@@ -19,7 +19,7 @@ const ARTICLES = [
   {
     id: 1, kicker: "平台企划", title: "《九州录》系列企划正式启动：九曲连章，现招两位作曲人",
     author: "曲境官方", date: "09-20", read: 3204, like: 186, liked: false,
-    glyph: "州", grad: "linear-gradient(120deg,#9E2B25 0%,#C96A4A 60%,#B8912E 100%)",
+    glyph: "州", grad: "linear-gradient(120deg,#2152FF 0%,#6B8CFF 60%,#C6D92E 100%)",
     sections: [
       { p: "「九州风物，各成一曲。」由沧海遗音社主催、曲境平台监制的系列企划《九州录》今日正式启动。企划共九首曲目，以九州风物为题，词作已全部完成，现面向全站招募两位作曲人。" },
       { h: "企划要什么样的曲", p: "整体风格为大气叙事向国风，参考方向：五声调式为骨、民乐与管弦并举。每首预算 ¥3,000–5,000，商用买断，签平台电子协议，稿酬全程托管。" },
@@ -31,7 +31,7 @@ const ARTICLES = [
   {
     id: 2, kicker: "本周热议", title: "戏腔到底该怎么混？编曲人和混音师「吵」起来了",
     author: "曲境官方", date: "09-21", read: 5127, like: 342, liked: false,
-    glyph: "戏", grad: "linear-gradient(120deg,#3A5068 0%,#6D8BA6 70%,#7E9B6E 100%)",
+    glyph: "戏", grad: "linear-gradient(120deg,#3B4252 0%,#7B88A8 70%,#6ED3A0 100%)",
     sections: [
       { p: "本周社区最热的帖子来自编曲人江篱的一个提问：国风电子里的琵琶与戏腔，混进 Future Bass 底鼓后中频全糊，EQ 怎么挖都不透。一石激起千层浪，编曲党和混音党在评论区展开了友好而激烈的切磋。" },
       { h: "两派观点", p: "编曲派认为问题出在编配阶段：中频排布太挤，戏腔进来之前就该给它让位。混音派则主张侧链闪避只挂 200–500Hz 频段、戏腔双轨平行处理，一轨只留气声高频。" },
@@ -42,7 +42,7 @@ const ARTICLES = [
   {
     id: 3, kicker: "新人扶持", title: "首单免佣金计划上线：9 月新入驻音乐人首笔订单 0 抽成",
     author: "曲境官方", date: "09-18", read: 2860, like: 254, liked: false,
-    glyph: "免", grad: "linear-gradient(120deg,#4A6B4F 0%,#7E9B6E 65%,#B8912E 100%)",
+    glyph: "免", grad: "linear-gradient(120deg,#2FA36B 0%,#6ED3A0 65%,#C6D92E 100%)",
     sections: [
       { p: "为帮助新入驻的音乐人接到第一单，曲境推出「首单免佣金计划」：2026 年 9 月 1 日后完成注册并通过工种认证的创作者，首笔完成的订单平台 0 抽成，稿酬全额结算。" },
       { h: "参与方式", p: "点击文末按钮报名后自动生效，无需其他操作。首单完成（买家验收 + 双方互评）后，佣金将随稿酬一并结算至钱包，可正常提现。" },
@@ -56,17 +56,17 @@ const ARTICLES = [
 const BANNERS = [
   {
     kicker: "平台企划", title: "《九州录》系列企划", sub: "九曲连章 · 招募作曲×2 · 预算充足",
-    glyph: "州", grad: "linear-gradient(120deg,#9E2B25 0%,#C96A4A 60%,#B8912E 100%)",
+    glyph: "州", grad: "linear-gradient(120deg,#2152FF 0%,#6B8CFF 60%,#C6D92E 100%)",
     act: () => openArticle(1),
   },
   {
     kicker: "本周热议", title: "戏腔到底该怎么混？", sub: "编曲人和混音师吵起来了，快来围观",
-    glyph: "戏", grad: "linear-gradient(120deg,#3A5068 0%,#6D8BA6 70%,#7E9B6E 100%)",
+    glyph: "戏", grad: "linear-gradient(120deg,#3B4252 0%,#7B88A8 70%,#6ED3A0 100%)",
     act: () => openArticle(2),
   },
   {
     kicker: "新人扶持", title: "首单免佣金计划", sub: "9 月新入驻音乐人首笔订单 0 抽成",
-    glyph: "免", grad: "linear-gradient(120deg,#4A6B4F 0%,#7E9B6E 65%,#B8912E 100%)",
+    glyph: "免", grad: "linear-gradient(120deg,#2FA36B 0%,#6ED3A0 65%,#C6D92E 100%)",
     act: () => openArticle(3),
   },
 ];
@@ -97,7 +97,7 @@ const WORKS = [
     tags: ["古风", "戏腔", "歌手", "抒情", "个人单曲", "空灵"],
     biz: "商业", price: "¥800 起",
     audio: true, video: false, dur: "00:47", ch: 190,
-    cover: "linear-gradient(160deg,#9E2B25,#C96A4A)", glyph: "绾",
+    cover: "linear-gradient(160deg,#2152FF,#6B8CFF)", glyph: "绾",
     desc: "戏腔转真声演示，音域 G3–E5，设备：U87 + 羽毛声卡，可交付 48k/24bit 干音。",
     detail: "商用价格含三次返修，加急 +30%。干音交付格式 WAV 48k/24bit，无混响无压缩。",
   },
@@ -107,7 +107,7 @@ const WORKS = [
     tags: ["国风电子", "电音", "燃向", "游戏配乐", "ACG"],
     biz: "商业", price: "¥3,200 起",
     audio: true, video: true, dur: "02:10", ch: 160,
-    cover: "linear-gradient(160deg,#3A5068,#6D8BA6)", glyph: "燈",
+    cover: "linear-gradient(160deg,#3B4252,#7B88A8)", glyph: "燈",
     desc: "传统五声旋律 × Future Bass 律动，琵琶采样与合成器音色融合，适合游戏宣传曲。",
     detail: "交付分轨 + 总线工程（Cubase / Studio One），含两次结构性修改与三次细节修改。",
   },
@@ -117,7 +117,7 @@ const WORKS = [
     tags: ["古风", "同人企划", "治愈"],
     biz: "非商业", price: "¥400 起",
     audio: false, video: false, ch: 200,
-    cover: "linear-gradient(160deg,#7A5C2E,#B8912E)", glyph: "畫",
+    cover: "linear-gradient(160deg,#8F9B1E,#C6D92E)", glyph: "畫",
     desc: "专接古风单曲封面与企划立绘，工笔重彩风格，交付 3000px 高清源文件。",
     detail: "非商用 ¥400/张，商用 ¥1,200/张 起，含线稿确认与一次成图修改。排单约 10 天。",
   },
@@ -127,7 +127,7 @@ const WORKS = [
     tags: ["古风", "商用宣传", "空灵", "抒情"],
     biz: "商业", price: "¥2,600 起",
     audio: false, video: true, dur: "00:15", ch: 150,
-    cover: "linear-gradient(160deg,#2C3A32,#4A6B4F)", glyph: "影",
+    cover: "linear-gradient(160deg,#1E2A24,#2FA36B)", glyph: "影",
     desc: "水墨晕染转场 + 歌词字幕动效，本片段为 15s 分镜演示，全曲 PV 周期约 30 天。",
     detail: "静态 PV ¥2,600 起；半动态含插画协调 ¥5,000 起。商用签平台协议，稿酬托管分期结算。",
   },
@@ -162,9 +162,9 @@ const ARTISTS = [
       desc: "偏爱叙事性旋律，擅长用五声音阶营造山河意象；副歌习惯弦乐层层推进，适合江湖、家国向企划。电音赛博向不接。",
     },
     shop: [
-      { kind: "work", title: "《关山月》成品曲买断", price: "¥3,500", biz: "商业", glyph: "月", grad: "linear-gradient(150deg,#3A5068,#6D8BA6)" },
-      { kind: "work", title: "《风雪归人》待售小样", price: "¥1,200", biz: "非商业", glyph: "雪", grad: "linear-gradient(150deg,#4A6B4F,#7E9B6E)" },
-      { kind: "bundle", title: "江湖企划全包 · 词曲+编曲", price: "¥6,800 起", count: 3, desc: "作曲+编曲+词，整体风格统一", glyph: "侠", grad: "linear-gradient(150deg,#7A5C2E,#B8912E)" },
+      { kind: "work", title: "《关山月》成品曲买断", price: "¥3,500", biz: "商业", glyph: "月", grad: "linear-gradient(150deg,#3B4252,#7B88A8)" },
+      { kind: "work", title: "《风雪归人》待售小样", price: "¥1,200", biz: "非商业", glyph: "雪", grad: "linear-gradient(150deg,#2FA36B,#6ED3A0)" },
+      { kind: "bundle", title: "江湖企划全包 · 词曲+编曲", price: "¥6,800 起", count: 3, desc: "作曲+编曲+词，整体风格统一", glyph: "侠", grad: "linear-gradient(150deg,#8F9B1E,#C6D92E)" },
     ],
     prices: [
       ["古风作曲（含小样）", "商业", "¥2,000 起"],
@@ -181,8 +181,8 @@ const ARTISTS = [
       desc: "音色婉转，戏腔真声无缝转换是招牌；情歌、叙事曲均可，嗓音向不接。",
     },
     shop: [
-      { kind: "work", title: "《咐悬》副歌干音现货", price: "¥600", biz: "非商业", glyph: "咐", grad: "linear-gradient(150deg,#9E2B25,#C96A4A)" },
-      { kind: "bundle", title: "主题曲演唱套餐 · 主喳+和声", price: "¥1,500 起", count: 2, desc: "主喳干音+全套和声编写与录制", glyph: "戏", grad: "linear-gradient(150deg,#9E2B25,#C96A4A)" },
+      { kind: "work", title: "《咐悬》副歌干音现货", price: "¥600", biz: "非商业", glyph: "咐", grad: "linear-gradient(150deg,#2152FF,#6B8CFF)" },
+      { kind: "bundle", title: "主题曲演唱套餐 · 主喳+和声", price: "¥1,500 起", count: 2, desc: "主喳干音+全套和声编写与录制", glyph: "戏", grad: "linear-gradient(150deg,#2152FF,#6B8CFF)" },
     ],
     prices: [
       ["歌曲演唱（含和声）", "商业", "¥800 起"],
@@ -198,8 +198,8 @@ const ARTISTS = [
       desc: "走古典雅词路线，典故考据严谨；命题创作需提供世界观设定，白话口水词不接。",
     },
     shop: [
-      { kind: "work", title: "《折枝令》成词待曲", price: "¥300", biz: "非商业", glyph: "折", grad: "linear-gradient(150deg,#4A6B4F,#7E9B6E)" },
-      { kind: "work", title: "《雪满弓刀》战歌词买断", price: "¥900", biz: "商业", glyph: "刀", grad: "linear-gradient(150deg,#2C3A32,#4A6B4F)" },
+      { kind: "work", title: "《折枝令》成词待曲", price: "¥300", biz: "非商业", glyph: "折", grad: "linear-gradient(150deg,#2FA36B,#6ED3A0)" },
+      { kind: "work", title: "《雪满弓刀》战歌词买断", price: "¥900", biz: "商业", glyph: "刀", grad: "linear-gradient(150deg,#1E2A24,#2FA36B)" },
     ],
     prices: [
       ["定制词作", "商业", "¥800 起"],
@@ -215,7 +215,7 @@ const ARTISTS = [
       desc: "传统五声 × 电子律动是主打，适合游戏宣传曲与燃向 PV；纯传统器乐编制也可。",
     },
     shop: [
-      { kind: "bundle", title: "游戏企划音乐包 · 编曲×3+后期", price: "¥12,000 起", count: 4, desc: "主题曲+两首场景BGM+全部混音母带", glyph: "燈", grad: "linear-gradient(150deg,#3A5068,#6D8BA6)" },
+      { kind: "bundle", title: "游戏企划音乐包 · 编曲×3+后期", price: "¥12,000 起", count: 4, desc: "主题曲+两首场景BGM+全部混音母带", glyph: "燈", grad: "linear-gradient(150deg,#3B4252,#7B88A8)" },
     ],
     prices: [
       ["整曲编曲", "商业", "¥3,200 起"],
@@ -231,9 +231,9 @@ const ARTISTS = [
       desc: "设色浓丽、线条工整，擅长带故事感的构图；人设卡、立绘、封面均可，Q 版不接。",
     },
     shop: [
-      { kind: "work", title: "古风封面现货 · 竹林夜孴", price: "¥800", biz: "商业", glyph: "竹", grad: "linear-gradient(150deg,#2C3A32,#4A6B4F)" },
-      { kind: "work", title: "古风封面现货 · 红衣們僥", price: "¥800", biz: "商业", glyph: "红", grad: "linear-gradient(150deg,#9E2B25,#C96A4A)" },
-      { kind: "bundle", title: "企划视觉全包 · 主视觉+人设×3", price: "¥4,600 起", count: 4, desc: "主视觉一张+三张人设立绘，风格统一", glyph: "畫", grad: "linear-gradient(150deg,#7A5C2E,#B8912E)" },
+      { kind: "work", title: "古风封面现货 · 竹林夜孴", price: "¥800", biz: "商业", glyph: "竹", grad: "linear-gradient(150deg,#1E2A24,#2FA36B)" },
+      { kind: "work", title: "古风封面现货 · 红衣們僥", price: "¥800", biz: "商业", glyph: "红", grad: "linear-gradient(150deg,#2152FF,#6B8CFF)" },
+      { kind: "bundle", title: "企划视觉全包 · 主视觉+人设×3", price: "¥4,600 起", count: 4, desc: "主视觉一张+三张人设立绘，风格统一", glyph: "畫", grad: "linear-gradient(150deg,#8F9B1E,#C6D92E)" },
     ],
     prices: [
       ["单曲封面", "商业", "¥1,200 起"],
@@ -252,9 +252,9 @@ const MY_STYLE = {
 };
 
 const MY_SHOP = [
-  { kind: "work", title: "《长安夜行录》成品买断", price: "¥2,400", biz: "商业", glyph: "♩", grad: "linear-gradient(150deg,#4A6B4F,#7E9B6E)" },
-  { kind: "work", title: "《掬水月》待售小样", price: "¥900", biz: "非商业", glyph: "♬", grad: "linear-gradient(150deg,#9E2B25,#C96A4A)" },
-  { kind: "bundle", title: "同人企划音乐包 · 词曲×3", price: "¥4,200 起", count: 3, desc: "三首词曲打包，风格统一，含小样", glyph: "♪", grad: "linear-gradient(150deg,#3A5068,#6D8BA6)" },
+  { kind: "work", title: "《长安夜行录》成品买断", price: "¥2,400", biz: "商业", glyph: "♩", grad: "linear-gradient(150deg,#2FA36B,#6ED3A0)" },
+  { kind: "work", title: "《掬水月》待售小样", price: "¥900", biz: "非商业", glyph: "♬", grad: "linear-gradient(150deg,#2152FF,#6B8CFF)" },
+  { kind: "bundle", title: "同人企划音乐包 · 词曲×3", price: "¥4,200 起", count: 3, desc: "三首词曲打包，风格统一，含小样", glyph: "♪", grad: "linear-gradient(150deg,#3B4252,#7B88A8)" },
 ];
 
 /* 我的报价（可在主页编辑增删） */
@@ -266,9 +266,9 @@ const MY_PRICES = [
 
 /* 我的作品（管理：置顶 / 隐藏 / 删除；新作品从发布页上传） */
 const MY_WORKS = [
-  { title: "长安夜行录", role: "作曲", plays: "1.2w", glyph: "♪", grad: "linear-gradient(135deg,#4A6B4F,#7E9B6E)", top: false, hidden: false },
-  { title: "掬水月", role: "编曲", plays: "8,432", glyph: "♬", grad: "linear-gradient(135deg,#9E2B25,#C96A4A)", top: false, hidden: false },
-  { title: "雁归引", role: "作曲", plays: "6,010", glyph: "♩", grad: "linear-gradient(135deg,#3A5068,#6D8BA6)", top: false, hidden: false },
+  { title: "长安夜行录", role: "作曲", plays: "1.2w", glyph: "♪", grad: "linear-gradient(135deg,#2FA36B,#6ED3A0)", top: false, hidden: false },
+  { title: "掬水月", role: "编曲", plays: "8,432", glyph: "♬", grad: "linear-gradient(135deg,#2152FF,#6B8CFF)", top: false, hidden: false },
+  { title: "雁归引", role: "作曲", plays: "6,010", glyph: "♩", grad: "linear-gradient(135deg,#3B4252,#7B88A8)", top: false, hidden: false },
 ];
 
 const DEMANDS = [

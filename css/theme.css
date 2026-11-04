@@ -4,35 +4,36 @@
  * ============================================================ */
 :root {
   /* 主色板：宣纸 + 墨色 + 朱砂 + 烫金 */
-  --paper:      #F7F2E7;   /* 页面底色（宣纸） */
-  --paper-2:    #FDFBF4;   /* 卡片底色 */
-  --ink:        #2B2620;   /* 主文字 */
-  --ink-2:      #6B6154;   /* 次级文字 */
-  --ink-3:      #9A8F7E;   /* 弱化文字 */
-  --red:        #9E2B25;   /* 主题红（朱砂）：主按钮 / 价格 / 强调 */
-  --red-light:  #F3E2DE;   /* 红 - 浅底（商业标签底色） */
-  --gold:       #B8912E;   /* 金（招募 / 分类标签） */
-  --gold-light: #F5ECD4;
-  --green:      #4A6B4F;   /* 绿（非商业 / 开放接稿状态） */
-  --green-light:#E3EDE2;
-  --line:       #E5DCC9;   /* 描边 / 分割线 */
-  --card:       #ffffff;   /* 输入框 / 小面板底色 */
-  --viewer-bg:  #171512;   /* 沉浸式浏览页底色 */
+  /* 主色板：冷静中性灰 + 黑 + 电光蓝 */
+  --paper:      #EEEEF0;   /* 页面底色（浅灰） */
+  --paper-2:    #FFFFFF;   /* 卡片底色（纯白） */
+  --ink:        #17181A;   /* 主文字 */
+  --ink-2:      #5C5F66;   /* 次级文字 */
+  --ink-3:      #9A9DA6;   /* 弱化文字 */
+  --red:        #2152FF;   /* 主强调色（电光蓝）：主按钮 / 价格 / 选中 */
+  --red-light:  #E6EBFF;   /* 蓝 - 浅底 */
+  --gold:       #8F9B1E;   /* 黄绿点睢（招募 / 分类） */
+  --gold-light: #F0F4D4;
+  --green:      #2FA36B;   /* 绿（非商业 / 开放接稿状态） */
+  --green-light:#E2F3EA;
+  --line:       #E6E6EA;   /* 描边 / 分割线 */
+  --card:       #F3F3F5;   /* 输入框 / 小面板底色 */
+  --viewer-bg:  #0F1013;   /* 沉浸式浏览页底色 */
 
   /* 布局参数 */
   --phone-w: 390px;
   --phone-h: 820px;
-  --radius-card: 22px;
+  --radius-card: 24px;
   --radius-sheet: 32px;
-  --shadow-card: 3px 4px 0 rgba(43, 38, 32, .12);
+  --shadow-card: 0 2px 12px rgba(20, 22, 30, .06);
 
-  /* 手绘风：不对称圆角（简笔画抉笔感） */
-  --squiggle: 255px 18px 225px 18px / 18px 225px 18px 255px;
-  --squiggle-sm: 18px 6px 16px 8px / 8px 16px 6px 18px;
+  /* 大圆角（变量名沿用，统一指向现代圆角） */
+  --squiggle: 22px;
+  --squiggle-sm: 16px;
 
-  /* 字体：圆体优先，更软萌 */
-  --font-serif: "Yuanti SC", "YouYuan", "Chalkboard SE", "Comic Sans MS", "Noto Serif SC", serif;
-  --font-sans: "Yuanti SC", "YouYuan", -apple-system, sans-serif;
+  /* 字体：现代几何无衬线 */
+  --font-serif: "Avenir Next", "PingFang SC", -apple-system, "Helvetica Neue", "Noto Sans SC", sans-serif;
+  --font-sans: "Avenir Next", "PingFang SC", -apple-system, "Helvetica Neue", "Noto Sans SC", sans-serif;
 }
 
 /* ============================================================
@@ -40,21 +41,21 @@
  * 夜色水墨：深褐墨底 + 米白文字，保留朱砂 / 烫金点缀
  * ============================================================ */
 html.dark {
-  --paper:      #1C1915;   /* 页面底色（夜墨） */
-  --paper-2:    #27221C;   /* 卡片底色 */
-  --ink:        #EAE2D3;   /* 主文字 */
-  --ink-2:      #B3A892;   /* 次级文字 */
-  --ink-3:      #837866;   /* 弱化文字 */
-  --red:        #C9655B;   /* 朱砂提亮，保证对比度 */
-  --red-light:  #3B2723;
-  --gold:       #CDA94E;
-  --gold-light: #342B17;
-  --green:      #85AB8B;
-  --green-light:#243027;
-  --line:       #3B342A;
-  --card:       #322C24;
-  --shadow-card: 3px 4px 0 rgba(0, 0, 0, .35);
+  --paper:      #131316;   /* 页面底色 */
+  --paper-2:    #1E1F23;   /* 卡片底色 */
+  --ink:        #F2F2F4;   /* 主文字 */
+  --ink-2:      #A6A9B3;   /* 次级文字 */
+  --ink-3:      #6E7179;   /* 弱化文字 */
+  --red:        #5B7CFF;   /* 蓝提亮，保证对比度 */
+  --red-light:  #232A45;
+  --gold:       #B9C73B;
+  --gold-light: #2A2D18;
+  --green:      #4CC08A;
+  --green-light:#1B2E24;
+  --line:       #2C2D33;
+  --card:       #2A2B30;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, .4);
 }
-html.dark body { background: #121009; }
+html.dark body { background: #09090B; }
 html.dark img { filter: brightness(.88); }
-html.dark .sinfo { background: rgba(28, 25, 21, .9); border-top-color: rgba(255, 255, 255, .06); }
+html.dark .sinfo { background: rgba(24, 24, 28, .92); border-top-color: rgba(255, 255, 255, .06); }

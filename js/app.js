@@ -520,7 +520,7 @@ function qrSVG(seed) {
   let rects = "";
   for (let y = 0; y < n; y++) for (let x = 0; x < n; x++)
     if (g[y][x]) rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-  return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" fill="#2B2620">${rects}</svg>`;
+  return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" fill="#17181A">${rects}</svg>`;
 }
 
 function openMyQR() {
@@ -1584,7 +1584,7 @@ function submitPublish() {
     const coverCss = pubState.cover?.kind === "image"
       ? `url(${pubState.cover.url}) center/cover`
       : pubState.cover?.kind === "video"
-        ? "linear-gradient(160deg,#2C3A32,#4A6B4F)" : null;
+        ? "linear-gradient(160deg,#1E2A24,#2FA36B)" : null;
     WORKS.unshift({
       id: Date.now(), type: pubState.types, title,
       author, role: state.myRoles.join(" / ") || "新人音乐人",
@@ -1891,7 +1891,7 @@ function openMyWorksList() {
     .sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0));
   openSheet(`我的作品清单 · ${list.length}`, list.map(w => `
     <div class="search-row" onclick="toast('Demo：作品《${esc(w.title)}》')">
-      <div class="sr-glyph" style="background:${w.grad};color:#FFFBF3;border-color:var(--ink)">${esc(w.glyph)}</div>
+      <div class="sr-glyph" style="background:${w.grad};color:#fff">${esc(w.glyph)}</div>
       <div class="sr-info"><b>${esc(w.title)}${w.top ? " 📌" : ""}</b><span>${esc(w.role)} · 播放 ${esc(w.plays)}</span></div>
       <span class="art-arrow">›</span></div>`).join("")
     || `<div class="rev-hint">暂无公开作品 · 去发布页上传</div>`);
@@ -2294,7 +2294,7 @@ const isFaved = id => state.favFolders.some(f => f.ids.includes(id));
 /** 作品小封面（收藏夹封面/列表行通用） */
 function workMiniCover(w) {
   if (!w) return `<span class="fav-glyph">♡</span>`;
-  const bg = w.cover || "linear-gradient(150deg,#3A5068,#6D8BA6)";
+  const bg = w.cover || "linear-gradient(150deg,#3B4252,#7B88A8)";
   return `<span class="fav-bg" style="background:${bg}"></span>
     <span class="fav-glyph">${w.lyric ? "词" : esc(w.glyph || "♪")}</span>`;
 }
@@ -2725,8 +2725,8 @@ function setMgBiz(b, el) {
 function closeMgEdit() { $("#mgEditMask").classList.remove("show"); }
 
 const SHOP_GRADS = [
-  "linear-gradient(150deg,#4A6B4F,#7E9B6E)", "linear-gradient(150deg,#9E2B25,#C96A4A)",
-  "linear-gradient(150deg,#3A5068,#6D8BA6)", "linear-gradient(150deg,#7A5C2E,#B8912E)",
+  "linear-gradient(150deg,#2FA36B,#6ED3A0)", "linear-gradient(150deg,#2152FF,#6B8CFF)",
+  "linear-gradient(150deg,#3B4252,#7B88A8)", "linear-gradient(150deg,#8F9B1E,#C6D92E)",
 ];
 
 function saveMgEdit() {
@@ -3272,7 +3272,7 @@ function doSearch(commit) {
         <span class="art-arrow">›</span></div>`).join("") : "",
     articles.length ? sec("📰 平台资讯", articles.length) + articles.map(a => `
       <div class="search-row" onclick="searchJump(()=>openArticle(${a.id}))">
-        <div class="sr-glyph" style="background:${a.grad};color:#FFFBF3;border-color:var(--ink)">${a.glyph}</div>
+        <div class="sr-glyph" style="background:${a.grad};color:#fff">${a.glyph}</div>
         <div class="sr-info"><b>${esc(a.title)}</b><span>${esc(a.author)} · 阅读 ${a.read.toLocaleString()}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
   ].join("");
@@ -3301,7 +3301,7 @@ function renderArticle() {
       <i class="art-kicker">${esc(a.kicker)}</i>
       <h2 class="art-title">${esc(a.title)}</h2>
       <div class="art-meta">
-        <div class="avatar" style="background:linear-gradient(135deg,#9E2B25,#B8912E);width:30px;height:30px;font-size:12px">曲</div>
+        <div class="avatar" style="background:linear-gradient(135deg,#2152FF,#C6D92E);width:30px;height:30px;font-size:12px">曲</div>
         <b>${esc(a.author)}</b><span>${a.date} · 阅读 ${a.read.toLocaleString()}</span>
       </div>
       ${a.sections.map(s => `${s.h ? `<h4 class="art-h">${esc(s.h)}</h4>` : ""}<p class="art-p">${esc(s.p)}</p>`).join("")}

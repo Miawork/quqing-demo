@@ -97,11 +97,11 @@ const CONFIG = {
 
   /** 头像渐变色池（按名字 hash 分配） */
   avatarColors: [
-    "linear-gradient(135deg,#9E2B25,#C96A4A)",
-    "linear-gradient(135deg,#3A5068,#6D8BA6)",
-    "linear-gradient(135deg,#4A6B4F,#7E9B6E)",
-    "linear-gradient(135deg,#7A5C2E,#B8912E)",
-    "linear-gradient(135deg,#5C3A68,#8E6DA6)",
+    "linear-gradient(135deg,#2152FF,#6B8CFF)",
+    "linear-gradient(135deg,#3B4252,#7B88A8)",
+    "linear-gradient(135deg,#2FA36B,#6ED3A0)",
+    "linear-gradient(135deg,#8F9B1E,#C6D92E)",
+    "linear-gradient(135deg,#6A3BFF,#9D7BFF)",
   ],
 
   /** UI 参数 */
