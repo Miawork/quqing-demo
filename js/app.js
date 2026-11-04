@@ -26,6 +26,8 @@ const state = {
   following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
   muted: new Set(),        // 消息免打扰（用户 / 讨论组通用）
+  workLiked: new Set(),    // 我点赞过的作品 id
+  viewerSwipes: 0,         // 沉浸式浏览累计切换次数（≥3 后隐藏新手提示）
   accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
@@ -200,9 +202,10 @@ function openShare(i) {
 function closeShare() { $("#shareMask").classList.remove("show"); }
 
 function shareTo(platform) {
-  const p = POSTS[state.currentShare];
+  const t = shareWorkTitle ?? POSTS[state.currentShare].title;
+  shareWorkTitle = null;
   closeShare();
-  toast(`已分享《${p.title.slice(0, 10)}…》到${platform}`);
+  toast(`已分享《${t.slice(0, 10)}…》到${platform}`);
 }
 function copyShareLink() {
   closeShare();
@@ -812,12 +815,112 @@ function copyAppLink() {
 /* ---------- 沉浸式作品浏览 ---------- */
 
 /** @param idx 列表下标；可传入自定义作品列表（如音乐人主页），默认用首页筛选结果 */
+let viewerWorks = []; // 当前浏览列表（点赞 / 评论 / 转发按 id 查找）
+let vLastIdx = 0;
+
 function openViewer(idx, list) {
   const works = list || state.filteredWorks;
+  viewerWorks = works;
   const scroller = $("#vscroll");
   scroller.innerHTML = works.map(slideHTML).join("");
   $("#viewer").classList.add("show");
+  // 新手提示：累计切换 3 次后不再展示
+  $(".viewer-hint").style.display = state.viewerSwipes >= 3 ? "none" : "";
+  vLastIdx = idx;
+  scroller.onscroll = viewerOnScroll;
   requestAnimationFrame(() => { scroller.scrollTop = scroller.clientHeight * idx; });
+}
+
+/** 统计上下滑切换次数，满 3 次淡出新手提示 */
+function viewerOnScroll() {
+  const sc = $("#vscroll");
+  const i = Math.round(sc.scrollTop / sc.clientHeight);
+  if (i === vLastIdx) return;
+  vLastIdx = i;
+  if (state.viewerSwipes >= 3) return;
+  state.viewerSwipes++;
+  if (state.viewerSwipes >= 3) {
+    const hint = $(".viewer-hint");
+    hint.style.transition = "opacity .6s";
+    hint.style.opacity = "0";
+    setTimeout(() => { hint.style.display = "none"; hint.style.opacity = ""; }, 650);
+  }
+}
+
+/* --- 作品互动：点赞 / 评论 / 转发 / 分享 --- */
+
+const vWorkById = id => viewerWorks.find(w => w.id === id) || WORKS.find(w => w.id === id);
+
+/** 基础点赞数：由 id 确定性生成（Demo 无后端） */
+const workLikeBase = id => 46 + (id * 83) % 460;
+const workLikeCount = id => workLikeBase(id) + (state.workLiked.has(id) ? 1 : 0);
+
+function toggleWorkLike(id) {
+  const on = !state.workLiked.has(id);
+  on ? state.workLiked.add(id) : state.workLiked.delete(id);
+  const el = $(`#wlike-${id}`);
+  if (el) {
+    el.classList.toggle("on", on);
+    el.innerHTML = `<i>${on ? "♥" : "♡"}</i><b>${workLikeCount(id)}</b>`;
+  }
+}
+
+/** 作品评论存储（按 id，首次访问种子两条 Demo 评论） */
+const workCmts = {};
+function workCmtsOf(id) {
+  if (!workCmts[id]) workCmts[id] = [
+    { name: "晚风拾梦", txt: "旋律太戳了，循环了一下午！", time: "2 天前" },
+    { name: "衔枝客", txt: "编曲层次好丰富，期待合作～", time: "1 周前" },
+  ];
+  return workCmts[id];
+}
+
+function openWorkComments(id) {
+  const list = workCmtsOf(id);
+  openSheet(`评论 ${list.length}`, `
+    <div class="wc-list">${list.map(c => `
+      <div class="wc-row">
+        <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
+        <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
+      </div>`).join("")}</div>
+    <div class="wc-input">
+      <input id="wcInput" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${id})">
+      <button class="btn primary" onclick="sendWorkCmt(${id})">发送</button>
+    </div>`);
+  setTimeout(() => $("#wcInput")?.focus(), 200);
+}
+
+function sendWorkCmt(id) {
+  const v = $("#wcInput").value.trim();
+  if (!v) return toast("先写点评论内容吧～");
+  workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚" });
+  openWorkComments(id); // 重绘评论列表
+  const n = $(`#wcmt-${id} b`);
+  if (n) n.textContent = workCmtsOf(id).length;
+  toast("评论已发布 ✓");
+}
+
+/** 转发作品：生成一条社区动态（带原作品引用） */
+function forwardWork(id) {
+  const w = vWorkById(id);
+  if (!w) return;
+  POSTS.unshift({
+    name: state.profile.name || "我", topic: null, time: "刚刚",
+    title: "推荐作品：《" + w.title + "》",
+    txt: "转发了 @" + w.author + " 的作品《" + w.title + "》，速来围观！",
+    like: 0, liked: false, reposts: 0, comments: [],
+    origin: { name: w.author, title: w.title, txt: w.desc || "" },
+  });
+  renderCommunity();
+  toast("已转发到社区动态 ✓");
+}
+
+/** 分享作品：复用多平台分享面板 */
+let shareWorkTitle = null;
+function openShareWork(id) {
+  const w = vWorkById(id);
+  shareWorkTitle = w ? w.title : "作品";
+  $("#shareMask").classList.add("show");
 }
 
 /** 音乐人主页：点代表作品，进入与首页一致的作品页 */

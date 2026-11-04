@@ -544,6 +544,12 @@ function slideInfoHTML(w) {
       <span class="go">主页 ›</span></div>
     <div class="sdesc">${esc(w.desc)}<br>
       <b style="color:var(--ink)">约稿须知：</b>${esc(w.detail)}</div>
+    <div class="s-acts">
+      <div class="s-act ${state.workLiked.has(w.id) ? "on" : ""}" id="wlike-${w.id}" onclick="toggleWorkLike(${w.id})"><i>${state.workLiked.has(w.id) ? "♥" : "♡"}</i><b>${workLikeCount(w.id)}</b></div>
+      <div class="s-act" id="wcmt-${w.id}" onclick="openWorkComments(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
+      <div class="s-act" onclick="forwardWork(${w.id})"><i>↻</i><b>转发</b></div>
+      <div class="s-act" onclick="openShareWork(${w.id})"><i>↗</i><b>分享</b></div>
+    </div>
     <div class="sbtns">
       <button class="btn ghost fav-btn" data-fav="${w.id}" onclick="openFavPick(${w.id})">${isFaved(w.id) ? "已收藏 ♥" : "收藏 ♡"}</button>
       <button class="btn primary" onclick="closeViewer();openCommission('${esc(w.author)}', '${esc(w.title)}')">发起约稿</button>

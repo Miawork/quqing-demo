@@ -488,6 +488,32 @@ body {
 .sbtns { display: flex; gap: 9px; }
 .sbtns .btn { padding: 11px; font-size: 13.5px; }
 
+/* 作品互动行：点赞 / 评论 / 转发 / 分享 */
+.s-acts { display: flex; gap: 8px; margin-bottom: 12px; }
+.s-act {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 8px 0; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); color: var(--ink-2); cursor: pointer; user-select: none;
+}
+.s-act i { font-style: normal; font-size: 13px; }
+.s-act b { font-size: 11.5px; font-weight: 600; }
+.s-act.on { color: #ff4d6d; border-color: rgba(255,77,109,.5); background: rgba(255,77,109,.07); }
+
+/* 作品评论弹层 */
+.wc-list { max-height: 42vh; overflow-y: auto; }
+.wc-row { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.wc-row:last-child { border-bottom: none; }
+.wc-body { flex: 1; min-width: 0; }
+.wc-body b { font-size: 12px; color: var(--ink-2); }
+.wc-body p { font-size: 13px; color: var(--ink); margin: 3px 0; line-height: 1.6; word-break: break-all; }
+.wc-body span { font-size: 10.5px; color: var(--ink-3); }
+.wc-input { display: flex; gap: 8px; margin-top: 12px; }
+.wc-input input {
+  flex: 1; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); color: var(--ink); font-size: 13px; outline: none;
+}
+.wc-input .btn { padding: 0 18px; font-size: 13px; }
+
 /* ---------- 7. 消息 ---------- */
 /* 通知分类入口（小红书式三磁贴：赞和收藏 / 评论和@ / 约稿通知） */
 .msg-entries {
