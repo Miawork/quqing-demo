@@ -12,7 +12,7 @@
 <body>
 
 <div class="phone">
-  <div class="statusbar"><span>9:41</span><span>曲境 · 古风音乐约稿</span><span>🔋 100%</span></div>
+  <div class="statusbar"><span>9:41</span><span>曲境 · 古风音乐约稿</span><span>100%</span></div>
 
   <div class="app">
 
@@ -58,7 +58,7 @@
         <div class="header-action" onclick="openPostForm()"><span class="si" data-icon="pencil"></span> 发帖</div>
       </div>
       <div class="hot-card" onclick="goHotTopic()">
-        🔥 本周热议：<b>#古风编曲里的戏腔到底该怎么混#</b><br>
+        本周热议：<b>#古风编曲里的戏腔到底该怎么混#</b><br>
         1,024 人正在讨论 · 参与讨论领「社区茶券」
       </div>
       <div class="filter-row" id="topicRow"></div>
@@ -74,7 +74,7 @@
           <div class="header-action af-plus" onclick="openMsgPlus()" title="添加好友 / 分享">＋</div>
         </div>
       </div>
-      <div class="sys-notice">📜 平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
+      <div class="sys-notice">平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
       <div id="msgList"></div>
     </div>
 
@@ -194,7 +194,7 @@
       <div class="ov-body chat-body" id="chatBody"></div>
       <div class="sticker-tray" id="stickerTray"></div>
       <div class="chat-bar">
-        <div class="cbtn" onclick="toggleStickerTray()" title="表情">☺</div>
+        <div class="cbtn" onclick="toggleStickerTray()" title="表情">表</div>
         <input id="chatInput" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendChatText()">
         <button class="btn primary send-btn" onclick="sendChatText()">发送</button>
       </div>
@@ -209,8 +209,8 @@
       <div class="ov-body" id="postBody"></div>
       <div class="sticker-tray" id="cmtTray"></div>
       <div class="chat-bar">
-        <div class="cbtn" onclick="toggleCmtTray()" title="表情">☺</div>
-        <div class="cbtn" onclick="pickCmtImg()" title="图片">🖼</div>
+        <div class="cbtn" onclick="toggleCmtTray()" title="表情">表</div>
+        <div class="cbtn" onclick="pickCmtImg()" title="图片">图</div>
         <input id="cmtInput" placeholder="友善评论，以茶会友…" onkeydown="if(event.key==='Enter')addComment()">
         <button class="btn primary send-btn" onclick="addComment()">评论</button>
       </div>
@@ -261,14 +261,14 @@
       <div class="pub-sheet">
         <h3>分享到</h3>
         <div class="share-grid">
-          <div class="share-item" onclick="shareTo('微信好友')"><span>💬</span><b>微信好友</b></div>
-          <div class="share-item" onclick="shareTo('朋友圈')"><span>🌸</span><b>朋友圈</b></div>
-          <div class="share-item" onclick="shareTo('QQ')"><span>🐧</span><b>QQ</b></div>
-          <div class="share-item" onclick="shareTo('微博')"><span>📣</span><b>微博</b></div>
-          <div class="share-item" onclick="shareTo('小红书')"><span>📕</span><b>小红书</b></div>
-          <div class="share-item" onclick="shareTo('B站动态')"><span>📺</span><b>B站动态</b></div>
-          <div class="share-item" onclick="copyShareLink()"><span>🔗</span><b>复制链接</b></div>
-          <div class="share-item" onclick="shareTo('生成海报')"><span>🖼</span><b>生成海报</b></div>
+          <div class="share-item" onclick="shareTo('微信好友')"><span>微</span><b>微信好友</b></div>
+          <div class="share-item" onclick="shareTo('朋友圈')"><span>圈</span><b>朋友圈</b></div>
+          <div class="share-item" onclick="shareTo('QQ')"><span>Q</span><b>QQ</b></div>
+          <div class="share-item" onclick="shareTo('微博')"><span>博</span><b>微博</b></div>
+          <div class="share-item" onclick="shareTo('小红书')"><span>红</span><b>小红书</b></div>
+          <div class="share-item" onclick="shareTo('B站动态')"><span>B</span><b>B站动态</b></div>
+          <div class="share-item" onclick="copyShareLink()"><span>链</span><b>复制链接</b></div>
+          <div class="share-item" onclick="shareTo('生成海报')"><span>图</span><b>生成海报</b></div>
         </div>
         <div class="pub-close" onclick="closeShare()">✕</div>
       </div>

@@ -129,7 +129,7 @@ function renderHome() {
     feed.className = "masonry";
     feed.innerHTML = state.filteredWorks.length
       ? state.filteredWorks.map(workCardHTML).join("")
-      : emptyHTML("没有符合筛选的作品，换个标签试试 ✦");
+      : emptyHTML("没有符合筛选的作品，换个标签试试");
 
   } else if (state.homeMode === "artist") {
     const list = ARTISTS.filter(a => matchTags([
@@ -162,7 +162,7 @@ function renderCommunity() {
     <div class="chip ${t === state.topic ? "on" : ""}" onclick="setTopic('${t}')">
       ${t === "全部" ? t : "# " + t}</div>`).join("");
   const articles = state.topic === "全部"
-    ? `<div class="art-sec">📰 平台资讯</div>` + ARTICLES.map(articleCardHTML).join("")
+    ? `<div class="art-sec">平台资讯</div>` + ARTICLES.map(articleCardHTML).join("")
     : "";
   $("#commFeed").innerHTML = articles +
     (POSTS.filter(p => state.topic === "全部" || p.topic === state.topic)
@@ -199,11 +199,11 @@ function closeShare() { $("#shareMask").classList.remove("show"); }
 function shareTo(platform) {
   const p = POSTS[state.currentShare];
   closeShare();
-  toast(`已分享《${p.title.slice(0, 10)}…》到${platform} ✦`);
+  toast(`已分享《${p.title.slice(0, 10)}…》到${platform}`);
 }
 function copyShareLink() {
   closeShare();
-  toast("链接已复制，快去粘贴吧 🔗");
+  toast("链接已复制，快去粘贴吧");
 }
 
 /** 转发：引用原帖（转发的转发仍指向最初原帖，微博逻辑） */
@@ -233,7 +233,7 @@ function submitRepost() {
   closeOverlay("ovPost");
   state.topic = "全部";
   renderCommunity();
-  toast("转发成功 ✦");
+  toast("转发成功");
 }
 
 function openPost(i, focusCmt) {
@@ -258,7 +258,7 @@ function addComment() {
   input.value = "";
   renderPostDetail();
   renderCommunity();
-  toast("评论成功 ✦");
+  toast("评论成功");
 }
 
 /* 评论：发表情 / 发图片 */
@@ -279,7 +279,7 @@ function sendCmtSticker(key) {
   $("#cmtTray").classList.remove("show");
   renderPostDetail();
   renderCommunity();
-  toast("表情已发送 ✦");
+  toast("表情已发送");
 }
 
 function pickCmtImg() { $("#cmtImgFile").click(); }
@@ -294,7 +294,7 @@ function onCmtImg(input) {
     });
     renderPostDetail();
     renderCommunity();
-    toast("图片评论已发送 ✦");
+    toast("图片评论已发送");
   };
   reader.readAsDataURL(file);
   input.value = "";
@@ -340,7 +340,7 @@ function submitPost() {
   state.topic = topic || "全部";
   closePostForm();
   renderCommunity();
-  toast(m ? `发布成功，已带标签 #${m[1]} ✦` : "发布成功 ✦");
+  toast(m ? `发布成功，已带标签 #${m[1]}` : "发布成功");
 }
 
 /* ---------- 首页提示（铃铛通知） ---------- */
@@ -356,7 +356,7 @@ function openNotices() {
 
 /** 一键全部已读 */
 function markAllNotices() {
-  if (!NOTICES.some(n => n.unread)) return toast("没有未读提示啦 ✦");
+  if (!NOTICES.some(n => n.unread)) return toast("没有未读提示啦");
   NOTICES.forEach(n => { n.unread = false; });
   renderNoticeDot();
   $("#noticeList").innerHTML = NOTICES.map(noticeHTML).join("");
@@ -375,7 +375,7 @@ function noticeGo(i) {
     openFollow("fans");
   }
   else if (n.type === "like") toast("Demo：查看被赞的作品");
-  else toast("已阅平台提示 📜");
+  else toast("已阅平台提示");
 }
 
 /* ---------- 消息 ---------- */
@@ -386,7 +386,7 @@ function renderMessages() {
 
 /** 消息列表一键全部已读 */
 function markAllMessages() {
-  if (!MESSAGES.some(m => m.unread)) return toast("没有未读消息啦 ✦");
+  if (!MESSAGES.some(m => m.unread)) return toast("没有未读消息啦");
   MESSAGES.forEach(m => { m.unread = 0; });
   renderMessages();
   toast("消息已全部标记为已读 ✓");
@@ -438,8 +438,8 @@ function followBack(name) {
 /** 消息页「＋」菜单（微信式） */
 function openMsgPlus() {
   openSheet("更多功能", `
-    <div class="af-entry" onclick="closeSheet();openAddFriend()"><span>👤</span><div><b>添加好友</b><i>搜索关注，互关即好友</i></div><em>›</em></div>
-    <div class="af-entry" onclick="closeSheet();openScan()"><span>📷</span><div><b>扫一扫</b><i>扫描好友二维码</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();openAddFriend()"><span>友</span><div><b>添加好友</b><i>搜索关注，互关即好友</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();openScan()"><span>扫</span><div><b>扫一扫</b><i>扫描好友二维码</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();openMyQR()"><span>▦</span><div><b>我的二维码</b><i>让对方扫码加我</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();shareApp()"><span>↗</span><div><b>分享应用</b><i>把「曲境」推荐给朋友</i></div><em>›</em></div>`);
 }
@@ -466,15 +466,15 @@ function afSearch() {
     const hits = pool.filter(n => n.toLowerCase().includes(kw) || uidOf(n).toLowerCase().includes(kw));
     $("#afResults").innerHTML = hits.length
       ? `<div class="search-sec">搜索结果<small>${hits.length}</small></div>` + hits.map(afRowHTML).join("")
-      : emptyHTML(`没有找到相关用户，核对圈名或 ID 后再试 ✦`);
+      : emptyHTML(`没有找到相关用户，核对圈名或 ID 后再试`);
     return;
   }
   const pending = FRIEND_REQS.filter(r => r.status === "pending");
   $("#afResults").innerHTML = `
     <div class="af-myid">我的 ID：<b>${esc(uidOf(state.profile.name))}</b></div>
-    <div class="af-entry" onclick="openScan()"><span>📷</span><div><b>扫一扫</b><i>扫描对方的好友二维码</i></div><em>›</em></div>
+    <div class="af-entry" onclick="openScan()"><span>扫</span><div><b>扫一扫</b><i>扫描对方的好友二维码</i></div><em>›</em></div>
     <div class="af-entry" onclick="openMyQR()"><span>▦</span><div><b>我的二维码</b><i>邀请对方扫码关注我</i></div><em>›</em></div>
-    ${pending.length ? `<div class="search-sec">🎐 新朋友 · 关注了你<small>${pending.length}</small></div>` + pending.map(afReqRowHTML).join("") : ""}
+    ${pending.length ? `<div class="search-sec">新朋友 · 关注了你<small>${pending.length}</small></div>` + pending.map(afReqRowHTML).join("") : ""}
     <div class="search-sec">可能认识的人</div>
     ${pool.filter(n => !state.following.has(n) && !pending.some(r => r.name === n)).slice(0, 6).map(afRowHTML).join("")}`;
 }
@@ -530,7 +530,7 @@ function openMyQR() {
     <div class="qr-box">${qrSVG("quqi-friend:" + uid)}</div>
     <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>`;
   $("#qrActs").innerHTML = `
-    <button class="qr-act" onclick="toast('二维码已保存到相册（Demo）📥')">📥 保存图片</button>
+    <button class="qr-act" onclick="toast('二维码已保存到相册（Demo）')">保存图片</button>
     <button class="qr-act" onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">↗ 分享名片</button>
     <button class="qr-act qr-act-close" onclick="closeQR()">✕ 关闭</button>`;
   $("#qrMask").classList.add("show");
@@ -571,20 +571,20 @@ const APP_SHARE_URL = "https://miawork.github.io/quqing-demo/";
 
 function shareApp() {
   closeSheet();
-  const plats = [["💬", "微信好友"], ["🌿", "朋友圈"], ["🐧", "QQ"], ["📣", "微博"]];
+  const plats = [["微", "微信好友"], ["圈", "朋友圈"], ["Q", "QQ"], ["博", "微博"]];
   openSheet("分享「曲境」给朋友", `
     <div class="share-app-qr">${qrSVG("quqing-app:" + APP_SHARE_URL)}</div>
     <p class="qr-tip">扫码体验「曲境 · 古风音乐约稿平台」</p>
     <div class="share-grid">
       ${plats.map(([e, p]) => `<div class="share-it" onclick="closeSheet();toast('已分享到${p}（Demo）↗')"><span>${e}</span><b>${p}</b></div>`).join("")}
-      <div class="share-it" onclick="copyAppLink()"><span>🔗</span><b>复制链接</b></div>
+      <div class="share-it" onclick="copyAppLink()"><span>链</span><b>复制链接</b></div>
     </div>`);
 }
 
 function copyAppLink() {
   closeSheet();
   navigator.clipboard?.writeText(APP_SHARE_URL).catch(() => {});
-  toast("应用链接已复制，快去分享吧 🔗");
+  toast("应用链接已复制，快去分享吧");
 }
 
 /* ---------- 沉浸式作品浏览 ---------- */
@@ -627,8 +627,8 @@ function toggleFollow(name) {
         CHATS[name] = [{ who: "them", type: "text", txt: greet }];
         renderMessages();
       }
-      toast(`你和「${name}」互相关注，成为好友啦 ✦`);
-    } else toast("关注成功 ✦");
+      toast(`你和「${name}」互相关注，成为好友啦`);
+    } else toast("关注成功");
   }
   renderFollowStats();
   renderFollowList();
@@ -671,7 +671,7 @@ function renderFollowList() {
   const names = isFollowing ? [...state.following] : FANS;
   $("#followList").innerHTML = names.length
     ? names.map(personRowHTML).join("")
-    : emptyHTML(isFollowing ? "还没有关注任何人，去首页逛逛 ✦" : "暂无粉丝，发布作品吸引同好吧 ✦");
+    : emptyHTML(isFollowing ? "还没有关注任何人，去首页逛逛" : "暂无粉丝，发布作品吸引同好吧");
 }
 
 /* ---------- 订单 / 钱包 ---------- */
@@ -726,8 +726,8 @@ function renderWallet() {
 const wallet = {
   withdrawn: 0,
   accounts: [
-    { key: "bank", name: "招商银行储蓄卡", tail: "尾号 6688", icon: "🏦" },
-    { key: "alipay", name: "支付宝", tail: "luo***@qq.com", icon: "💠" },
+    { key: "bank", name: "招商银行储蓄卡", tail: "尾号 6688", icon: "银" },
+    { key: "alipay", name: "支付宝", tail: "luo***@qq.com", icon: "支" },
   ],
   records: [], // { amount, fee, to, time, status }
 };
@@ -736,7 +736,7 @@ let wdCtx = null;
 
 function openWithdraw() {
   const bal = walletBalance();
-  if (bal <= 0 && !wallet.records.length) return toast("暂无可提现余额，完成接稿订单后再来 ✦");
+  if (bal <= 0 && !wallet.records.length) return toast("暂无可提现余额，完成接稿订单后再来");
   wdCtx = { to: wallet.accounts[0].key };
   renderWithdraw();
   $("#wdMask").classList.add("show");
@@ -765,7 +765,7 @@ function renderWithdraw() {
           <i>${wdCtx.to === a.key ? "●" : "○"}</i>
         </div>`).join("")}
       <div class="pch" onclick="toast('Demo：绑定新卡需实名认证 + 银行预留手机验证')">
-        <span>➕</span><b>添加新卡</b><i></i></div>
+        <span>+</span><b>添加新卡</b><i></i></div>
     </div>
     <button class="btn primary" style="width:100%" onclick="submitWithdraw()">确认提现</button>
     ${wallet.records.length ? `
@@ -789,7 +789,7 @@ function submitWithdraw() {
   const bal = walletBalance();
   const amt = parseInt($("#wdAmt").value, 10) || 0;
   if (amt <= 0) return toast("请输入提现金额");
-  if (amt > bal) return toast(`超出可提现余额 ¥${bal.toLocaleString()} ✂️`);
+  if (amt > bal) return toast(`超出可提现余额 ¥${bal.toLocaleString()}`);
   const today = new Date().toISOString().slice(0, 10);
   if (wallet.records.some(r => r.time.startsWith(today))) return toast("今日已提现过一笔，明天再来 ⏳");
   const acc = wallet.accounts.find(a => a.key === wdCtx.to);
@@ -822,9 +822,9 @@ const payAmountOf = (o, stage) =>
   : o.amount;
 
 const PAY_CHANNELS = [
-  { key: "支付宝", icon: "💠" },
-  { key: "微信支付", icon: "💬" },
-  { key: "曲境余额", icon: "🪙" },
+  { key: "支付宝", icon: "支" },
+  { key: "微信支付", icon: "微" },
+  { key: "曲境余额", icon: "余" },
 ];
 
 function openPay(id, stage) {
@@ -859,7 +859,7 @@ function renderPay() {
           <i>${payCtx.channel === c.key ? "●" : "○"}</i>
         </div>`).join("")}
     </div>
-    <p class="escrow-note">🔒 款项由平台托管，验收通过后才结算给接稿方；协议期内可申请退款 / 仲裁</p>
+    <p class="escrow-note">款项由平台托管，验收通过后才结算给接稿方；协议期内可申请退款 / 仲裁</p>
     <button class="btn primary" style="width:100%" onclick="confirmPay()">确认支付 ¥${amt.toLocaleString()}</button>`;
 }
 
@@ -869,19 +869,19 @@ function confirmPay() {
   if (payCtx.channel === "曲境余额") {
     const balance = ORDERS.filter(x => x.status === "已完成" && x.mine === "接稿")
       .reduce((s, x) => s + x.amount, 0);
-    if (balance < amt) { toast("余额不足，换个支付方式吧 ✂️"); return; }
+    if (balance < amt) { toast("余额不足，换个支付方式吧"); return; }
   }
   o.paid += amt;
   closePay();
   if (payCtx.stage === "rest") {
     settleOrder(o);
-    toast(`已通过${payCtx.channel}支付尾款 ¥${amt.toLocaleString()}，验收完成 ✦`);
+    toast(`已通过${payCtx.channel}支付尾款 ¥${amt.toLocaleString()}，验收完成`);
   } else {
     o.status = "进行中";
     o.note = payCtx.stage === "deposit"
       ? `定金 ¥${amt.toLocaleString()} 已托管 · 尾款验收时支付 · 对方可开工`
       : "稿酬已全额托管 · 对方已开工";
-    toast(`已通过${payCtx.channel}托管 ¥${amt.toLocaleString()} 🔒`);
+    toast(`已通过${payCtx.channel}托管 ¥${amt.toLocaleString()}`);
   }
   renderOrders();
 }
@@ -916,7 +916,7 @@ function renderDeliver() {
     </div>
     <label style="font-size:12px;font-weight:700;display:block;margin-bottom:6px">作品文件 <b style="color:var(--red)">*</b></label>
     <div class="upload-row">
-      <div class="upload-btn" onclick="pickDeliverFile()">📎 上传作品文件</div>
+      <div class="upload-btn" onclick="pickDeliverFile()">上传作品文件</div>
       <span class="upload-name ${f ? "has" : ""}">${f ? `${esc(f.name)}（${f.ext} · ${f.size}）` : "未选择文件"}</span>
     </div>
     <p class="se-note">成品 / 工程 / 分轨等任意格式，单个文件不超过 2G；文件将托管至平台，验收通过后对方可下载源文件</p>
@@ -933,7 +933,7 @@ function onDeliverFile(input) {
   const file = input.files[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024 * 1024) {
-    toast("文件超过 2G 上限，请压缩后再传 ✂️");
+    toast("文件超过 2G 上限，请压缩后再传");
     input.value = "";
     return;
   }
@@ -943,12 +943,12 @@ function onDeliverFile(input) {
     : Math.max(1, Math.round(file.size / 1024)) + " KB";
   deliverCtx.file = { name: file.name, size: sizeTxt, ext: (file.name.split(".").pop() || "文件").toUpperCase() };
   renderDeliver();
-  toast("作品文件已就绪 ✦");
+  toast("作品文件已就绪");
   input.value = "";
 }
 
 function submitDeliver() {
-  if (!deliverCtx.file) { toast("请先上传订单对应的作品文件 📎"); return; }
+  if (!deliverCtx.file) { toast("请先上传订单对应的作品文件"); return; }
   const o = findOrder(deliverCtx.id);
   const note = $("#deliverNote").value.trim();
   o.file = deliverCtx.file;
@@ -959,7 +959,7 @@ function submitDeliver() {
     + (note ? ` · 交付说明：${note}` : "");
   closeDeliver();
   renderOrders();
-  toast("交付已提交，文件已托管，等待对方验收 📦");
+  toast("交付已提交，文件已托管，等待对方验收");
 }
 
 /** 验收：有尾款先走收银台，全款单直接结算 */
@@ -968,7 +968,7 @@ function confirmOrder(id) {
   if (o.paid < o.amount) { openPay(id, "rest"); return; }
   settleOrder(o);
   renderOrders();
-  toast("验收完成，稿酬已结算 ✦");
+  toast("验收完成，稿酬已结算");
 }
 
 /** 结算：托管款打给接稿方，订单完成待互评 */
@@ -1032,7 +1032,7 @@ function openAfterSale(id, type) {
       `<div class="chip ${r === asCtx.reason ? "on" : ""}" onclick="setAsReason('${r}',this)">${r}</div>`).join("")}</div>
     <label style="font-size:12px;font-weight:700;display:block;margin:10px 0 6px">补充说明与证据</label>
     <textarea id="asTxt" rows="3" maxlength="200" placeholder="描述经过，可附聊天记录/文件截图（Demo 略）…"></textarea>
-    <p class="escrow-note">🛡 提交后托管款项冻结，双方先协商（48h）；协商不成平台仲裁，按协议与证据裁定退款比例</p>
+    <p class="escrow-note">提交后托管款项冻结，双方先协商（48h）；协商不成平台仲裁，按协议与证据裁定退款比例</p>
     <div class="rate-acts">
       <button class="btn ghost" onclick="closeAfterSale()">取消</button>
       <button class="btn primary" onclick="submitAfterSale()">提交申请</button>
@@ -1052,7 +1052,7 @@ function submitAfterSale() {
   o.note = `${asCtx.type === "refund" ? "退款" : "售后"}申请已提交 · 托管款已冻结 · 等待对方响应（48h）`;
   closeAfterSale();
   renderOrders();
-  toast("申请已提交，平台已冻结托管款项 🛡");
+  toast("申请已提交，平台已冻结托管款项");
 }
 
 function cancelAfterSale(id) {
@@ -1061,7 +1061,7 @@ function cancelAfterSale(id) {
   o.as = null;
   o.note = `${t}申请已撤销 · 订单恢复正常流程`;
   renderOrders();
-  toast(`${t}申请已撤销，托管款解冻 ✦`);
+  toast(`${t}申请已撤销，托管款解冻`);
 }
 
 /* ---------- 文件下载（待验收约稿方仅水印预览，验收后解锁源文件） ---------- */
@@ -1073,11 +1073,11 @@ function openDownload(id) {
   const locked = o.status === "待验收" && o.mine === "约稿";
   $("#dlBody").innerHTML = `
     <div class="pay-order">
-      <b>📎 ${esc(o.file.name)}</b>
+      <b>${esc(o.file.name)}</b>
       <span>${o.file.ext} · ${o.file.size} · 来自订单 ${o.id}</span>
     </div>
     ${locked ? `
-      <div class="dl-lock">🔐 源文件已托管加锁<br><small>验收通过后自动解锁高清源文件，现可在线预览水印版</small></div>
+      <div class="dl-lock">源文件已托管加锁<br><small>验收通过后自动解锁高清源文件，现可在线预览水印版</small></div>
       <div class="rate-acts">
         <button class="btn ghost" onclick="previewWatermark('${o.id}')">预览水印版</button>
         <button class="btn primary" onclick="closeDownload();confirmOrder('${o.id}')">${o.paid < o.amount ? "补尾款并验收" : "验收并解锁"}</button>
@@ -1109,20 +1109,20 @@ function startDownload(id) {
     $("#dlFill").style.width = pct + "%";
     $("#dlStat").textContent = pct < 100
       ? `下载中 ${Math.floor(pct)}% · ${o.file.size}`
-      : "下载完成，已保存到「文件」App 📁";
+      : "下载完成，已保存到「文件」App";
     if (pct >= 100) {
       clearInterval(dlTimer);
       btn.disabled = false;
       btn.textContent = "打开文件";
       btn.onclick = () => toast(`Demo：调用系统打开 ${o.file.name}`);
-      toast("下载完成 ⬇");
+      toast("下载完成");
     }
   }, 180);
 }
 
 function previewWatermark(id) {
   const o = findOrder(id);
-  toast(`Demo：在线播放水印版《${o.file.name}》，含语音水印，验收后解锁 🔐`);
+  toast(`Demo：在线播放水印版《${o.file.name}》，含语音水印，验收后解锁`);
 }
 
 /* ---------- 交易方式（按单设定，接稿方在对方付款前可改） ---------- */
@@ -1181,7 +1181,7 @@ function submitRate() {
   o.note = "双方已互评 · 订单归档";
   closeRate();
   renderOrders();
-  toast("评价成功，已公开展示在对方主页 ✦");
+  toast("评价成功，已公开展示在对方主页");
 }
 
 /* ---------- 通用底稿 / 需求详情与投递 / 约稿邀约处理 ---------- */
@@ -1209,7 +1209,7 @@ function openDemandDetail(i) {
       <div class="pay-row total"><span>预算</span><b>${esc(d.budget)}</b></div>
     </div>
     ${d.applied
-      ? `<p class="escrow-note">✉ 已投递 · 对方通过后将私信与你签约，稿酬经平台托管</p>`
+      ? `<p class="escrow-note">已投递 · 对方通过后将私信与你签约，稿酬经平台托管</p>`
       : `<textarea id="applyNote" rows="3" placeholder="自荐留言：擅长风格、代表作、档期…（选填）"></textarea>
          <div class="rate-acts">
            <button class="btn ghost" onclick="closeSheet()">再看看</button>
@@ -1223,7 +1223,7 @@ function applyDemand(i) {
   d.appliedNote = ($("#applyNote")?.value || "").trim();
   closeSheet();
   renderHome();
-  toast("投递成功，对方通过后会私信你 ✉");
+  toast("投递成功，对方通过后会私信你");
 }
 
 /** 接稿方：接受约稿邀约 → 进入待付款（等对方托管） */
@@ -1328,7 +1328,7 @@ function onStickerImg(input) {
     state.myStickers.push(e.target.result);
     CHATS[state.currentChat].push({ who: "me", type: "img", src: e.target.result });
     renderChat();
-    toast("表情包已添加，下次可在表情面板直接发送 ✦");
+    toast("表情包已添加，下次可在表情面板直接发送");
     autoReply();
   };
   reader.readAsDataURL(f);
@@ -1340,7 +1340,7 @@ function autoReply() {
   const name = state.currentChat;
   setTimeout(() => {
     if (state.currentChat !== name || !$("#ovChat").classList.contains("show")) return;
-    CHATS[name].push({ who: "them", type: "text", txt: "收到～稍后回复您 🍵" });
+    CHATS[name].push({ who: "them", type: "text", txt: "收到～稍后回复您" });
     renderChat();
   }, 900);
 }
@@ -1462,7 +1462,7 @@ function onPubAttach(input) {
   const file = input.files[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024 * 1024) {
-    toast("文件超过 2G 上限，请压缩后再传 ✂️");
+    toast("文件超过 2G 上限，请压缩后再传");
     input.value = "";
     return;
   }
@@ -1473,9 +1473,9 @@ function onPubAttach(input) {
   const ext = (file.name.split(".").pop() || "文件").toUpperCase();
   pubState.attach = { name: file.name, size: sizeTxt, ext };
   const label = $("#pubAttachName");
-  label.textContent = `📎 ${file.name}（${ext} · ${sizeTxt}）`;
+  label.textContent = `${file.name}（${ext} · ${sizeTxt}）`;
   label.classList.add("has");
-  toast(`附件已就绪：${sizeTxt}，将随作品一同发布 ✦`);
+  toast(`附件已就绪：${sizeTxt}，将随作品一同发布`);
   input.value = "";
 }
 
@@ -1509,7 +1509,7 @@ function onPubMedia(input) {
   const url = URL.createObjectURL(file);
   pubState.media = { kind, name: file.name, url };
   const label = $("#pubMediaName");
-  label.textContent = `${kind === "video" ? "🎬" : "🎵"} ${file.name}（${ext} ${kind === "video" ? "视频" : "音频"}）· 点击预览`;
+  label.textContent = `${file.name}（${ext} ${kind === "video" ? "视频" : "音频"}）· 点击预览`;
   label.classList.add("has");
   // 读取真实时长（失败则留空）
   const probe = document.createElement(kind === "video" ? "video" : "audio");
@@ -1541,7 +1541,7 @@ function previewMedia() {
   const { kind, url } = pubState.media;
   openPreview(kind === "video"
     ? `<video src="${url}" controls autoplay></video>`
-    : `<div class="audio-wrap">🎵<audio src="${url}" controls autoplay></audio></div>`);
+    : `<div class="audio-wrap"><audio src="${url}" controls autoplay></audio></div>`);
 }
 
 /** 回到首页对应模式并刷新 */
@@ -1557,12 +1557,12 @@ function backHomeAs(mode) {
 
 function submitPublish() {
   const title = $("#pubName").value.trim();
-  if (!title) { toast("请先填写标题 ✂️"); return; }
+  if (!title) { toast("请先填写标题"); return; }
   const p = state.profile;
   const author = p.name || "我";
 
   if (pubState.mode === "work") {
-    if (!pubState.types.length) { toast("请至少选择一个作品品类 ✂️"); return; }
+    if (!pubState.types.length) { toast("请至少选择一个作品品类"); return; }
     // 按已选品类逐一校验必需内容（格式已在上传时自动识别）
     const hasAudio = pubState.media?.kind === "audio";
     const hasVideo = pubState.media?.kind === "video" || pubState.cover?.kind === "video";
@@ -1570,11 +1570,11 @@ function submitPublish() {
     for (const t of pubState.types) {
       const rule = CONFIG.mediaRules[t];
       if (rule === "av" && !hasAudio && !hasVideo) {
-        toast(`「${t}」品类需上传音频或视频小样 🎵`); return;
+        toast(`「${t}」品类需上传音频或视频小样`); return;
       }
-      if (rule === "video" && !hasVideo) { toast(`「${t}」品类需上传视频 🎬`); return; }
-      if (rule === "image" && pubState.cover?.kind !== "image") { toast(`「${t}」品类需上传封面图片 🖼️`); return; }
-      if (rule === "lyric" && !lyric) { toast(`「${t}」品类需填写词作正文 🖌️`); return; }
+      if (rule === "video" && !hasVideo) { toast(`「${t}」品类需上传视频`); return; }
+      if (rule === "image" && pubState.cover?.kind !== "image") { toast(`「${t}」品类需上传封面图片`); return; }
+      if (rule === "lyric" && !lyric) { toast(`「${t}」品类需填写词作正文`); return; }
     }
 
     const coverCss = pubState.cover?.kind === "image"
@@ -1597,7 +1597,7 @@ function submitPublish() {
     });
     closeOverlay("ovPub");
     backHomeAs("works");
-    toast("作品已发布 ✦");
+    toast("作品已发布");
   } else {
     DEMANDS.unshift({
       title, desc: $("#pubDesc").value.trim() || "（暂无描述）",
@@ -1613,7 +1613,7 @@ function submitPublish() {
     });
     closeOverlay("ovPub");
     backHomeAs("demand");
-    toast("招募已发布，等待音乐人投递 ✦");
+    toast("招募已发布，等待音乐人投递");
   }
 }
 
@@ -1716,7 +1716,7 @@ function confirmCrop() {
 
 function heroBgMenu() {
   openSheet("名片背景", `
-    <div class="set-item" onclick="closeSheet();$('#heroBgFile').click()"><span>🌄 从相册选择背景</span><i>›</i></div>
+    <div class="set-item" onclick="closeSheet();$('#heroBgFile').click()"><span>从相册选择背景</span><i>›</i></div>
     <div class="set-item" onclick="closeSheet();resetHeroBg()"><span>↩︎ 恢复默认底色</span><i>›</i></div>`);
 }
 
@@ -1727,7 +1727,7 @@ function onHeroBgFile(input) {
   reader.onload = e => {
     state.profile.heroBg = e.target.result;
     applyHeroBg();
-    toast("名片背景已更换 ✦");
+    toast("名片背景已更换");
   };
   reader.readAsDataURL(file);
   input.value = "";
@@ -1774,7 +1774,7 @@ function showRegStep(n) {
 function regNext() {
   if (state.roleSetupMode === "register" && state.regStep === 1) {
     const name = $("#fName").value.trim();
-    if (!name) { toast("圈名为必填项 ✂️"); return; }
+    if (!name) { toast("圈名为必填项"); return; }
     state.profile.name = name;
     state.profile.uid = $("#fUid").value.trim() || randomUid();
     state.profile.bio = $("#fBio").value.trim();
@@ -1826,12 +1826,12 @@ function closeRoleName() {
 
 function confirmRoleName() {
   const name = $("#roleNameInput").value.trim().replace(/['"<>`\\]/g, "");
-  if (!name) { toast("请填写工种名称 ✂️"); return; }
+  if (!name) { toast("请填写工种名称"); return; }
   const cb = roleNameCb;
   closeRoleName();
   registerCustomRole(name);
   cb && cb(name);
-  toast(`已添加自定义工种「${name}」✦`);
+  toast(`已添加自定义工种「${name}」`);
 }
 
 /** 全局登记自定义工种：进入工种池与首页「工种」检索标签 */
@@ -1860,7 +1860,7 @@ function confirmRoles() {
   $("#regOverlay").classList.remove("show");
   renderMyProfile();
   toast(state.roleSetupMode === "register"
-    ? (state.myRoles.length ? "注册完成，欢迎入驻曲境 ✦" : "注册完成，可稍后补选工种")
+    ? (state.myRoles.length ? "注册完成，欢迎入驻曲境" : "注册完成，可稍后补选工种")
     : "工种已更新 ✓");
 }
 
@@ -1888,7 +1888,7 @@ function openMyWorksList() {
   openSheet(`我的作品清单 · ${list.length}`, list.map(w => `
     <div class="search-row" onclick="toast('Demo：作品《${esc(w.title)}》')">
       <div class="sr-glyph" style="background:${w.grad};color:#fff">${esc(w.glyph)}</div>
-      <div class="sr-info"><b>${esc(w.title)}${w.top ? " 📌" : ""}</b><span>${esc(w.role)} · 播放 ${esc(w.plays)}</span></div>
+      <div class="sr-info"><b>${esc(w.title)}${w.top ? " · 置顶" : ""}</b><span>${esc(w.role)} · 播放 ${esc(w.plays)}</span></div>
       <span class="art-arrow">›</span></div>`).join("")
     || `<div class="rev-hint">暂无公开作品 · 去发布页上传</div>`);
 }
@@ -1965,7 +1965,7 @@ function previewShopMedia() {
   if (!m.url) { toast(`Demo：试听『${m.name}』`); return; }
   openPreview(m.kind === "video"
     ? `<video src="${m.url}" controls autoplay></video>`
-    : `<div class="audio-wrap">🎵<audio src="${m.url}" controls autoplay></audio></div>`);
+    : `<div class="audio-wrap"><audio src="${m.url}" controls autoplay></audio></div>`);
 }
 
 function renderShopBuy() {
@@ -1990,8 +1990,8 @@ function renderShopBuy() {
     </div>
     ${item.desc ? `<p class="sb-desc">${esc(item.desc)}</p>` : ""}
     ${item.media || item.doc ? `<div class="sb-files">
-      ${item.media ? `<div class="sb-file" onclick="previewShopMedia()">${item.media.kind === "video" ? "🎬" : "🎵"} 试听小样 · ${esc(item.media.name)} ›</div>` : ""}
-      ${item.doc ? `<div class="sb-file" onclick="toast('Demo：预览文档『${esc(item.doc.name)}』')">📄 说明文档 · ${esc(item.doc.name)}（${esc(item.doc.size)}） ›</div>` : ""}
+      ${item.media ? `<div class="sb-file" onclick="previewShopMedia()">试听小样 · ${esc(item.media.name)} ›</div>` : ""}
+      ${item.doc ? `<div class="sb-file" onclick="toast('Demo：预览文档『${esc(item.doc.name)}』')">说明文档 · ${esc(item.doc.name)}（${esc(item.doc.size)}） ›</div>` : ""}
     </div>` : ""}`;
 
   if (isBundle) {
@@ -2001,7 +2001,7 @@ function renderShopBuy() {
         <div class="pay-row"><span>项目数</span><b>${item.count} 项</b></div>
         <div class="pay-row total"><span>打包价</span><b>${esc(item.price)}</b></div>
       </div>
-      <p class="escrow-note">📋 企划打包为定制约稿：发起后与卖家商定曲目构成、档期与分期方案，双方确认后再按期托管</p>
+      <p class="escrow-note">企划打包为定制约稿：发起后与卖家商定曲目构成、档期与分期方案，双方确认后再按期托管</p>
       <div class="rate-acts">
         <button class="btn ghost" onclick="closeShopBuy();openChat('${esc(owner)}')">私信沟通</button>
         <button class="btn primary" onclick="confirmShopBuy()">发起约稿订单</button>
@@ -2026,7 +2026,7 @@ function renderShopBuy() {
           <i>${sbCtx.channel === c.key ? "●" : "○"}</i>
         </div>`).join("")}
     </div>
-    <p class="escrow-note">🔒 买断款由平台托管冻结，卖家交付源文件、您确认后才结算；确认前仅可水印预览</p>
+    <p class="escrow-note">买断款由平台托管冻结，卖家交付源文件、您确认后才结算；确认前仅可水印预览</p>
     <button class="btn primary" style="width:100%" onclick="confirmShopBuy()">一次性买断 ¥${amt.toLocaleString()}</button>`;
 }
 
@@ -2037,7 +2037,7 @@ function confirmShopBuy() {
   if (!isBundle && sbCtx.channel === "曲境余额") {
     const balance = ORDERS.filter(x => x.status === "已完成" && x.mine === "接稿")
       .reduce((s, x) => s + x.amount, 0);
-    if (balance < amt) { toast("余额不足，换个支付方式吧 ✂️"); return; }
+    if (balance < amt) { toast("余额不足，换个支付方式吧"); return; }
   }
   const d = new Date();
   const id = `QX-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.floor(100 + Math.random() * 900)}`;
@@ -2059,8 +2059,8 @@ function confirmShopBuy() {
   const meTab = [...$$(".tab")].find(t => t.dataset.scr === "scr-me");
   if (meTab) switchTab(meTab); // 跳到「我的」查看订单
   toast(isBundle
-    ? "约稿订单已发起 · 商定方案后托管 📋"
-    : `已通过${sbCtx.channel}托管 ¥${amt.toLocaleString()} 🔒 卖家交付后验收解冻`);
+    ? "约稿订单已发起 · 商定方案后托管"
+    : `已通过${sbCtx.channel}托管 ¥${amt.toLocaleString()} 卖家交付后验收解冻`);
 }
 
 /* ---------- 发起约稿（邀约式：发送 → 对方接受 → 托管付款） ---------- */
@@ -2077,7 +2077,7 @@ function myDemands() {
 function openCommission(to, refTitle) {
   if (!to) { toast("Demo：约稿对象不存在"); return; }
   const p = state.profile;
-  if (to === p.name) { toast("不能约自己的稿哦 🍵"); return; }
+  if (to === p.name) { toast("不能约自己的稿哦"); return; }
   cmCtx = { to, types: [], payMode: "全款", instN: 2, attach: null, fromDemand: null };
   const cats = CONFIG.categories.filter(c => c !== "全部");
   const mines = myDemands();
@@ -2108,7 +2108,7 @@ function openCommission(to, refTitle) {
     <textarea id="cmDesc" rows="4" placeholder="风格参考、用途（同人/商用）、时长、交付内容（小样/分轨/工程）…"></textarea>
     <label>参考文件（选填）</label>
     <div class="upload-row">
-      <div class="upload-btn" onclick="$('#cmAttachFile').click()">📎 上传参考</div>
+      <div class="upload-btn" onclick="$('#cmAttachFile').click()">上传参考</div>
       <span class="upload-name" id="cmAttachName">未选择文件</span>
     </div>
     <p class="se-note">参考曲 / 文案 / 分镜脚本等任意格式，单个不超过 2G</p>
@@ -2166,7 +2166,7 @@ function cmPickDemand(i, el) {
     c.classList.toggle("on", hit);
     if (hit) cmCtx.types.push(t);
   });
-  toast("已带入企划内容，可继续补充修改 ✦");
+  toast("已带入企划内容，可继续补充修改");
 }
 
 function cmAddCustomType(btn) {
@@ -2221,15 +2221,15 @@ function cmUpdateInstSum() {
 function onCmAttach(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024 * 1024) { toast("文件超过 2G 上限 ✂️"); input.value = ""; return; }
+  if (file.size > 2 * 1024 * 1024 * 1024) { toast("文件超过 2G 上限"); input.value = ""; return; }
   const mb = 1024 * 1024;
   const sizeTxt = file.size >= mb ? (file.size / mb).toFixed(1) + " MB"
     : Math.max(1, Math.round(file.size / 1024)) + " KB";
   cmCtx.attach = { name: file.name, size: sizeTxt };
   const label = $("#cmAttachName");
-  label.textContent = `📎 ${file.name}（${sizeTxt}）`;
+  label.textContent = `${file.name}（${sizeTxt}）`;
   label.classList.add("has");
-  toast("参考文件已就绪，将随邀约一并发送 ✦");
+  toast("参考文件已就绪，将随邀约一并发送");
   input.value = "";
 }
 
@@ -2237,19 +2237,19 @@ function submitCommission() {
   const title = $("#cmT").value.trim();
   const desc = $("#cmDesc").value.trim();
   const amt = parseInt($("#cmBudget").value, 10);
-  if (!title) { toast("请填写约稿项目标题 ✂️"); return; }
-  if (!cmCtx.types.length) { toast("请至少选择一个约稿品类 ✂️"); return; }
-  if (!desc) { toast("请填写需求描述 ✂️"); return; }
-  if (!amt || amt < 1) { toast("请填写预算 ✂️"); return; }
+  if (!title) { toast("请填写约稿项目标题"); return; }
+  if (!cmCtx.types.length) { toast("请至少选择一个约稿品类"); return; }
+  if (!desc) { toast("请填写需求描述"); return; }
+  if (!amt || amt < 1) { toast("请填写预算"); return; }
   let instTxt = "";
   if (cmCtx.payMode === "分期") {
     const nVal = parseInt($("#cmInstN").value, 10);
-    if (!nVal || nVal < 2 || nVal > 6) { toast("期数需在 2–6 之间 ✂️"); return; }
+    if (!nVal || nVal < 2 || nVal > 6) { toast("期数需在 2–6 之间"); return; }
     if (nVal !== cmCtx.instN) { cmCtx.instN = nVal; cmFillInstAvg(); }
     const insts = cmInstAmounts();
-    if (insts.some(v => v < 1)) { toast("每期金额需大于 0 ✂️"); return; }
+    if (insts.some(v => v < 1)) { toast("每期金额需大于 0"); return; }
     const sum = insts.reduce((s, v) => s + v, 0);
-    if (sum !== amt) { toast(`各期合计 ¥${sum.toLocaleString()} 与预算不一致 ✂️`); return; }
+    if (sum !== amt) { toast(`各期合计 ¥${sum.toLocaleString()} 与预算不一致`); return; }
     instTxt = ` · 分 ${insts.length} 期（${insts.map(v => "¥" + v.toLocaleString()).join(" / ")}）`;
   }
   const due = $("#cmDue").value;
@@ -2267,7 +2267,7 @@ function submitCommission() {
   renderOrders();
   const meTab = [...$$(".tab")].find(t => t.dataset.scr === "scr-me");
   if (meTab) switchTab(meTab);
-  toast(`约稿邀约已发送给 ${to} 💌`);
+  toast(`约稿邀约已发送给 ${to}`);
   // Demo：模拟对方稍后接受邀约 → 进入待付款（托管）
   setTimeout(() => {
     const o = ORDERS.find(x => x.id === id);
@@ -2275,7 +2275,7 @@ function submitCommission() {
     o.status = "待付款";
     o.note = "对方已接受约稿 · 协议已签署 · 请托管稿酬后开工";
     renderOrders();
-    toast(`${to} 接受了你的约稿，去托管稿酬吧 ✦`);
+    toast(`${to} 接受了你的约稿，去托管稿酬吧`);
   }, 4000);
 }
 
@@ -2334,7 +2334,7 @@ function favToggleIn(i) {
 
 function favNewFolder() {
   const name = $("#favNewName").value.trim();
-  if (!name) { toast("给收藏夹起个名字吧 ✂️"); return; }
+  if (!name) { toast("给收藏夹起个名字吧"); return; }
   state.favFolders.push({ name, ids: favCtx != null ? [favCtx] : [] });
   renderFavPick();
   updateFavBtns();
@@ -2419,11 +2419,11 @@ function renderFavs() {
 
 function favNewFolderFromList() {
   const name = $("#favNewName2").value.trim();
-  if (!name) { toast("给收藏夹起个名字吧 ✂️"); return; }
+  if (!name) { toast("给收藏夹起个名字吧"); return; }
   state.favFolders.push({ name, ids: [] });
   renderFavs();
   renderFavStrip();
-  toast(`收藏夹「${name}」已创建 ✦`);
+  toast(`收藏夹「${name}」已创建`);
 }
 
 /** 从收藏夹直接进入沉浸式浏览 */
@@ -2449,11 +2449,11 @@ function favRenameToggle() {
 
 function favRenameSave() {
   const name = $("#favRenameIn").value.trim();
-  if (!name) { toast("名字不能为空 ✂️"); return; }
+  if (!name) { toast("名字不能为空"); return; }
   state.favFolders[favOpenIdx].name = name;
   renderFavs();
   renderFavStrip();
-  toast("已重命名 ✦");
+  toast("已重命名");
 }
 
 function favDelFolder() {
@@ -2487,7 +2487,7 @@ function renderManage() {
         <div class="mg-cover" style="background:${s.cover && s.cover.kind === "image" ? `url(${s.cover.url}) center/cover` : s.grad}">${s.cover && s.cover.kind === "image" ? "" : esc(s.glyph)}</div>
         <div class="mg-info">
           <b>${esc(s.title)}</b>
-          <span>${s.kind === "bundle" ? `企划打包 · ${s.count} 项` : `现货 · ${s.biz}`} · ${esc(s.price)}${[s.media && "🎵", s.doc && "📄"].filter(Boolean).join(" ") ? " · " + [s.media && "🎵", s.doc && "📄"].filter(Boolean).join(" ") : ""}${s.off ? " · <i>已下架</i>" : ""}</span>
+          <span>${s.kind === "bundle" ? `企划打包 · ${s.count} 项` : `现货 · ${s.biz}`} · ${esc(s.price)}${[s.media && "小样", s.doc && "文档"].filter(Boolean).join(" ") ? " · " + [s.media && "小样", s.doc && "文档"].filter(Boolean).join(" ") : ""}${s.off ? " · <i>已下架</i>" : ""}</span>
         </div>
         <div class="mg-acts">
           <button class="mini-btn" onclick="openMgEdit('shop',${i})">编辑</button>
@@ -2516,7 +2516,7 @@ function renderManage() {
       <div class="mg-item ${w.hidden ? "off" : ""}">
         <div class="mg-cover" style="background:${w.grad}">${esc(w.glyph)}</div>
         <div class="mg-info">
-          <b>${esc(w.title)}${w.top ? " 📌" : ""}</b>
+          <b>${esc(w.title)}${w.top ? " · 置顶" : ""}</b>
           <span>${esc(w.role)} · 播放 ${esc(w.plays)}${w.hidden ? " · <i>已隐藏</i>" : ""}</span>
         </div>
         <div class="mg-acts">
@@ -2532,19 +2532,19 @@ function renderManage() {
 function mgShopToggle(i) {
   MY_SHOP[i].off = !MY_SHOP[i].off;
   renderManage(); renderMyStyleShop();
-  toast(MY_SHOP[i].off ? "已下架，橱窗不再展示" : "已重新上架 ✦");
+  toast(MY_SHOP[i].off ? "已下架，橱窗不再展示" : "已重新上架");
 }
 
 function mgWorkTop(i) {
   MY_WORKS[i].top = !MY_WORKS[i].top;
   renderManage(); renderMyWorks();
-  toast(MY_WORKS[i].top ? "已置顶，主页优先展示 📌" : "已取消置顶");
+  toast(MY_WORKS[i].top ? "已置顶，主页优先展示" : "已取消置顶");
 }
 
 function mgWorkHide(i) {
   MY_WORKS[i].hidden = !MY_WORKS[i].hidden;
   renderManage(); renderMyWorks();
-  toast(MY_WORKS[i].hidden ? "已隐藏，访客不可见" : "已重新公开 ✦");
+  toast(MY_WORKS[i].hidden ? "已隐藏，访客不可见" : "已重新公开");
 }
 
 function mgDel(kind, i) {
@@ -2582,17 +2582,17 @@ function openMgEdit(kind, idx) {
       <input id="mgP" maxlength="12" placeholder="如：¥2,400 或 ¥6,800 起" value="${s ? esc(s.price) : ""}">
       <label>作品封面（图片 / 视频，选填）</label>
       <div class="upload-row">
-        <div class="upload-btn" onclick="$('#mgCoverFile').click()">🖼️ 上传封面</div>
+        <div class="upload-btn" onclick="$('#mgCoverFile').click()">上传封面</div>
         <div class="upload-prev" id="mgCoverPrev" onclick="previewMgCover()" title="点击查看"></div>
       </div>
       <label>试听小样（音频 / 视频，选填）</label>
       <div class="upload-row">
-        <div class="upload-btn" onclick="$('#mgMediaFile').click()">🎵 上传小样</div>
+        <div class="upload-btn" onclick="$('#mgMediaFile').click()">上传小样</div>
         <span class="upload-name" id="mgMediaName">未选择文件</span>
       </div>
       <label>说明文档（歌词 / 授权书 / 企划案，选填）</label>
       <div class="upload-row">
-        <div class="upload-btn" onclick="$('#mgDocFile').click()">📄 上传文档</div>
+        <div class="upload-btn" onclick="$('#mgDocFile').click()">上传文档</div>
         <span class="upload-name" id="mgDocName">未选择文件</span>
       </div>
       <label>商品描述</label>
@@ -2656,13 +2656,13 @@ function renderMgUploads() {
   const mn = $("#mgMediaName");
   if (mn) {
     mn.textContent = mgEditCtx.media
-      ? `${mgEditCtx.media.kind === "video" ? "🎬" : "🎵"} ${mgEditCtx.media.name}` : "未选择文件";
+      ? `${mgEditCtx.media.kind === "video" ? "视频" : "音频"} · ${mgEditCtx.media.name}` : "未选择文件";
     mn.classList.toggle("has", !!mgEditCtx.media);
   }
   const dn = $("#mgDocName");
   if (dn) {
     dn.textContent = mgEditCtx.doc
-      ? `📄 ${mgEditCtx.doc.name}（${mgEditCtx.doc.size}）` : "未选择文件";
+      ? `${mgEditCtx.doc.name}（${mgEditCtx.doc.size}）` : "未选择文件";
     dn.classList.toggle("has", !!mgEditCtx.doc);
   }
 }
@@ -2696,20 +2696,20 @@ function onMgMedia(input) {
   if (!kind) { toast("小样仅支持音频或视频格式"); input.value = ""; return; }
   mgEditCtx.media = { kind, name: file.name, url: URL.createObjectURL(file) };
   renderMgUploads();
-  toast(`试听小样已就绪（${kind === "video" ? "视频" : "音频"}）✦`);
+  toast(`试听小样已就绪（${kind === "video" ? "视频" : "音频"}）`);
   input.value = "";
 }
 
 function onMgDoc(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024 * 1024) { toast("文件超过 2G 上限 ✂️"); input.value = ""; return; }
+  if (file.size > 2 * 1024 * 1024 * 1024) { toast("文件超过 2G 上限"); input.value = ""; return; }
   const mb = 1024 * 1024;
   const sizeTxt = file.size >= mb ? (file.size / mb).toFixed(1) + " MB"
     : Math.max(1, Math.round(file.size / 1024)) + " KB";
   mgEditCtx.doc = { name: file.name, size: sizeTxt, ext: (file.name.split(".").pop() || "文件").toUpperCase() };
   renderMgUploads();
-  toast("说明文档已就绪 📄");
+  toast("说明文档已就绪");
   input.value = "";
 }
 
@@ -2735,7 +2735,7 @@ function saveMgEdit() {
     MY_STYLE.tags = [...mgEditCtx.tags];
     MY_STYLE.desc = desc;
     renderMyStyleShop(); closeMgEdit();
-    return toast("个人风格已更新 ✦");
+    return toast("个人风格已更新");
   }
 
   const t = $("#mgT").value.trim();
@@ -2764,7 +2764,7 @@ function saveMgEdit() {
       delete item.count;
     }
     if (idx < 0) MY_SHOP.unshift(item);
-    toast(idx < 0 ? "已上架到橱窗 ✦" : "商品已更新");
+    toast(idx < 0 ? "已上架到橱窗" : "商品已更新");
     if (mgKind) renderManage();
     renderMyStyleShop();
     closeOverlay("ovShopPub");
@@ -2775,7 +2775,7 @@ function saveMgEdit() {
     item.biz = mgEditCtx.biz;
     item.note = $("#mgN").value.trim() || (item.biz === "商业" ? "商用 · 全款托管" : "非商用 · 标注署名即可");
     if (idx < 0) MY_PRICES.push(item);
-    toast(idx < 0 ? "报价已新增 ✦" : "报价已更新");
+    toast(idx < 0 ? "报价已新增" : "报价已更新");
   }
   renderManage(); renderMyStyleShop();
   closeMgEdit();
@@ -2857,7 +2857,7 @@ function renderSettings() {
       <div class="set-item" onclick="openTerms('privacy')"><span>隐私政策</span><i>›</i></div>
       <div class="set-item"><span>版本</span><b>v2.6.0（Demo）</b></div>
     </div>
-    <button class="btn ghost logout-btn" onclick="toast('Demo：已退出登录，下次再会 👋')">退出登录</button>`;
+    <button class="btn ghost logout-btn" onclick="toast('Demo：已退出登录，下次再会')">退出登录</button>`;
 }
 
 function togglePriv(key, el) {
@@ -2875,12 +2875,12 @@ function cacheSizeLabel() {
 
 function openClearCache() {
   const m = state.settings.cacheMB;
-  if (m <= 0) { toast("已经很干净啦 ✨"); return; }
+  if (m <= 0) { toast("已经很干净啦"); return; }
   const row = (name, mb) => `<div class="set-item"><span>${name}</span><b>${mb.toFixed(1)} MB</b></div>`;
   openSheet("清理缓存", `
-    ${row("🖼 图片缓存", m * .58)}
-    ${row("🎵 音频试听缓存", m * .31)}
-    ${row("📦 其他数据", m * .11)}
+    ${row("图片缓存", m * .58)}
+    ${row("音频试听缓存", m * .31)}
+    ${row("其他数据", m * .11)}
     <p class="se-note" style="margin-top:10px">清理后作品图片与试听音频需重新加载，不影响草稿与聊天记录</p>
     <button class="btn primary" style="width:100%;margin-top:14px" id="ccBtn" onclick="doClearCache()">清理 ${m.toFixed(1)} MB</button>`);
 }
@@ -2893,7 +2893,7 @@ function doClearCache() {
     state.settings.cacheMB = 0;
     closeSheet();
     renderSettings();
-    toast(`已清理 ${m.toFixed(1)} MB ✨`);
+    toast(`已清理 ${m.toFixed(1)} MB`);
   }, 700);
 }
 
@@ -2919,9 +2919,9 @@ function openThemeSheet() {
       <i>${state.settings.theme === key ? "✓" : ""}</i>
     </div>`;
   openSheet("夜间模式", `
-    ${opt("system", "🌗", "随系统自动切换")}
-    ${opt("light", "☀︎", "始终宣纸浅色")}
-    ${opt("dark", "🌙", "始终夜色水墨")}`);
+    ${opt("system", "随", "随系统自动切换")}
+    ${opt("light", "浅", "始终宣纸浅色")}
+    ${opt("dark", "深", "始终夜色水墨")}`);
 }
 
 function setTheme(t) {
@@ -2929,7 +2929,7 @@ function setTheme(t) {
   applyTheme();
   closeSheet();
   renderSettings();
-  toast(t === "dark" ? "已切换夜色水墨 🌙" : t === "light" ? "已切换宣纸浅色 ☀︎" : "已跟随系统 🌗");
+  toast(t === "dark" ? "已切换夜色水墨" : t === "light" ? "已切换宣纸浅色" : "已跟随系统");
 }
 
 /* 设置 · 编辑弹层（改 ID / 绑邮箱 / 绑手机） */
@@ -2998,11 +2998,11 @@ function sendVerifyCode() {
   if (setEditKind === "email") {
     if (!/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(v)) return toast("请先输入正确的邮箱地址");
     sentCode = "135790";
-    toast(`验证邮件已发至 ${maskEmail(v)}（Demo 验证码：135790）✉️`);
+    toast(`验证邮件已发至 ${maskEmail(v)}（Demo 验证码：135790）`);
   } else {
     if (!/^1\d{10}$/.test(v)) return toast("请先输入正确的 11 位手机号");
     sentCode = "246810";
-    toast("验证码短信已发送（Demo 验证码：246810）📱");
+    toast("验证码短信已发送（Demo 验证码：246810）");
   }
   startCodeCountdown();
 }
@@ -3032,27 +3032,27 @@ function saveSetEdit() {
     if (!/^\w{4,16}$/.test(v)) return toast("ID 需 4-16 位字母 / 数字 / 下划线");
     state.profile.uid = v;
     renderMyProfile();
-    toast("ID 修改成功 ✦");
+    toast("ID 修改成功");
   } else if (setEditKind === "email") {
-    if (!/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(v)) return toast("邮箱格式不正确 ✂️");
+    if (!/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(v)) return toast("邮箱格式不正确");
     if (!sentCode) return toast("请先点「发送验证邮件」获取验证码");
     if ($("#seCode").value.trim() !== sentCode) return toast("验证码不正确，再检查一下邮件～");
     s.email = v;
     sentCode = null;
-    toast("邮箱验证通过，绑定成功 ✉️");
+    toast("邮箱验证通过，绑定成功");
   } else if (setEditKind === "phone") {
-    if (!/^1\d{10}$/.test(v)) return toast("手机号格式不正确 ✂️");
+    if (!/^1\d{10}$/.test(v)) return toast("手机号格式不正确");
     if (!sentCode) return toast("请先点「获取验证码」");
     if ($("#seCode").value.trim() !== sentCode) return toast("验证码不正确，再检查一下～");
     s.phone = v;
     sentCode = null;
-    toast("手机号绑定成功 ✦");
+    toast("手机号绑定成功");
   } else if (setEditKind === "password") {
-    if (s.password && $("#seOld").value !== s.password) return toast("当前密码不正确 ✂️");
+    if (s.password && $("#seOld").value !== s.password) return toast("当前密码不正确");
     if (!/^(?=.*[A-Za-z])(?=.*\d)\S{8,24}$/.test(v)) return toast("密码需 8-24 位，且同时包含字母和数字");
-    if ($("#seConfirm").value !== v) return toast("两次输入的密码不一致 ✂️");
+    if ($("#seConfirm").value !== v) return toast("两次输入的密码不一致");
     s.password = v;
-    toast("密码修改成功，请妥善保管 🔐");
+    toast("密码修改成功，请妥善保管");
   }
   closeSetEdit();
   renderSettings();
@@ -3188,10 +3188,10 @@ function doSearch(commit) {
   /* 空输入：热搜 + 历史 */
   if (!q) {
     $("#searchBody").innerHTML = `
-      <div class="search-sec">🔥 热门搜索</div>
+      <div class="search-sec">热门搜索</div>
       <div class="search-chips">${SEARCH_HOT.map(k => `<div class="chip" onclick="searchGo('${esc(k)}')">${esc(k)}</div>`).join("")}</div>
       ${state.searchHistory.length ? `
-        <div class="search-sec">🕒 搜索历史 <span class="search-hclear" onclick="clearSearchHistory()">清空</span></div>
+        <div class="search-sec">搜索历史 <span class="search-hclear" onclick="clearSearchHistory()">清空</span></div>
         <div class="search-chips">${state.searchHistory.map(k => `<div class="chip" onclick="searchGo('${esc(k)}')">${esc(k)}</div>`).join("")}</div>` : ""}`;
     return;
   }
@@ -3231,23 +3231,23 @@ function doSearch(commit) {
 
   const total = works.length + artists.length + users.length + demands.length + posts.length + articles.length + (me ? 1 : 0);
   if (!total) {
-    $("#searchBody").innerHTML = emptyHTML(`没有找到与「${esc(q)}」相关的内容，换个词试试 ✦`);
+    $("#searchBody").innerHTML = emptyHTML(`没有找到与「${esc(q)}」相关的内容，换个词试试`);
     return;
   }
 
   const sec = (label, n) => `<div class="search-sec">${label}<small>${n}</small></div>`;
   $("#searchBody").innerHTML = [
-    works.length ? sec("🎵 作品", works.length) + works.map(w => `
+    works.length ? sec("作品", works.length) + works.map(w => `
       <div class="search-row" onclick="searchJump(()=>favOpenWork(${w.id}))">
         <div class="fi-cover">${workMiniCover(w)}</div>
         <div class="sr-info"><b>${esc(w.title)}</b><span>${esc(w.author)} · ${esc(Array.isArray(w.type) ? w.type.join("/") : w.type)} · ${esc(w.price)}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
-    artists.length ? sec("🎨 音乐人", artists.length) + artists.map(a => `
+    artists.length ? sec("音乐人", artists.length) + artists.map(a => `
       <div class="search-row" onclick="searchJump(()=>openArtistByName('${esc(a.name)}'))">
         <div class="avatar" style="background:${avatarBg(a.name)}">${esc(a.name[0])}</div>
         <div class="sr-info"><b>${esc(a.name)}</b><span>${esc(a.roles.join(" / "))} · ${esc(a.bio)}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
-    (users.length || me) ? sec("👤 用户", users.length + (me ? 1 : 0)) + (me ? `
+    (users.length || me) ? sec("用户", users.length + (me ? 1 : 0)) + (me ? `
       <div class="search-row" onclick="searchJump(goMyProfile)">
         <div class="avatar" style="background:${avatarBg(state.profile.name)}">${esc(state.profile.name[0])}</div>
         <div class="sr-info"><b>${esc(state.profile.name)}</b><span>我自己 · 点击前往我的主页</span></div>
@@ -3256,17 +3256,17 @@ function doSearch(commit) {
         <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
         <div class="sr-info"><b>${esc(n)}</b><span>${esc(USERS_EXTRA[n]?.bio || "曲境用户")}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
-    demands.length ? sec("🏮 企划招募", demands.length) + demands.map(d => `
+    demands.length ? sec("企划招募", demands.length) + demands.map(d => `
       <div class="search-row" onclick="searchJump(()=>openDemandDetail(${DEMANDS.indexOf(d)}))">
         <div class="sr-glyph">募</div>
         <div class="sr-info"><b>${esc(d.title)}</b><span>${esc(d.who)} · ${esc(d.budget)}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
-    posts.length ? sec("🍵 社区帖子", posts.length) + posts.map(p => `
+    posts.length ? sec("社区帖子", posts.length) + posts.map(p => `
       <div class="search-row" onclick="searchJump(()=>openPost(${POSTS.indexOf(p)}))">
         <div class="avatar" style="background:${avatarBg(p.name)}">${esc(p.name[0])}</div>
         <div class="sr-info"><b>${esc(p.title)}</b><span>${esc(p.name)} · ${p.topic ? "# " + esc(p.topic) : "动态"} · ♡ ${p.like}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
-    articles.length ? sec("📰 平台资讯", articles.length) + articles.map(a => `
+    articles.length ? sec("平台资讯", articles.length) + articles.map(a => `
       <div class="search-row" onclick="searchJump(()=>openArticle(${a.id}))">
         <div class="sr-glyph" style="background:${a.grad};color:#fff">${a.glyph}</div>
         <div class="sr-info"><b>${esc(a.title)}</b><span>${esc(a.author)} · 阅读 ${a.read.toLocaleString()}</span></div>
@@ -3303,8 +3303,8 @@ function renderArticle() {
       ${a.sections.map(s => `${s.h ? `<h4 class="art-h">${esc(s.h)}</h4>` : ""}<p class="art-p">${esc(s.p)}</p>`).join("")}
       ${a.cta ? `<button class="btn primary art-cta" onclick="articleCta(${a.id})">${esc(a.cta.txt)}</button>` : ""}
       <div class="art-foot">
-        <span class="${a.liked ? "on" : ""}" onclick="toggleArticleLike(${a.id})">${a.liked ? "❤" : "♡"} ${a.like}</span>
-        <span onclick="toast('已复制文章链接，可分享给好友 ✦')">↗ 分享</span>
+        <span class="${a.liked ? "on" : ""}" onclick="toggleArticleLike(${a.id})">${a.liked ? "♥" : "♡"} ${a.like}</span>
+        <span onclick="toast('已复制文章链接，可分享给好友')">↗ 分享</span>
       </div>
     </div>`;
 }
@@ -3320,9 +3320,9 @@ function toggleArticleLike(id) {
 function articleCta(id) {
   const a = findArticle(id);
   closeOverlay("ovArticle");
-  if (a.cta.act === "demand") { backHomeAs("demand"); toast("已跳转企划招募 🏮"); }
+  if (a.cta.act === "demand") { backHomeAs("demand"); toast("已跳转企划招募"); }
   else if (a.cta.act === "topic") { switchTab($('.tab[data-scr="scr-comm"]')); goHotTopic(); }
-  else toast("报名成功！首单免佣资格已到账 ✦");
+  else toast("报名成功！首单免佣资格已到账");
 }
 
 /* ---------- 首页头图轮播 ---------- */

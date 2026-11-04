@@ -86,11 +86,11 @@ const CONFIG = {
   /** 聊天默认表情（符合古风调性的贴纸），另可从相册导入表情包 */
   stickers: [
     { key: "nice",     e: "🎐", t: "妙哉" },
-    { key: "tea",      e: "🍵", t: "奉茶一盏" },
-    { key: "ok",       e: "📜", t: "收到" },
+    { key: "tea",      e: "", t: "奉茶一盏" },
+    { key: "ok",       e: "", t: "收到" },
     { key: "please",   e: "🙏", t: "有劳了" },
     { key: "congrats", e: "🏮", t: "恭喜开单" },
-    { key: "moved",    e: "🌙", t: "泪目" },
+    { key: "moved",    e: "", t: "泪目" },
     { key: "wait",     e: "⏳", t: "容我斟酌" },
     { key: "love",     e: "🪶", t: "爱了爱了" },
   ],

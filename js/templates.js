@@ -181,17 +181,17 @@ function orderActionsHTML(o) {
   if (o.as)
     return o.mine === "约稿"
       ? `<button class="btn ghost obtn" onclick="cancelAfterSale('${o.id}')">撤销申请</button>
-         <button class="btn ghost obtn" onclick="toast('平台客服已接入，证据材料审核中 🛡')">查看进度</button>`
-      : `<button class="btn ghost obtn" onclick="toast('对方发起了${o.as.type === "refund" ? "退款" : "售后"}，请在工单中提交你的说明 🛡')">响应工单</button>`;
+         <button class="btn ghost obtn" onclick="toast('平台客服已接入，证据材料审核中')">查看进度</button>`
+      : `<button class="btn ghost obtn" onclick="toast('对方发起了${o.as.type === "refund" ? "退款" : "售后"}，请在工单中提交你的说明')">响应工单</button>`;
   if (o.status === "待接稿")
     return o.mine === "约稿"
-      ? `<button class="btn ghost obtn" onclick="toast('已提醒对方查看约稿邀约 💌')">提醒对方</button>
+      ? `<button class="btn ghost obtn" onclick="toast('已提醒对方查看约稿邀约')">提醒对方</button>
          <button class="btn ghost obtn" onclick="cancelOrder('${o.id}')">撤回邀约</button>`
       : `<button class="btn primary obtn" onclick="acceptInvite('${o.id}')">接受约稿</button>
          <button class="btn ghost obtn" onclick="declineInvite('${o.id}')">婉拒</button>`;
   if (o.status === "待付款") {
     if (o.mine !== "约稿")
-      return `<button class="btn ghost obtn" onclick="toast('已提醒对方托管稿酬 💌')">提醒付款</button>`;
+      return `<button class="btn ghost obtn" onclick="toast('已提醒对方托管稿酬')">提醒付款</button>`;
     return (o.payMode === "定金"
       ? `<button class="btn ghost obtn" onclick="openPay('${o.id}','deposit')">付定金 ¥${Math.round(o.amount / 2).toLocaleString()}</button>
          <button class="btn primary obtn" onclick="openPay('${o.id}','full')">付全款</button>`
@@ -201,14 +201,14 @@ function orderActionsHTML(o) {
   if (o.status === "进行中")
     return o.mine === "接稿"
       ? `<button class="btn primary obtn" onclick="openDeliver('${o.id}')">提交交付</button>`
-      : `<button class="btn ghost obtn" onclick="toast('已提醒对方交付 💌')">提醒交付</button>
+      : `<button class="btn ghost obtn" onclick="toast('已提醒对方交付')">提醒交付</button>
          <button class="btn ghost obtn" onclick="openAfterSale('${o.id}','refund')">申请退款</button>`;
   if (o.status === "待验收")
     return o.mine === "约稿"
       ? `<button class="btn primary obtn" onclick="confirmOrder('${o.id}')">${o.paid < o.amount ? "补尾款并验收" : "确认验收"}</button>
          <button class="btn ghost obtn" onclick="openRevise('${o.id}')">要求修改</button>
          <button class="btn ghost obtn" onclick="openAfterSale('${o.id}','aftersale')">申请售后</button>`
-      : `<button class="btn ghost obtn" onclick="toast('已催促验收 💌')">催验收</button>`;
+      : `<button class="btn ghost obtn" onclick="toast('已催促验收')">催验收</button>`;
   if (o.status === "已取消")
     return `<button class="btn ghost obtn" onclick="deleteOrder('${o.id}')">删除记录</button>`;
   return o.rated
@@ -236,10 +236,10 @@ function orderCardHTML(o) {
     <div class="o-title">${esc(o.title)}</div>
     <div class="o-meta">${esc(o.who)} · ${o.date} · 单号 ${o.id}</div>
     <div class="o-note">${esc(o.note)}</div>
-    ${o.as ? `<div class="as-banner">🛡 ${o.as.type === "refund" ? "退款" : "售后"}处理中 · ${esc(o.as.reason)} · 平台 48h 内介入</div>` : ""}
-    ${(o.revUsed || 0) > 0 ? `<div class="rev-count">✒ 已返修 ${o.revUsed}/3 次${o.revUsed >= 3 ? " · 再改需另付费" : ""}</div>` : ""}
+    ${o.as ? `<div class="as-banner">${o.as.type === "refund" ? "退款" : "售后"}处理中 · ${esc(o.as.reason)} · 平台 48h 内介入</div>` : ""}
+    ${(o.revUsed || 0) > 0 ? `<div class="rev-count">已返修 ${o.revUsed}/3 次${o.revUsed >= 3 ? " · 再改需另付费" : ""}</div>` : ""}
     ${o.file ? `<div class="o-file" onclick="openDownload('${o.id}')">
-      📎 <b>${esc(o.file.name)}</b><small>${o.file.ext} · ${o.file.size}</small><span>${o.status === "待验收" && o.mine === "约稿" ? "预览 ›" : "下载 ›"}</span></div>` : ""}
+      <b>${esc(o.file.name)}</b><small>${o.file.ext} · ${o.file.size}</small><span>${o.status === "待验收" && o.mine === "约稿" ? "预览 ›" : "下载 ›"}</span></div>` : ""}
     <div class="o-foot">
       <span class="price">¥${o.amount.toLocaleString()}${paidInfo}</span>
       <div class="o-acts">${orderActionsHTML(o)}</div>
@@ -264,7 +264,7 @@ function demandCardHTML(d) {
   const cover = d.cover
     ? `<div class="dcover" style="background:${d.cover}">${d.hasVideo ? `<div class="vplay">▶</div>` : ""}</div>`
     : d.hasVideo || d.hasAudio
-      ? `<div class="dmedia-hint">${d.hasVideo ? "🎬 含介绍视频" : "🎵 含参考音频"}</div>` : "";
+      ? `<div class="dmedia-hint">${d.hasVideo ? "含介绍视频" : "含参考音频"}</div>` : "";
   return `<div class="demand-card" onclick="openDemandDetail(${DEMANDS.indexOf(d)})">
     ${cover}
     <div class="dtitle">${esc(d.title)}</div>
@@ -313,8 +313,8 @@ function postHTML(p) {
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="event.stopPropagation();toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
-      <span onclick="event.stopPropagation();openPost(${idx}, true)">💬 ${p.comments.length}</span>
-      <span onclick="event.stopPropagation();openRepost(${idx})">🔁 ${p.reposts || 0}</span>
+      <span onclick="event.stopPropagation();openPost(${idx}, true)">评 ${p.comments.length}</span>
+      <span onclick="event.stopPropagation();openRepost(${idx})">转 ${p.reposts || 0}</span>
       <span onclick="event.stopPropagation();openShare(${idx})">⤴ 分享</span>
     </div></div>`;
 }
@@ -351,12 +351,12 @@ function postDetailHTML(p, idx) {
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
-      <span>💬 ${p.comments.length}</span>
-      <span onclick="openRepost(${idx})">🔁 ${p.reposts || 0}</span>
+      <span>评 ${p.comments.length}</span>
+      <span onclick="openRepost(${idx})">转 ${p.reposts || 0}</span>
       <span onclick="openShare(${idx})">⤴ 分享</span>
     </div></div>
     <div class="detail-section" style="margin-top:14px"><h4>评论 ${p.comments.length}</h4></div>
-    ${p.comments.map(commentItemHTML).join("") || `<div class="rev-hint">还没有评论，坐个沙发吧 ✦</div>`}`;
+    ${p.comments.map(commentItemHTML).join("") || `<div class="rev-hint">还没有评论，坐个沙发吧</div>`}`;
 }
 
 /* ---------- 首页提示（铃铛通知） ---------- */
@@ -574,13 +574,13 @@ function pubWorkFormHTML() {
     <input id="pubName" maxlength="30">
     <label id="pubCoverLabel">封面</label>
     <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickCover()">🖼️ 上传封面（图片/视频）</div>
+      <div class="upload-btn" onclick="pubPickCover()">上传封面（图片/视频）</div>
       <div class="upload-prev" id="pubCoverPrev" onclick="previewCover()" title="点击查看"></div>
     </div>
     <div id="pubMediaBlock" style="display:none">
       <label id="pubMediaLabel">音频 / 视频小样</label>
       <div class="upload-row">
-        <div class="upload-btn" onclick="pubPickMedia()">🎵 上传小样</div>
+        <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
         <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
       </div>
     </div>
@@ -590,7 +590,7 @@ function pubWorkFormHTML() {
     </div>
     <label>作品源文件 / 附件（选填）</label>
     <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickAttach()">📎 上传文件</div>
+      <div class="upload-btn" onclick="pubPickAttach()">上传文件</div>
       <span class="upload-name" id="pubAttachName">未选择文件</span>
     </div>
     <p class="se-note">支持工程 / 分轨 / 压缩包等任意格式，单个文件不超过 2G</p>
@@ -611,12 +611,12 @@ function pubDemandFormHTML() {
     <input id="pubName" maxlength="30">
     <label>封面</label>
     <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickCover()">🖼️ 上传封面（图片/视频）</div>
+      <div class="upload-btn" onclick="pubPickCover()">上传封面（图片/视频）</div>
       <div class="upload-prev" id="pubCoverPrev" onclick="previewCover()" title="点击查看"></div>
     </div>
     <label>介绍视频 / 参考音频</label>
     <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickMedia()">🎵 上传小样</div>
+      <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
       <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
     </div>
     <label>招募工种（可多选）</label>

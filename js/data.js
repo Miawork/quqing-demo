@@ -372,11 +372,11 @@ const MESSAGES = [
  * type: order | fan | like | system，点击可跳转对应页面
  * ------------------------------------------------------------ */
 const NOTICES = [
-  { type: "order", icon: "📬", txt: "《九州录》主题曲订单：定金 ¥2,000 已托管，可以开工啦", time: "10 分钟前", unread: true },
-  { type: "fan", icon: "🎐", txt: "「白鹭洲」关注了你，去看看 TA 的主页吧", time: "1 小时前", unread: true },
-  { type: "like", icon: "❤️", txt: "「二十四桥》赞了你的作品《掬水月》", time: "3 小时前", unread: true },
-  { type: "order", icon: "⭐", txt: "「二十四桥」给了你一条 5 星评价，已展示在你的主页", time: "昨天", unread: false },
-  { type: "system", icon: "📜", txt: "平台提示：商单请务必签署电子协议并托管稿酬", time: "昨天", unread: false },
+  { type: "order", icon: "单", txt: "《九州录》主题曲订单：定金 ¥2,000 已托管，可以开工啦", time: "10 分钟前", unread: true },
+  { type: "fan", icon: "粉", txt: "「白鹭洲」关注了你，去看看 TA 的主页吧", time: "1 小时前", unread: true },
+  { type: "like", icon: "赞", txt: "「二十四桥》赞了你的作品《掬水月》", time: "3 小时前", unread: true },
+  { type: "order", icon: "评", txt: "「二十四桥」给了你一条 5 星评价，已展示在你的主页", time: "昨天", unread: false },
+  { type: "system", icon: "告", txt: "平台提示：商单请务必签署电子协议并托管稿酬", time: "昨天", unread: false },
 ];/* ---------- 关注 / 粉丝（小红书式：可互关） ---------- */
 
 /** 关注我的人（互相关注即好友） */
