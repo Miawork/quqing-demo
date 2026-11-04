@@ -262,7 +262,10 @@
         <div class="repost-imgprev" id="repostImgPrev" style="display:none">
           <img id="repostImgEl" alt="表情包"><span onclick="clearRepostImg()">✕</span>
         </div>
-        <div class="repost-stickers" id="repostStickers"></div>
+        <div class="repost-tools">
+          <span class="rp-emoji-btn" onclick="toggleRepostTray()">☺ 表情</span>
+        </div>
+        <div class="sticker-tray" id="repostTray"></div>
         <div id="repostOrig"></div>
         <div class="rate-acts">
           <button class="btn ghost" onclick="closeRepost()">取消</button>
@@ -284,7 +287,7 @@
           <div class="share-item" onclick="shareTo('小红书')"><span>红</span><b>小红书</b></div>
           <div class="share-item" onclick="shareTo('B站动态')"><span>B</span><b>B站动态</b></div>
           <div class="share-item" onclick="copyShareLink()"><span>链</span><b>复制链接</b></div>
-          <div class="share-item" onclick="shareTo('生成海报')"><span>图</span><b>生成海报</b></div>
+          <div class="share-item" onclick="sharePoster()"><span>图</span><b>生成海报</b></div>
         </div>
         <div class="pub-close" onclick="closeShare()">✕</div>
       </div>

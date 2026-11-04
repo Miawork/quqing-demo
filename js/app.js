@@ -193,23 +193,179 @@ function toggleLike(i) {
   if (state.currentPost === i && $("#ovPost").classList.contains("show")) renderPostDetail();
 }
 
-/* ---------- 分享（多平台面板）/ 转发（微博式） ---------- */
+/* ---------- 分享（网易云式：多平台 + 生成海报）/ 转发（微博式） ---------- */
+
+/** 当前分享对象：{kind:"post"|"work"|"article", ...} */
+let shareCtx = null;
 
 function openShare(i) {
+  shareCtx = { kind: "post", idx: i };
   state.currentShare = i;
   $("#shareMask").classList.add("show");
 }
 function closeShare() { $("#shareMask").classList.remove("show"); }
 
+/** 当前分享对象标题 */
+function shareTitleOf() {
+  if (!shareCtx) return "内容";
+  if (shareCtx.kind === "work") return vWorkById(shareCtx.id)?.title || "作品";
+  if (shareCtx.kind === "article") return findArticle(shareCtx.id)?.title || "资讯";
+  return POSTS[shareCtx.idx]?.title || "帖子";
+}
+
 function shareTo(platform) {
-  const t = shareWorkTitle ?? POSTS[state.currentShare].title;
-  shareWorkTitle = null;
+  const t = shareTitleOf();
   closeShare();
   toast(`已分享《${t.slice(0, 10)}…》到${platform}`);
 }
 function copyShareLink() {
   closeShare();
   toast("链接已复制，快去粘贴吧");
+}
+
+/* --- 生成海报（网易云式：封面 + 歌词/简介 + 创作人信息 + 平台落款） --- */
+
+/** canvas 文本自动换行，返回行数组 */
+function wrapCanvasText(ctx, text, maxW, maxLines) {
+  const lines = [];
+  let line = "";
+  for (const ch of String(text || "")) {
+    if (ch === "\n") { lines.push(line); line = ""; continue; }
+    if (ctx.measureText(line + ch).width > maxW) { lines.push(line); line = ch; }
+    else line += ch;
+    if (lines.length >= maxLines) return lines;
+  }
+  if (line) lines.push(line);
+  return lines.slice(0, maxLines);
+}
+
+/** 海报素材：按分享对象类型统一抽取 */
+function posterDataOf() {
+  if (shareCtx?.kind === "work") {
+    const w = vWorkById(shareCtx.id);
+    return {
+      cover: w.cover || "", glyph: w.glyph || "♪", title: w.title,
+      sub: `${w.type} · ${w.biz} · ${w.price}`,
+      body: (w.lyric || w.desc || "") + (w.detail ? "\n约稿须知：" + w.detail : ""),
+      author: w.author, role: w.role || "音乐人",
+    };
+  }
+  if (shareCtx?.kind === "article") {
+    const a = findArticle(shareCtx.id);
+    return {
+      cover: a.grad, glyph: a.glyph, title: a.title,
+      sub: a.kicker + " · 阅读 " + a.read.toLocaleString(),
+      body: a.sections.map(s => s.p).join("\n"),
+      author: a.author, role: "平台资讯",
+    };
+  }
+  const p = POSTS[shareCtx?.idx] || POSTS[0];
+  return {
+    cover: avatarBg(p.name), glyph: p.title[0] || "话", title: p.title,
+    sub: (p.topic ? "# " + p.topic + " · " : "") + p.time,
+    body: p.txt, author: p.name, role: "社区动态",
+  };
+}
+
+/** 绘制分享海报，完成回调 cb(canvas) */
+function buildPosterCanvas(cb) {
+  const d = posterDataOf();
+  const W = 640, H = 1000, CV = 460; // CV: 封面区高度
+  const cv = document.createElement("canvas");
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H);
+
+  const drawInfo = () => {
+    // 标题 / 副标
+    ctx.fillStyle = "#17181A"; ctx.font = "700 36px 'Noto Serif SC', serif";
+    ctx.fillText(d.title.slice(0, 14), 48, CV + 72);
+    ctx.fillStyle = "#2152FF"; ctx.font = "600 20px -apple-system, sans-serif";
+    ctx.fillText(d.sub.slice(0, 30), 48, CV + 110);
+    // 歌词 / 简介（自动换行，最多 7 行）
+    ctx.fillStyle = "#5C5F66"; ctx.font = "400 22px 'Noto Serif SC', serif";
+    wrapCanvasText(ctx, d.body, W - 96, 7).forEach((ln, i) => ctx.fillText(ln, 48, CV + 160 + i * 38));
+    // 创作人：渐变头像 + 名字 + 身份
+    const ay = H - 118, ar = 30;
+    const [c1, c2] = gradStops(d.author);
+    const g = ctx.createLinearGradient(48, ay - ar, 48 + ar * 2, ay + ar);
+    g.addColorStop(0, c1); g.addColorStop(1, c2);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(48 + ar, ay, ar, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#FFFFFF"; ctx.font = "700 26px 'Noto Serif SC', serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(d.author[0], 48 + ar, ay + 2);
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "#17181A"; ctx.font = "700 24px 'Noto Serif SC', serif";
+    ctx.fillText(d.author, 122, ay - 2);
+    ctx.fillStyle = "#9A9DA6"; ctx.font = "400 18px -apple-system, sans-serif";
+    ctx.fillText(d.role, 122, ay + 26);
+    // 平台落款 + 装饰小码
+    const svg = qrSVG("quqing-share:" + d.title);
+    const img = new Image();
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, W - 148, H - 168, 100, 100);
+      ctx.imageSmoothingEnabled = true;
+      ctx.fillStyle = "#9A9DA6"; ctx.font = "400 16px -apple-system, sans-serif";
+      ctx.fillText("长按识别 · 曲境", W - 148, H - 48);
+      ctx.fillStyle = "#5C5F66"; ctx.font = "600 19px 'Noto Serif SC', serif";
+      ctx.fillText("曲境 · 音乐约稿平台", 48, H - 48);
+      cb(cv);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); cb(cv); };
+    img.src = url;
+  };
+
+  // 封面区：自定义图片 cover 或渐变 + 字符印
+  const um = String(d.cover).match(/url\((.*?)\)/);
+  if (um) {
+    const im = new Image();
+    im.onload = () => {
+      // 等比裁切铺满封面区
+      const s = Math.max(W / im.width, CV / im.height);
+      ctx.drawImage(im, (W - im.width * s) / 2, (CV - im.height * s) / 2, im.width * s, im.height * s);
+      drawInfo();
+    };
+    im.onerror = () => { drawCoverGrad(); drawInfo(); };
+    im.src = um[1].replace(/["']/g, "");
+  } else { drawCoverGrad(); drawInfo(); }
+
+  function drawCoverGrad() {
+    const m = String(d.cover).match(/#[0-9A-Fa-f]{3,6}/g) || ["#2152FF", "#6B8CFF"];
+    const g = ctx.createLinearGradient(0, 0, W, CV);
+    g.addColorStop(0, m[0]); g.addColorStop(1, m[1] || m[0]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, CV);
+    ctx.fillStyle = "rgba(255,255,255,.92)"; ctx.font = "700 150px 'Noto Serif SC', serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(d.glyph, W / 2, CV / 2 + 8);
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  }
+}
+
+let posterURL = null;
+
+/** 生成海报：预览 + 保存 */
+function sharePoster() {
+  closeShare();
+  toast("海报生成中…");
+  buildPosterCanvas(cv => {
+    posterURL = cv.toDataURL("image/png");
+    openPreview(`<div style="display:flex;flex-direction:column;align-items:stretch">
+      <img src="${posterURL}" style="max-width:100%;max-height:68vh;border-radius:14px;display:block" alt="分享海报">
+      <button class="btn primary" style="margin-top:12px" onclick="savePoster()">保存海报</button></div>`);
+  });
+}
+
+function savePoster() {
+  if (!posterURL) return;
+  const a = document.createElement("a");
+  a.href = posterURL;
+  a.download = `曲境海报-${shareTitleOf().slice(0, 10)}.png`;
+  a.click();
+  toast("海报已保存，去下载/相册里看看吧");
 }
 
 /** 转发：引用原帖（转发的转发仍指向最初原帖，微博逻辑） */
@@ -221,12 +377,19 @@ function repostOriginOf(p) {
 let repostCtx = null;   // {kind:"post", idx} | {kind:"work", id}
 let repostImg = null;   // 附带的图片表情包 dataURL
 
-/** 表情条：默认贴纸插入文字，相册表情包作图附带 */
+/** 表情面板（微信朋友圈式：点「表情」按钮展开，与聊天表情面板同款） */
 function renderRepostStickers() {
-  $("#repostStickers").innerHTML =
-    CONFIG.stickers.map(s => `<div class="rs-item" onclick="repostAddEmoji('${s.e}')"><span>${s.e}</span></div>`).join("")
-    + state.myStickers.map((src, i) => `<div class="rs-item" onclick="repostPickImg(${i})"><img src="${src}" alt="表情包"></div>`).join("")
-    + `<div class="rs-item rs-add" onclick="pickStickerImg()" title="从相册导入表情包"><span>＋</span></div>`;
+  $("#repostTray").innerHTML =
+    CONFIG.stickers.map(s => `
+      <div class="tray-item" onclick="repostAddEmoji('${s.e || "【" + s.t + "】"}')"><span>${s.e || "♪"}</span><b>${s.t}</b></div>`).join("")
+    + state.myStickers.map((src, i) => `
+      <div class="tray-item" onclick="repostPickImg(${i})"><img src="${src}" alt="表情包"></div>`).join("")
+    + `<div class="tray-item tray-add" onclick="pickStickerImg()"><span>＋</span><b>相册导入</b></div>`;
+}
+
+function toggleRepostTray() {
+  renderRepostStickers();
+  $("#repostTray").classList.toggle("show");
 }
 
 function repostAddEmoji(e) {
@@ -239,6 +402,7 @@ function repostPickImg(i) {
   repostImg = state.myStickers[i];
   $("#repostImgEl").src = repostImg;
   $("#repostImgPrev").style.display = "";
+  $("#repostTray").classList.remove("show");
 }
 
 function clearRepostImg() {
@@ -251,7 +415,7 @@ function openRepost(i) {
   state.currentRepost = i;
   $("#repostTxt").value = "";
   clearRepostImg();
-  renderRepostStickers();
+  $("#repostTray").classList.remove("show");
   $("#repostOrig").innerHTML = originBoxHTML(repostOriginOf(POSTS[i]));
   $("#repostMask").classList.add("show");
 }
@@ -946,7 +1110,7 @@ function forwardWork(id) {
   repostCtx = { kind: "work", id };
   $("#repostTxt").value = "";
   clearRepostImg();
-  renderRepostStickers();
+  $("#repostTray").classList.remove("show");
   $("#repostOrig").innerHTML = originBoxHTML({ name: w.author, title: w.title, txt: w.desc || "" });
   $("#repostMask").classList.add("show");
 }
@@ -968,11 +1132,9 @@ function submitWorkRepost() {
   toast("已转发到社区动态 ✓");
 }
 
-/** 分享作品：复用多平台分享面板 */
-let shareWorkTitle = null;
+/** 分享作品：网易云式面板（含生成海报） */
 function openShareWork(id) {
-  const w = vWorkById(id);
-  shareWorkTitle = w ? w.title : "作品";
+  shareCtx = { kind: "work", id };
   $("#shareMask").classList.add("show");
 }
 
@@ -4388,10 +4550,9 @@ function forwardArticle(id) {
   toast("已转发到社区动态 ✓");
 }
 
-/** 分享文章：复用多平台分享面板 */
+/** 分享文章：网易云式面板（含生成海报） */
 function openShareArticle(id) {
-  const a = findArticle(id);
-  shareWorkTitle = a ? a.title : "资讯";
+  shareCtx = { kind: "article", id };
   $("#shareMask").classList.add("show");
 }
 
