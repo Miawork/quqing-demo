@@ -460,7 +460,7 @@ body {
   gap: 14px; padding: 44px 24px 20px;
 }
 .smedia .cover-glyph { font-size: 66px; color: rgba(255,255,255,.92); font-weight: 700; text-shadow: 0 6px 24px rgba(0,0,0,.35); }
-.smedia .tpl-label { position: absolute; bottom: 10px; right: 14px; font-size: 9.5px; color: rgba(255,255,255,.45); letter-spacing: 1px; }
+.smedia .tpl-label { position: absolute; bottom: 30px; right: 14px; font-size: 9.5px; color: rgba(255,255,255,.45); letter-spacing: 1px; }
 .smedia .bigplay {
   width: 58px; height: 58px; border-radius: 50%;
   background: rgba(0,0,0,.35); color: #fff; font-size: 22px;
@@ -484,10 +484,16 @@ body {
 .vwave { display: flex; align-items: flex-end; gap: 3px; height: 34px; }
 .vwave i { width: 3.5px; border-radius: 2px; background: rgba(255,255,255,.6); }
 
-/* 信息面板 */
+/* 信息面板：磨砂半透 + 上叠媒体区，浅色模板下边角过渡更柔和 */
 .sinfo {
   flex-shrink: 0; max-height: 48%; overflow-y: auto; scrollbar-width: none;
-  background: var(--paper); border-radius: 20px 20px 0 0; padding: 16px 18px;
+  margin-top: -20px; position: relative; z-index: 1;
+  background: rgba(247,242,231,.88);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+  backdrop-filter: blur(14px) saturate(1.05);
+  border-top: 1px solid rgba(43,38,32,.07);
+  box-shadow: 0 -10px 26px rgba(43,38,32,.10);
+  border-radius: 20px 20px 0 0; padding: 16px 18px;
 }
 .sinfo::-webkit-scrollbar { display: none; }
 .sinfo .stitle { font-size: 16.5px; font-weight: 700; letter-spacing: .5px; margin-bottom: 8px; }
