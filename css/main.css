@@ -467,6 +467,8 @@ body {
 /* 信息面板：磨砂半透 + 上叠媒体区，浅色模板下边角过渡更柔和 */
 .sinfo {
   flex-shrink: 0; max-height: 48%; overflow-y: auto; scrollbar-width: none;
+  /* 评论区内滑动不向外链接：防止看评论时误翻下一个作品，切换需在封面区用力下滑 */
+  overscroll-behavior: contain;
   margin-top: -20px; position: relative; z-index: 1;
   background: rgba(255,255,255,.9);
   -webkit-backdrop-filter: blur(14px) saturate(1.05);
@@ -513,6 +515,13 @@ body {
   background: var(--card); color: var(--ink); font-size: 13px; outline: none;
 }
 .wc-input .btn { padding: 0 18px; font-size: 13px; }
+
+/* 作品页内嵌评论区（信息面板内下拉查看） */
+.s-cmts { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 2px; }
+.s-cmts-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+.s-cmts-head b { font-size: 13px; color: var(--ink); }
+.s-cmts-head span { font-size: 10px; color: var(--ink-3); margin-left: auto; }
+.s-cmts .wc-list { max-height: none; }
 
 /* ---------- 7. 消息 ---------- */
 /* 通知分类入口（小红书式三磁贴：赞和收藏 / 评论和@ / 约稿通知） */

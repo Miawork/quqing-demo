@@ -546,13 +546,21 @@ function slideInfoHTML(w) {
       <b style="color:var(--ink)">约稿须知：</b>${esc(w.detail)}</div>
     <div class="s-acts">
       <div class="s-act ${state.workLiked.has(w.id) ? "on" : ""}" id="wlike-${w.id}" onclick="toggleWorkLike(${w.id})"><i>${state.workLiked.has(w.id) ? "♥" : "♡"}</i><b>${workLikeCount(w.id)}</b></div>
-      <div class="s-act" id="wcmt-${w.id}" onclick="openWorkComments(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
+      <div class="s-act" id="wcmt-${w.id}" onclick="scrollToCmts(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
       <div class="s-act" onclick="forwardWork(${w.id})"><i>↻</i><b>转发</b></div>
       <div class="s-act" onclick="openShareWork(${w.id})"><i>↗</i><b>分享</b></div>
     </div>
     <div class="sbtns">
       <button class="btn ghost fav-btn" data-fav="${w.id}" onclick="openFavPick(${w.id})">${isFaved(w.id) ? "已收藏 ♥" : "收藏 ♡"}</button>
       <button class="btn primary" onclick="closeViewer();openCommission('${esc(w.author)}', '${esc(w.title)}')">发起约稿</button>
+    </div>
+    <div class="s-cmts" id="scmts-${w.id}">
+      <div class="s-cmts-head">评论 <b id="scmtn-${w.id}">${workCmtsOf(w.id).length}</b><span>评论区内滑动不翻页 · 在封面区用力下滑切换作品</span></div>
+      <div class="wc-list" id="wcl-${w.id}">${workCmtsListHTML(w.id)}</div>
+      <div class="wc-input">
+        <input id="wcin-${w.id}" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${w.id})">
+        <button class="btn primary" onclick="sendWorkCmt(${w.id})">发送</button>
+      </div>
     </div></div>`;
 }
 

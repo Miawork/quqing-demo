@@ -549,6 +549,8 @@ body {
 /* 信息面板：磨砂半透 + 上叠媒体区，浅色模板下边角过渡更柔和 */
 .sinfo {
   flex-shrink: 0; max-height: 48%; overflow-y: auto; scrollbar-width: none;
+  /* 评论区内滑动不向外链接：防止看评论时误翻下一个作品，切换需在封面区用力下滑 */
+  overscroll-behavior: contain;
   margin-top: -20px; position: relative; z-index: 1;
   background: rgba(255,255,255,.9);
   -webkit-backdrop-filter: blur(14px) saturate(1.05);
@@ -595,6 +597,13 @@ body {
   background: var(--card); color: var(--ink); font-size: 13px; outline: none;
 }
 .wc-input .btn { padding: 0 18px; font-size: 13px; }
+
+/* 作品页内嵌评论区（信息面板内下拉查看） */
+.s-cmts { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 2px; }
+.s-cmts-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+.s-cmts-head b { font-size: 13px; color: var(--ink); }
+.s-cmts-head span { font-size: 10px; color: var(--ink-3); margin-left: auto; }
+.s-cmts .wc-list { max-height: none; }
 
 /* ---------- 7. 消息 ---------- */
 /* 通知分类入口（小红书式三磁贴：赞和收藏 / 评论和@ / 约稿通知） */
@@ -3667,13 +3676,21 @@ function slideInfoHTML(w) {
       <b style="color:var(--ink)">约稿须知：</b>${esc(w.detail)}</div>
     <div class="s-acts">
       <div class="s-act ${state.workLiked.has(w.id) ? "on" : ""}" id="wlike-${w.id}" onclick="toggleWorkLike(${w.id})"><i>${state.workLiked.has(w.id) ? "♥" : "♡"}</i><b>${workLikeCount(w.id)}</b></div>
-      <div class="s-act" id="wcmt-${w.id}" onclick="openWorkComments(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
+      <div class="s-act" id="wcmt-${w.id}" onclick="scrollToCmts(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
       <div class="s-act" onclick="forwardWork(${w.id})"><i>↻</i><b>转发</b></div>
       <div class="s-act" onclick="openShareWork(${w.id})"><i>↗</i><b>分享</b></div>
     </div>
     <div class="sbtns">
       <button class="btn ghost fav-btn" data-fav="${w.id}" onclick="openFavPick(${w.id})">${isFaved(w.id) ? "已收藏 ♥" : "收藏 ♡"}</button>
       <button class="btn primary" onclick="closeViewer();openCommission('${esc(w.author)}', '${esc(w.title)}')">发起约稿</button>
+    </div>
+    <div class="s-cmts" id="scmts-${w.id}">
+      <div class="s-cmts-head">评论 <b id="scmtn-${w.id}">${workCmtsOf(w.id).length}</b><span>评论区内滑动不翻页 · 在封面区用力下滑切换作品</span></div>
+      <div class="wc-list" id="wcl-${w.id}">${workCmtsListHTML(w.id)}</div>
+      <div class="wc-input">
+        <input id="wcin-${w.id}" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${w.id})">
+        <button class="btn primary" onclick="sendWorkCmt(${w.id})">发送</button>
+      </div>
     </div></div>`;
 }
 
@@ -4735,28 +4752,30 @@ function workCmtsOf(id) {
   return workCmts[id];
 }
 
-function openWorkComments(id) {
-  const list = workCmtsOf(id);
-  openSheet(`评论 ${list.length}`, `
-    <div class="wc-list">${list.map(c => `
-      <div class="wc-row">
-        <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
-        <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
-      </div>`).join("")}</div>
-    <div class="wc-input">
-      <input id="wcInput" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${id})">
-      <button class="btn primary" onclick="sendWorkCmt(${id})">发送</button>
-    </div>`);
-  setTimeout(() => $("#wcInput")?.focus(), 200);
+/** 作品评论列表（内嵌在信息面板，下拉即见） */
+function workCmtsListHTML(id) {
+  return workCmtsOf(id).map(c => `
+    <div class="wc-row">
+      <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
+      <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
+    </div>`).join("");
+}
+
+/** 点「评论」按钮：平滑滚到当前 slide 的内嵌评论区 */
+function scrollToCmts(id) {
+  $(`#scmts-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function sendWorkCmt(id) {
-  const v = $("#wcInput").value.trim();
+  const input = $(`#wcin-${id}`);
+  const v = input.value.trim();
   if (!v) return toast("先写点评论内容吧～");
   workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚" });
-  openWorkComments(id); // 重绘评论列表
-  const n = $(`#wcmt-${id} b`);
+  input.value = "";
+  $(`#wcl-${id}`).innerHTML = workCmtsListHTML(id);
+  const n = $(`#wcmt-${id} b`), h = $(`#scmtn-${id}`);
   if (n) n.textContent = workCmtsOf(id).length;
+  if (h) h.textContent = workCmtsOf(id).length;
   toast("评论已发布 ✓");
 }
 

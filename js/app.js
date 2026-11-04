@@ -875,28 +875,30 @@ function workCmtsOf(id) {
   return workCmts[id];
 }
 
-function openWorkComments(id) {
-  const list = workCmtsOf(id);
-  openSheet(`评论 ${list.length}`, `
-    <div class="wc-list">${list.map(c => `
-      <div class="wc-row">
-        <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
-        <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
-      </div>`).join("")}</div>
-    <div class="wc-input">
-      <input id="wcInput" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${id})">
-      <button class="btn primary" onclick="sendWorkCmt(${id})">发送</button>
-    </div>`);
-  setTimeout(() => $("#wcInput")?.focus(), 200);
+/** 作品评论列表（内嵌在信息面板，下拉即见） */
+function workCmtsListHTML(id) {
+  return workCmtsOf(id).map(c => `
+    <div class="wc-row">
+      <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
+      <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
+    </div>`).join("");
+}
+
+/** 点「评论」按钮：平滑滚到当前 slide 的内嵌评论区 */
+function scrollToCmts(id) {
+  $(`#scmts-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function sendWorkCmt(id) {
-  const v = $("#wcInput").value.trim();
+  const input = $(`#wcin-${id}`);
+  const v = input.value.trim();
   if (!v) return toast("先写点评论内容吧～");
   workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚" });
-  openWorkComments(id); // 重绘评论列表
-  const n = $(`#wcmt-${id} b`);
+  input.value = "";
+  $(`#wcl-${id}`).innerHTML = workCmtsListHTML(id);
+  const n = $(`#wcmt-${id} b`), h = $(`#scmtn-${id}`);
   if (n) n.textContent = workCmtsOf(id).length;
+  if (h) h.textContent = workCmtsOf(id).length;
   toast("评论已发布 ✓");
 }
 
