@@ -7362,6 +7362,8 @@ function doLogout() {
 
 function lvShow(id) {
   ["lvPick", "lvLogin", "lvReg"].forEach(v => { $("#" + v).style.display = v === id ? "" : "none"; });
+  // 没有已登录过的账号时，隐藏「返回」（账号选择页只有＋，无意义）
+  [...$$("#loginOverlay .login-back")].forEach(b => { b.style.display = state.accounts.length ? "" : "none"; });
 }
 
 function acctAvatarHTML(a) {
@@ -8023,7 +8025,10 @@ renderOrders();
 renderMyReviews();
 renderFavStrip();
 renderNoticeDot();
-openRoleSetup("register"); // Demo：模拟注册流程，进入资料填写 → 工种选择
+/* 初始为未登录：先进登录/注册界面，登录注册成功后再取名、选工种 */
+renderAcctGrid();
+lvShow(state.accounts.length ? "lvPick" : "lvLogin");
+$("#loginOverlay").classList.add("show");
 
 </script>
 </body>
