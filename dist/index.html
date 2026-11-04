@@ -566,6 +566,33 @@ body {
 .sbtns .btn { padding: 11px; font-size: 13.5px; }
 
 /* ---------- 7. 消息 ---------- */
+/* 通知分类入口（小红书式三磁贴：赞和收藏 / 评论和@ / 约稿通知） */
+.msg-entries {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  padding: 2px 16px 14px;
+}
+.me-tile {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 14px 6px 12px; cursor: pointer;
+  background: var(--paper-2); border-radius: 18px; box-shadow: var(--shadow-card);
+}
+.me-tile:active { transform: scale(.96); }
+.me-tile b { font-size: 11.5px; font-weight: 600; color: var(--ink-2); }
+.me-ic {
+  width: 42px; height: 42px; border-radius: 50%; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+}
+.me-ic-like { background: #FF5A7E; }
+.me-ic-comment { background: var(--red); }
+.me-ic-order { background: var(--gold); }
+.me-badge {
+  position: absolute; top: 8px; right: 12px;
+  min-width: 17px; height: 17px; border-radius: 9px; padding: 0 5px;
+  background: #F53F3F; color: #fff; font: 700 10px var(--font-sans);
+  font-style: normal; display: flex; align-items: center; justify-content: center;
+}
+
 .msg-item { display: flex; gap: 12px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); cursor: pointer; }
 .msg-item .avatar { width: 46px; height: 46px; font-size: 17px; }
 .msg-body { flex: 1; min-width: 0; }
@@ -1638,6 +1665,7 @@ body { background: #D9DADE; }
         </div>
       </div>
       <div class="sys-notice">平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
+      <div class="msg-entries" id="msgEntries"></div>
       <div id="msgList"></div>
     </div>
 
@@ -1784,7 +1812,7 @@ body { background: #D9DADE; }
     <div class="overlay" id="ovNotice">
       <div class="ov-head">
         <div class="back-btn" onclick="closeOverlay('ovNotice')">‹</div>
-        <h3>提示</h3>
+        <h3 id="noticeTitle">通知</h3>
         <div class="head-act" onclick="markAllNotices()">全部已读</div>
       </div>
       <div class="ov-body" id="noticeList"></div>
@@ -2697,14 +2725,18 @@ const MESSAGES = [
   { name: "平台助手", txt: "您与「半盏茶」的约稿协议已生效，首期稿酬已托管。", time: "昨天", unread: 0 },
   { name: "青梧", txt: "《折枝令》第二段改好了，你看看这版韵脚顺不顺。", time: "周一", unread: 0 },
 ];
-/* ---------- 首页提示（铃铛通知） ----------
- * type: order | fan | like | system，点击可跳转对应页面
+/* ---------- 通知中心 ----------
+ * type: order（约稿/订单）| comment（评论和@）| like（点赞）| fav（收藏）| fan（新增关注）| system
  * ------------------------------------------------------------ */
 const NOTICES = [
   { type: "order", icon: "单", txt: "《九州录》主题曲订单：定金 ¥2,000 已托管，可以开工啦", time: "10 分钟前", unread: true },
+  { type: "comment", icon: "评", txt: "「绤绤」评论了你的作品《掬水月》：副歌戲腔这里起得真好！", time: "28 分钟前", unread: true },
   { type: "fan", icon: "粉", txt: "「白鹭洲」关注了你，去看看 TA 的主页吧", time: "1 小时前", unread: true },
-  { type: "like", icon: "赞", txt: "「二十四桥》赞了你的作品《掬水月》", time: "3 小时前", unread: true },
+  { type: "like", icon: "赞", txt: "「二十四桥」赞了你的作品《掬水月》", time: "3 小时前", unread: true },
+  { type: "fav", icon: "藏", txt: "「孤鹤」收藏了你的作品《山河入梦》到「宝藏 BGM」", time: "5 小时前", unread: true },
+  { type: "comment", icon: "@", txt: "「沈昼」在帖子里 @ 了你：这个混音思路可以听听他的", time: "昨天", unread: false },
   { type: "order", icon: "评", txt: "「二十四桥」给了你一条 5 星评价，已展示在你的主页", time: "昨天", unread: false },
+  { type: "like", icon: "赞", txt: "「半盏茶」等 3 人赞了你的帖子「接单避坑实录」", time: "昨天", unread: false },
   { type: "system", icon: "告", txt: "平台提示：商单请务必签署电子协议并托管稿酬", time: "昨天", unread: false },
 ];/* ---------- 关注 / 粉丝（小红书式：可互关） ---------- */
 
@@ -3801,14 +3833,45 @@ function submitPost() {
   toast(m ? `发布成功，已带标签 #${m[1]}` : "发布成功");
 }
 
-/* ---------- 首页提示（铃铛通知） ---------- */
+/* ---------- 通知中心（小红书式归类） ---------- */
+
+/** 分类：赞和收藏 / 评论和@ / 约稿通知（重要） */
+const NOTICE_CATS = {
+  like:    { title: "赞和收藏", types: ["like", "fav"] },
+  comment: { title: "评论和@",  types: ["comment"] },
+  order:   { title: "约稿通知", types: ["order", "system"] },
+};
+
+const catOfNotice = n =>
+  Object.keys(NOTICE_CATS).find(k => NOTICE_CATS[k].types.includes(n.type)) || null;
 
 function renderNoticeDot() {
   $("#nDot").style.display = NOTICES.some(n => n.unread) ? "block" : "none";
+  renderMsgEntries();
 }
 
-function openNotices() {
-  $("#noticeList").innerHTML = NOTICES.map(noticeHTML).join("");
+/** 消息页顶部：分类入口磁贴（带未读角标） */
+function renderMsgEntries() {
+  const box = $("#msgEntries");
+  if (!box) return;
+  box.innerHTML = Object.keys(NOTICE_CATS).map(k => {
+    const c = NOTICE_CATS[k];
+    const unread = NOTICES.filter(n => c.types.includes(n.type) && n.unread).length;
+    return `<div class="me-tile" onclick="openNotices('${k}')">
+      <span class="me-ic me-ic-${k}">${k === "like" ? "♥" : k === "comment" ? "评" : "约"}</span>
+      <b>${c.title}</b>
+      ${unread ? `<i class="me-badge">${unread}</i>` : ""}</div>`;
+  }).join("");
+}
+
+/** 打开通知：不传 cat 看全部，传 cat 只看该分类 */
+function openNotices(cat) {
+  const c = cat && NOTICE_CATS[cat];
+  const list = c ? NOTICES.filter(n => c.types.includes(n.type)) : NOTICES;
+  $("#noticeTitle").textContent = c ? c.title : "通知";
+  $("#noticeList").innerHTML = list.length
+    ? list.map(n => noticeHTML(n, NOTICES.indexOf(n))).join("")
+    : emptyHTML("这里还没有通知");
   $("#ovNotice").classList.add("show");
 }
 
@@ -3833,6 +3896,8 @@ function noticeGo(i) {
     openFollow("fans");
   }
   else if (n.type === "like") toast("Demo：查看被赞的作品");
+  else if (n.type === "fav") toast("Demo：查看被收藏的作品");
+  else if (n.type === "comment") toast("Demo：查看评论详情");
   else toast("已阅平台提示");
 }
 
@@ -3840,6 +3905,7 @@ function noticeGo(i) {
 
 function renderMessages() {
   $("#msgList").innerHTML = MESSAGES.map(messageHTML).join("");
+  renderMsgEntries();
 }
 
 /** 消息列表一键全部已读 */

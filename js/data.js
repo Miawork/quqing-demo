@@ -368,14 +368,18 @@ const MESSAGES = [
   { name: "平台助手", txt: "您与「半盏茶」的约稿协议已生效，首期稿酬已托管。", time: "昨天", unread: 0 },
   { name: "青梧", txt: "《折枝令》第二段改好了，你看看这版韵脚顺不顺。", time: "周一", unread: 0 },
 ];
-/* ---------- 首页提示（铃铛通知） ----------
- * type: order | fan | like | system，点击可跳转对应页面
+/* ---------- 通知中心 ----------
+ * type: order（约稿/订单）| comment（评论和@）| like（点赞）| fav（收藏）| fan（新增关注）| system
  * ------------------------------------------------------------ */
 const NOTICES = [
   { type: "order", icon: "单", txt: "《九州录》主题曲订单：定金 ¥2,000 已托管，可以开工啦", time: "10 分钟前", unread: true },
+  { type: "comment", icon: "评", txt: "「绤绤」评论了你的作品《掬水月》：副歌戲腔这里起得真好！", time: "28 分钟前", unread: true },
   { type: "fan", icon: "粉", txt: "「白鹭洲」关注了你，去看看 TA 的主页吧", time: "1 小时前", unread: true },
-  { type: "like", icon: "赞", txt: "「二十四桥》赞了你的作品《掬水月》", time: "3 小时前", unread: true },
+  { type: "like", icon: "赞", txt: "「二十四桥」赞了你的作品《掬水月》", time: "3 小时前", unread: true },
+  { type: "fav", icon: "藏", txt: "「孤鹤」收藏了你的作品《山河入梦》到「宝藏 BGM」", time: "5 小时前", unread: true },
+  { type: "comment", icon: "@", txt: "「沈昼」在帖子里 @ 了你：这个混音思路可以听听他的", time: "昨天", unread: false },
   { type: "order", icon: "评", txt: "「二十四桥」给了你一条 5 星评价，已展示在你的主页", time: "昨天", unread: false },
+  { type: "like", icon: "赞", txt: "「半盏茶」等 3 人赞了你的帖子「接单避坑实录」", time: "昨天", unread: false },
   { type: "system", icon: "告", txt: "平台提示：商单请务必签署电子协议并托管稿酬", time: "昨天", unread: false },
 ];/* ---------- 关注 / 粉丝（小红书式：可互关） ---------- */
 

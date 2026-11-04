@@ -343,14 +343,45 @@ function submitPost() {
   toast(m ? `发布成功，已带标签 #${m[1]}` : "发布成功");
 }
 
-/* ---------- 首页提示（铃铛通知） ---------- */
+/* ---------- 通知中心（小红书式归类） ---------- */
+
+/** 分类：赞和收藏 / 评论和@ / 约稿通知（重要） */
+const NOTICE_CATS = {
+  like:    { title: "赞和收藏", types: ["like", "fav"] },
+  comment: { title: "评论和@",  types: ["comment"] },
+  order:   { title: "约稿通知", types: ["order", "system"] },
+};
+
+const catOfNotice = n =>
+  Object.keys(NOTICE_CATS).find(k => NOTICE_CATS[k].types.includes(n.type)) || null;
 
 function renderNoticeDot() {
   $("#nDot").style.display = NOTICES.some(n => n.unread) ? "block" : "none";
+  renderMsgEntries();
 }
 
-function openNotices() {
-  $("#noticeList").innerHTML = NOTICES.map(noticeHTML).join("");
+/** 消息页顶部：分类入口磁贴（带未读角标） */
+function renderMsgEntries() {
+  const box = $("#msgEntries");
+  if (!box) return;
+  box.innerHTML = Object.keys(NOTICE_CATS).map(k => {
+    const c = NOTICE_CATS[k];
+    const unread = NOTICES.filter(n => c.types.includes(n.type) && n.unread).length;
+    return `<div class="me-tile" onclick="openNotices('${k}')">
+      <span class="me-ic me-ic-${k}">${k === "like" ? "♥" : k === "comment" ? "评" : "约"}</span>
+      <b>${c.title}</b>
+      ${unread ? `<i class="me-badge">${unread}</i>` : ""}</div>`;
+  }).join("");
+}
+
+/** 打开通知：不传 cat 看全部，传 cat 只看该分类 */
+function openNotices(cat) {
+  const c = cat && NOTICE_CATS[cat];
+  const list = c ? NOTICES.filter(n => c.types.includes(n.type)) : NOTICES;
+  $("#noticeTitle").textContent = c ? c.title : "通知";
+  $("#noticeList").innerHTML = list.length
+    ? list.map(n => noticeHTML(n, NOTICES.indexOf(n))).join("")
+    : emptyHTML("这里还没有通知");
   $("#ovNotice").classList.add("show");
 }
 
@@ -375,6 +406,8 @@ function noticeGo(i) {
     openFollow("fans");
   }
   else if (n.type === "like") toast("Demo：查看被赞的作品");
+  else if (n.type === "fav") toast("Demo：查看被收藏的作品");
+  else if (n.type === "comment") toast("Demo：查看评论详情");
   else toast("已阅平台提示");
 }
 
@@ -382,6 +415,7 @@ function noticeGo(i) {
 
 function renderMessages() {
   $("#msgList").innerHTML = MESSAGES.map(messageHTML).join("");
+  renderMsgEntries();
 }
 
 /** 消息列表一键全部已读 */

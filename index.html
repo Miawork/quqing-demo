@@ -75,6 +75,7 @@
         </div>
       </div>
       <div class="sys-notice">平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
+      <div class="msg-entries" id="msgEntries"></div>
       <div id="msgList"></div>
     </div>
 
@@ -221,7 +222,7 @@
     <div class="overlay" id="ovNotice">
       <div class="ov-head">
         <div class="back-btn" onclick="closeOverlay('ovNotice')">‹</div>
-        <h3>提示</h3>
+        <h3 id="noticeTitle">通知</h3>
         <div class="head-act" onclick="markAllNotices()">全部已读</div>
       </div>
       <div class="ov-body" id="noticeList"></div>
