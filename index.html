@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>曲境 · 古风音乐约稿平台 Demo</title>
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>曲境 · 古风音乐约稿</span><span>🔋 100%</span></div>
+
+  <div class="app">
+
+    <!-- ========== 首页：作品 / 找音乐人 / 企划招募 ========== -->
+    <div class="screen active" id="scr-home">
+      <div class="header">
+        <div class="logo">曲境</div>
+        <div class="header-action icon-btn bell-wrap" onclick="openNotices()"><span data-icon="bell"></span><i class="ndot" id="nDot"></i></div>
+      </div>
+      <div class="search" onclick="openSearch()"><span class="si" data-icon="search"></span> 搜索作品 / 音乐人 / 约稿需求…</div>
+      <div class="banner-wrap" id="bannerWrap">
+        <div class="banner-track" id="bannerTrack"></div>
+        <div class="banner-dots" id="bannerDots"></div>
+      </div>
+      <div class="mode-tabs" id="modeTabs">
+        <div class="mode-tab on" onclick="setHomeMode('works', this)">作品</div>
+        <div class="mode-tab" onclick="setHomeMode('artist', this)">找音乐人</div>
+        <div class="mode-tab" onclick="setHomeMode('demand', this)">企划招募</div>
+      </div>
+      <div class="tag-rows" id="catRow"></div>
+      <div id="homeFeed"></div>
+    </div>
+
+    <!-- ========== 社区 ========== -->
+    <div class="screen" id="scr-comm">
+      <div class="header">
+        <div class="logo" style="font-size:20px">社区</div>
+        <div class="header-action" onclick="openPostForm()"><span class="si" data-icon="pencil"></span> 发帖</div>
+      </div>
+      <div class="hot-card" onclick="goHotTopic()">
+        🔥 本周热议：<b>#古风编曲里的戏腔到底该怎么混#</b><br>
+        1,024 人正在讨论 · 参与讨论领「社区茶券」
+      </div>
+      <div class="filter-row" id="topicRow"></div>
+      <div class="feed" id="commFeed"></div>
+    </div>
+
+    <!-- ========== 消息 ========== -->
+    <div class="screen" id="scr-msg">
+      <div class="header">
+        <div class="logo" style="font-size:20px">消息</div>
+        <div class="header-action" onclick="markAllMessages()">全部已读</div>
+      </div>
+      <div class="sys-notice">📜 平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
+      <div id="msgList"></div>
+    </div>
+
+    <!-- ========== 我的主页 ========== -->
+    <div class="screen" id="scr-me">
+      <div class="header">
+        <div class="logo" style="font-size:20px">我的主页</div>
+        <div class="header-action icon-btn" data-icon="gear" onclick="openSettings()"></div>
+      </div>
+      <div class="profile-hero" id="myHero">
+        <div class="ph-bg-blur"></div><div class="ph-bg-sharp"></div>
+        <div class="ph-bg-btn" onclick="heroBgMenu()" title="更换名片背景"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.6"/><path d="M21 15.5 16.5 11 7 20.5"/></svg></div>
+        <div class="ph-top">
+          <div class="avatar avatar-photo" id="myAvatar" onclick="pickAvatar()" title="点击更换头像"></div>
+          <div>
+            <h2 id="myName">洛云笙</h2>
+            <div class="uid" id="myUid">ID: quqi_180324</div>
+            <div class="ph-roles" id="myRoles" onclick="openRoleSetup('edit')"></div>
+          </div>
+        </div>
+        <div class="ph-bio" id="myBio" style="display:none"></div>
+        <div class="ph-stats">
+          <div onclick="openMyWorksList()" style="cursor:pointer"><b id="statWorks">36</b><span>作品</span></div>
+          <div onclick="openFollow('following')" style="cursor:pointer"><b id="statFollowing">0</b><span>关注</span></div>
+          <div onclick="openFollow('fans')" style="cursor:pointer"><b id="statFans">0</b><span>粉丝</span></div>
+          <div onclick="openMyReviewsSheet()" style="cursor:pointer"><b>98%</b><span>好评率</span></div>
+        </div>
+      </div>
+      <div class="status-row">
+        <div class="st">接稿状态：开放约稿中</div>
+        <div class="switch" onclick="toggleAccepting(this)"></div>
+      </div>
+
+      <!-- 钱包：托管中 / 可提现 -->
+      <div class="wallet-card">
+        <div class="w-item"><b id="wEscrow">¥0</b><span>托管中稿酬</span></div>
+        <div class="w-item"><b id="wBalance">¥0</b><span>可提现</span></div>
+        <button class="btn ghost w-btn" onclick="openWithdraw()">提现</button>
+      </div>
+
+      <div class="section-title"><h3>个人风格</h3><a href="javascript:;" onclick="openStyleEdit()">编辑 ›</a></div>
+      <div id="myStyle" style="padding:0 16px"></div>
+
+      <div class="section-title"><h3>我的橱窗</h3><a href="javascript:;" onclick="openManage('shop')">管理 ›</a></div>
+      <div class="shop-row" id="myShop" style="padding:0 16px 4px"></div>
+
+      <div class="section-title"><h3>我的收藏夹</h3><a href="javascript:;" onclick="openFavs()">全部 ›</a></div>
+      <div class="fav-strip" id="favStrip"></div>
+
+      <div class="section-title"><h3>我的订单</h3><a href="javascript:;" onclick="openOrders()">全部 ›</a></div>
+      <div class="order-entry" id="orderEntry"></div>
+
+      <div class="section-title"><h3>我收到的评价</h3><a href="javascript:;" onclick="openSettings()">设置 ›</a></div>
+      <div id="myReviews" style="padding:0 16px"></div>
+
+      <div class="section-title"><h3>我的报价</h3><a href="javascript:;" onclick="openManage('price')">编辑 ›</a></div>
+      <div class="price-list" id="myPrices"></div>
+      <div class="section-title"><h3>我的作品</h3><a href="javascript:;" onclick="openManage('work')">管理 ›</a></div>
+      <div class="mini-works" id="myWorks"></div>
+    </div>
+
+    <!-- ========== 沉浸式作品浏览（上下滑动切换） ========== -->
+    <div class="viewer" id="viewer">
+      <div class="viewer-close" onclick="closeViewer()">✕</div>
+      <div class="viewer-hint">↕ 上下滑动切换作品</div>
+      <div class="vscroll" id="vscroll"></div>
+    </div>
+
+    <!-- ========== 音乐人主页浮层 ========== -->
+    <div class="overlay" id="ovArtist">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovArtist')">‹</div>
+        <h3>音乐人主页</h3>
+      </div>
+      <div class="ov-body" id="ovArtistBody"></div>
+      <div class="ov-foot">
+        <button class="btn ghost" onclick="openChat(currentArtistName)">私信</button>
+        <button class="btn primary" onclick="openCommission(currentArtistName)">约稿</button>
+      </div>
+    </div>
+
+    <!-- ========== 关注 / 粉丝列表 ========== -->
+    <div class="overlay" id="ovFollow">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovFollow')">‹</div>
+        <h3 id="followTitle">我的关注</h3>
+      </div>
+      <div class="filter-row" style="padding:12px 18px 4px">
+        <div class="chip" id="tabFollowing" onclick="setFollowTab('following')">关注</div>
+        <div class="chip" id="tabFans" onclick="setFollowTab('fans')">粉丝</div>
+      </div>
+      <div class="ov-body" id="followList"></div>
+    </div>
+
+    <!-- ========== 订单管理 ========== -->
+    <div class="overlay" id="ovOrders">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovOrders')">‹</div>
+        <h3>订单管理</h3>
+      </div>
+      <div class="filter-row" id="orderTabs" style="padding:12px 18px 4px"></div>
+      <div class="ov-body" id="orderList"></div>
+    </div>
+
+    <!-- ========== 聊天（小红书式） ========== -->
+    <div class="overlay" id="ovChat">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovChat')">‹</div>
+        <h3 id="chatName">聊天</h3>
+      </div>
+      <div class="ov-body chat-body" id="chatBody"></div>
+      <div class="sticker-tray" id="stickerTray"></div>
+      <div class="chat-bar">
+        <div class="cbtn" onclick="toggleStickerTray()" title="表情">☺</div>
+        <input id="chatInput" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendChatText()">
+        <button class="btn primary send-btn" onclick="sendChatText()">发送</button>
+      </div>
+    </div>
+
+    <!-- ========== 帖子详情（评论区） ========== -->
+    <div class="overlay" id="ovPost">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovPost')">‹</div>
+        <h3>帖子详情</h3>
+      </div>
+      <div class="ov-body" id="postBody"></div>
+      <div class="sticker-tray" id="cmtTray"></div>
+      <div class="chat-bar">
+        <div class="cbtn" onclick="toggleCmtTray()" title="表情">☺</div>
+        <div class="cbtn" onclick="pickCmtImg()" title="图片">🖼</div>
+        <input id="cmtInput" placeholder="友善评论，以茶会友…" onkeydown="if(event.key==='Enter')addComment()">
+        <button class="btn primary send-btn" onclick="addComment()">评论</button>
+      </div>
+    </div>
+    <input type="file" id="cmtImgFile" accept="image/*" hidden onchange="onCmtImg(this)">
+
+    <!-- ========== 首页提示（通知中心） ========== -->
+    <div class="overlay" id="ovNotice">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovNotice')">‹</div>
+        <h3>提示</h3>
+        <div class="head-act" onclick="markAllNotices()">全部已读</div>
+      </div>
+      <div class="ov-body" id="noticeList"></div>
+    </div>
+
+    <!-- ========== 发帖弹层 ========== -->
+    <div class="pub-mask" id="postMask" onclick="if(event.target===this)closePostForm()">
+      <div class="pub-sheet rate-box">
+        <h3>发 帖</h3>
+        <input id="postTitle" class="post-input" maxlength="40" placeholder="标题（必填）">
+        <textarea id="postTxt" rows="5" placeholder="聊聊你的问题或经验…&#10;输入「#话题 + 空格」即可添加标签，如：#编曲交流 " oninput="postTxtInput()"></textarea>
+        <div class="tag-preview" id="postTagPrev"></div>
+        <div class="rate-acts">
+          <button class="btn ghost" onclick="closePostForm()">取消</button>
+          <button class="btn primary" onclick="submitPost()">发布</button>
+        </div>
+        <div class="pub-close" onclick="closePostForm()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 转发弹层（微博式） ========== -->
+    <div class="pub-mask" id="repostMask" onclick="if(event.target===this)closeRepost()">
+      <div class="pub-sheet rate-box">
+        <h3>转 发</h3>
+        <textarea id="repostTxt" rows="3" placeholder="说点什么…（可留空，支持 #话题 标签）"></textarea>
+        <div id="repostOrig"></div>
+        <div class="rate-acts">
+          <button class="btn ghost" onclick="closeRepost()">取消</button>
+          <button class="btn primary" onclick="submitRepost()">转发</button>
+        </div>
+        <div class="pub-close" onclick="closeRepost()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 分享面板（多平台） ========== -->
+    <div class="pub-mask" id="shareMask" onclick="if(event.target===this)closeShare()">
+      <div class="pub-sheet">
+        <h3>分享到</h3>
+        <div class="share-grid">
+          <div class="share-item" onclick="shareTo('微信好友')"><span>💬</span><b>微信好友</b></div>
+          <div class="share-item" onclick="shareTo('朋友圈')"><span>🌸</span><b>朋友圈</b></div>
+          <div class="share-item" onclick="shareTo('QQ')"><span>🐧</span><b>QQ</b></div>
+          <div class="share-item" onclick="shareTo('微博')"><span>📣</span><b>微博</b></div>
+          <div class="share-item" onclick="shareTo('小红书')"><span>📕</span><b>小红书</b></div>
+          <div class="share-item" onclick="shareTo('B站动态')"><span>📺</span><b>B站动态</b></div>
+          <div class="share-item" onclick="copyShareLink()"><span>🔗</span><b>复制链接</b></div>
+          <div class="share-item" onclick="shareTo('生成海报')"><span>🖼</span><b>生成海报</b></div>
+        </div>
+        <div class="pub-close" onclick="closeShare()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 收银台（米画师式托管付款） ========== -->
+    <div class="pub-mask" id="payMask" onclick="if(event.target===this)closePay()">
+      <div class="pub-sheet rate-box">
+        <h3>收银台</h3>
+        <div id="payBody"></div>
+        <div class="pub-close" onclick="closePay()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 橱窗购买（现货一次性买断 / 企划打包约稿） ========== -->
+    <div class="pub-mask" id="shopBuyMask" onclick="if(event.target===this)closeShopBuy()">
+      <div class="pub-sheet rate-box">
+        <h3>确认购买</h3>
+        <div id="sbBody"></div>
+        <div class="pub-close" onclick="closeShopBuy()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 提交交付（须上传作品文件） ========== -->
+    <div class="pub-mask" id="deliverMask" onclick="if(event.target===this)closeDeliver()">
+      <div class="pub-sheet rate-box">
+        <h3>提交交付</h3>
+        <div id="deliverBody"></div>
+        <div class="pub-close" onclick="closeDeliver()">✕</div>
+      </div>
+    </div>
+    <input type="file" id="deliverFile" hidden onchange="onDeliverFile(this)">
+
+    <!-- ========== 评价弹层（订单完成后互评） ========== -->
+    <div class="pub-mask" id="rateMask" onclick="if(event.target===this)closeRate()">
+      <div class="pub-sheet rate-box">
+        <h3>评价对方</h3>
+        <div class="star-row" id="starRow"></div>
+        <textarea id="rateTxt" rows="3" placeholder="合作体验如何？评价将公开展示在对方主页"></textarea>
+        <div class="rate-acts">
+          <button class="btn ghost" onclick="closeRate()">取消</button>
+          <button class="btn primary" onclick="submitRate()">提交评价</button>
+        </div>
+        <div class="pub-close" onclick="closeRate()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 通用信息底稿（需求详情 / 互评详情等） ========== -->
+    <div class="pub-mask" id="sheetMask" onclick="if(event.target===this)closeSheet()">
+      <div class="pub-sheet rate-box">
+        <h3 id="sheetTitle"></h3>
+        <div id="sheetBody"></div>
+        <div class="pub-close" onclick="closeSheet()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 要求修改（待验收 · 约稿方） ========== -->
+    <div class="pub-mask" id="reviseMask" onclick="if(event.target===this)closeRevise()">
+      <div class="pub-sheet rate-box">
+        <h3>要求修改</h3>
+        <div id="reviseBody"></div>
+        <div class="pub-close" onclick="closeRevise()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 申请售后 / 退款 ========== -->
+    <div class="pub-mask" id="asMask" onclick="if(event.target===this)closeAfterSale()">
+      <div class="pub-sheet rate-box">
+        <h3 id="asTitle">申请售后</h3>
+        <div id="asBody"></div>
+        <div class="pub-close" onclick="closeAfterSale()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 文件下载 ========== -->
+    <div class="pub-mask" id="dlMask" onclick="if(event.target===this)closeDownload()">
+      <div class="pub-sheet rate-box">
+        <h3>作品文件</h3>
+        <div id="dlBody"></div>
+        <div class="pub-close" onclick="closeDownload()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 提现 ========== -->
+    <div class="pub-mask" id="wdMask" onclick="if(event.target===this)closeWithdraw()">
+      <div class="pub-sheet rate-box">
+        <h3>提 现</h3>
+        <div id="wdBody"></div>
+        <div class="pub-close" onclick="closeWithdraw()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 全局搜索 ========== -->
+    <div class="overlay" id="ovSearch">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovSearch')">‹</div>
+        <div class="search-box">
+          <span class="si" data-icon="search"></span>
+          <input id="searchInput" placeholder="搜作品 / 音乐人 / 招募 / 帖子…" oninput="doSearch()" onkeydown="if(event.key==='Enter')doSearch(true)">
+          <span class="search-clear" id="searchClear" onclick="clearSearchInput()">✕</span>
+        </div>
+      </div>
+      <div class="ov-body" id="searchBody"></div>
+    </div>
+
+    <!-- ========== 平台资讯文章（公众号式阅读页，头图/社区共用） ========== -->
+    <div class="overlay" id="ovArticle">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovArticle')">‹</div>
+        <h3>平台资讯</h3>
+      </div>
+      <div class="ov-body" id="articleBody" style="padding:0"></div>
+    </div>
+
+    <!-- ========== 发布面板 ========== -->
+    <div class="pub-mask" id="pubMask" onclick="if(event.target===this)closePublish()">
+      <div class="pub-sheet">
+        <h3>发 布</h3>
+        <div class="pub-grid">
+          <div class="pub-item" onclick="openPubForm('work')"><div class="icon" data-icon="note"></div><div><b>发布作品</b><span>作词/作曲/编曲/干音/后期/美工/PV</span></div></div>
+          <div class="pub-item" onclick="openPubForm('demand')"><div class="icon" data-icon="scroll"></div><div><b>发布企划招募</b><span>寻找合作伙伴</span></div></div>
+          <div class="pub-item" onclick="openShopPub()"><div class="icon" data-icon="tea"></div><div><b>上架到橱窗</b><span>成品买断/企划打包</span></div></div>
+          <div class="pub-item" onclick="closePublish();switchToCommunityPost()"><div class="icon" data-icon="pen"></div><div><b>发社区动态</b><span>交流/求助/避雷曝光</span></div></div>
+        </div>
+        <div class="pub-close" onclick="closePublish()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 发布编辑器 ========== -->
+    <div class="overlay" id="ovPub">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovPub')">‹</div>
+        <h3 id="pubTitle">发布作品</h3>
+      </div>
+      <div class="ov-body reg-form" id="pubBody"></div>
+      <div class="ov-foot">
+        <button class="btn primary" style="flex:1" onclick="submitPublish()">确认发布</button>
+      </div>
+    </div>
+    <input type="file" id="pubCoverFile" accept="image/*,video/*" hidden onchange="onPubCover(this)">
+    <input type="file" id="pubMediaFile" accept="audio/*,video/*" hidden onchange="onPubMedia(this)">
+    <input type="file" id="pubAttachFile" hidden onchange="onPubAttach(this)">
+
+    <!-- ========== 橱窗商品编辑（发布式全屏可滑动） ========== -->
+    <div class="overlay" id="ovShopPub">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovShopPub')">‹</div>
+        <h3 id="shopPubTitle">上架橱窗商品</h3>
+      </div>
+      <div class="ov-body reg-form" id="shopPubBody"></div>
+      <div class="ov-foot">
+        <button class="btn primary" style="flex:1" id="shopPubBtn" onclick="saveMgEdit()">确认上架</button>
+      </div>
+    </div>
+
+    <!-- ========== 发起约稿 ========== -->
+    <div class="overlay" id="ovCommission">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovCommission')">‹</div>
+        <h3>发起约稿</h3>
+      </div>
+      <div class="ov-body reg-form" id="cmBody"></div>
+      <div class="ov-foot">
+        <button class="btn primary" style="flex:1" onclick="submitCommission()">发送约稿邀约</button>
+      </div>
+    </div>
+    <input type="file" id="cmAttachFile" hidden onchange="onCmAttach(this)">
+
+    <!-- ========== 设置（小红书式） ========== -->
+    <div class="overlay" id="ovSettings">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovSettings')">‹</div>
+        <h3>设置</h3>
+      </div>
+      <div class="ov-body" id="setBody"></div>
+    </div>
+
+    <!-- 设置 · 编辑弹层（改 ID / 绑邮箱 / 绑手机） -->
+    <div class="pub-mask" id="setEditMask" onclick="if(event.target===this)closeSetEdit()">
+      <div class="pub-sheet rate-box reg-form" style="padding-top:22px">
+        <h3 id="seTitle">修改 ID</h3>
+        <div id="seBody"></div>
+        <div class="rate-acts">
+          <button class="btn ghost" onclick="closeSetEdit()">取消</button>
+          <button class="btn primary" onclick="saveSetEdit()">保存</button>
+        </div>
+        <div class="pub-close" onclick="closeSetEdit()">✕</div>
+      </div>
+    </div>
+
+    <!-- 条约 / 公约 / 政策阅读页 -->
+    <div class="overlay" id="ovTerms">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovTerms')">‹</div>
+        <h3 id="termsTitle">曲境条约</h3>
+      </div>
+      <div class="ov-body terms-txt" id="termsBody"></div>
+    </div>
+
+    <!-- 管理页（橱窗 / 报价 / 作品） -->
+    <div class="overlay" id="ovManage">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovManage')">‹</div>
+        <h3 id="mgTitle">管理</h3>
+      </div>
+      <div class="ov-body" id="mgBody"></div>
+    </div>
+
+    <!-- ========== 收藏夹（歌单式） ========== -->
+    <div class="overlay" id="ovFavs">
+      <div class="ov-head">
+        <div class="back-btn" onclick="favBack()">‹</div>
+        <h3 id="favTitle">我的收藏夹</h3>
+      </div>
+      <div class="ov-body" id="favBody"></div>
+    </div>
+
+    <!-- 收藏到收藏夹（选择 / 新建） -->
+    <div class="pub-mask" id="favMask" onclick="if(event.target===this)closeFavPick()">
+      <div class="pub-sheet rate-box">
+        <h3>收藏到收藏夹</h3>
+        <div id="favPickBody"></div>
+        <div class="pub-close" onclick="closeFavPick()">✕</div>
+      </div>
+    </div>
+
+    <!-- 管理 · 编辑弹层（风格 / 橱窗商品 / 报价项） -->
+    <div class="pub-mask" id="mgEditMask" onclick="if(event.target===this)closeMgEdit()">
+      <div class="pub-sheet rate-box reg-form" style="padding-top:22px">
+        <h3 id="mgEditTitle">编辑</h3>
+        <div id="mgEditBody"></div>
+        <div class="rate-acts">
+          <button class="btn ghost" onclick="closeMgEdit()">取消</button>
+          <button class="btn primary" onclick="saveMgEdit()">保存</button>
+        </div>
+        <div class="pub-close" onclick="closeMgEdit()">✕</div>
+      </div>
+    </div>
+    <input type="file" id="mgCoverFile" accept="image/*,video/*" hidden onchange="onMgCover(this)">
+    <input type="file" id="mgMediaFile" accept="audio/*,video/*" hidden onchange="onMgMedia(this)">
+    <input type="file" id="mgDocFile" hidden onchange="onMgDoc(this)">
+
+    <!-- ========== 自定义工种命名 ========== -->
+    <div class="pub-mask" id="roleNameMask" onclick="if(event.target===this)closeRoleName()">
+      <div class="pub-sheet rate-box reg-form" style="padding-top:22px">
+        <h3>自定义工种</h3>
+        <label>工种名称</label>
+        <input id="roleNameInput" maxlength="6" placeholder="如：唁呐、二胡、和声编写" onkeydown="if(event.key==='Enter')confirmRoleName()">
+        <div class="rate-acts">
+          <button class="btn ghost" onclick="closeRoleName()">取消</button>
+          <button class="btn primary" onclick="confirmRoleName()">确定</button>
+        </div>
+        <div class="pub-close" onclick="closeRoleName()">✕</div>
+      </div>
+    </div>
+
+    <!-- ========== 上传内容预览 ========== -->
+    <div class="preview-mask" id="prevMask" onclick="closePreview()">
+      <div class="preview-box" id="prevBox" onclick="event.stopPropagation()"></div>
+      <div class="preview-close">✕ 点击空白处关闭</div>
+    </div>
+
+    <!-- ========== 注册：步骤一 基本资料 → 步骤二 选择工种 ========== -->
+    <div class="reg-overlay" id="regOverlay">
+      <div class="reg-head">
+        <div class="logo">曲境</div>
+        <div class="header-action" id="regSkip" onclick="skipRoles()">跳过 ›</div>
+      </div>
+
+      <!-- 步骤一：基本资料（仅圈名必填） -->
+      <div class="reg-body" id="regStep1">
+        <h2>创建你的身份</h2>
+        <div class="avatar-pick">
+          <div class="avatar-preview" id="avatarPreview" onclick="pickAvatar()"></div>
+        </div>
+        <div class="reg-form">
+          <label>圈名 <b>*</b></label>
+          <input id="fName" maxlength="12">
+          <label>ID</label>
+          <input id="fUid" maxlength="16">
+          <label>性别</label>
+          <div class="gender-row" id="genderRow">
+            <div class="chip" onclick="setGender('男', this)">男</div>
+            <div class="chip" onclick="setGender('女', this)">女</div>
+            <div class="chip on" onclick="setGender('保密', this)">保密</div>
+          </div>
+          <label>简介</label>
+          <textarea id="fBio" rows="3" placeholder="选填 · 一句话介绍自己"></textarea>
+        </div>
+      </div>
+
+      <!-- 步骤二：选择工种（可多选 / 可跳过） -->
+      <div class="reg-body" id="regStep2" style="display:none">
+        <h2 id="regTitle">选择你的工种</h2>
+        <p class="sub" id="regSub">可多选 · 跳过可稍后在「我的主页」中设置</p>
+        <div class="role-grid" id="roleGrid"></div>
+      </div>
+
+      <div class="reg-foot">
+        <button class="btn primary" id="regBtn" onclick="regNext()">下一步</button>
+      </div>
+    </div>
+    <!-- 头像裁剪 -->
+    <div class="crop-mask" id="cropMask" onclick="if(event.target===this)closeCrop()">
+      <div class="crop-panel">
+        <h4>裁剪头像</h4>
+        <div class="crop-view" onpointerdown="cropDown(event)" onpointermove="cropMove(event)" onpointerup="cropUp()" onpointercancel="cropUp()">
+          <img id="cropImg" alt="">
+        </div>
+        <input type="range" class="crop-zoom" id="cropZoom" min="100" max="300" value="100" oninput="cropSetZoom(this.value)">
+        <div class="crop-btns">
+          <button class="btn ghost" onclick="closeCrop()">取消</button>
+          <button class="btn primary" onclick="confirmCrop()">✓ 使用</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="heroBgFile" accept="image/*" hidden onchange="onHeroBgFile(this)">
+    <input type="file" id="avatarFile" accept="image/*" hidden onchange="onAvatarFile(this)">
+    <input type="file" id="stickerFile" accept="image/*" hidden onchange="onStickerImg(this)">
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ========== 底部导航 ========== -->
+    <div class="tabbar">
+      <div class="tab on" data-scr="scr-home" onclick="switchTab(this)"><div class="ticon" data-icon="home"></div>首页</div>
+      <div class="tab" data-scr="scr-comm" onclick="switchTab(this)"><div class="ticon" data-icon="tea"></div>社区</div>
+      <div class="tab center" onclick="openPublish()"><div class="ticon" data-icon="plus"></div>发布</div>
+      <div class="tab" data-scr="scr-msg" onclick="switchTab(this)"><div class="ticon" data-icon="msg"></div>消息</div>
+      <div class="tab" data-scr="scr-me" onclick="switchTab(this)"><div class="ticon" data-icon="user"></div>我的</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 加载顺序：配置 → 数据 → 模板 → 应用逻辑 -->
+<script src="js/env.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

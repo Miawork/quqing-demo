@@ -1,0 +1,7 @@
+# macOS
+.DS_Store
+
+# 本仓库只公开前端 demo，后端与官网不推送
+server/
+website/
+DEPLOY.md

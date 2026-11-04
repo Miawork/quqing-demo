@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- 曲境 App 图标 · 备案用方形满幅版（无圆角裁切） -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FCFAF4"/>
+      <stop offset=".6" stop-color="#F6F3EA"/>
+      <stop offset="1" stop-color="#EEEADD"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#E8C879" stop-opacity=".95"/>
+      <stop offset=".75" stop-color="#D8B35C" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#C9A144" stop-opacity=".75"/>
+    </radialGradient>
+    <radialGradient id="moonHalo" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#D8B35C" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#D8B35C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A94A3" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#8A94A3" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5C6472" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#5C6472" stop-opacity=".05"/>
+    </linearGradient>
+    <linearGradient id="mNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#343B47" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#343B47" stop-opacity=".25"/>
+    </linearGradient>
+  </defs>
+
+  <g>
+    <!-- 宣纸天空 -->
+    <rect width="1024" height="1024" fill="url(#sky)"/>
+
+    <!-- 金月与月晕 -->
+    <circle cx="738" cy="286" r="250" fill="url(#moonHalo)"/>
+    <circle cx="738" cy="286" r="128" fill="url(#moonGlow)"/>
+
+    <!-- 雁影两行 -->
+    <g stroke="#1F242D" stroke-width="8" stroke-linecap="round" fill="none" opacity=".8">
+      <path d="M296 262 Q318 246 340 262 M340 262 Q362 246 384 262"/>
+      <path d="M232 322 Q250 308 268 322 M268 322 Q286 308 304 322" opacity=".6"/>
+    </g>
+
+    <!-- 远山 -->
+    <path d="M-40 538 Q130 362 290 462 Q420 544 540 478 Q700 392 850 492 Q950 556 1064 512 L1064 1024 L-40 1024 Z" fill="url(#mFar)"/>
+    <!-- 中山 -->
+    <path d="M-40 650 Q150 436 330 560 Q470 652 620 572 Q780 488 920 592 Q990 642 1064 616 L1064 1024 L-40 1024 Z" fill="url(#mMid)"/>
+    <!-- 云雾留白 -->
+    <ellipse cx="360" cy="636" rx="330" ry="44" fill="#F6F3EA" opacity=".8"/>
+    <ellipse cx="720" cy="700" rx="300" ry="36" fill="#F6F3EA" opacity=".62"/>
+    <!-- 近山主峰 -->
+    <path d="M-40 800 Q120 560 300 672 Q420 748 560 686 Q730 606 880 702 Q970 758 1064 730 L1064 1024 L-40 1024 Z" fill="url(#mNear)"/>
+
+    <!-- 水面波痕 -->
+    <g fill="none" stroke="#343B47" stroke-linecap="round" opacity=".5">
+      <path d="M160 846 Q320 830 480 846 T 870 842" stroke-width="9"/>
+      <path d="M240 896 Q390 882 550 896 T 820 892" stroke-width="8" opacity=".7"/>
+      <path d="M330 942 Q460 930 590 942 T 780 938" stroke-width="7" opacity=".45"/>
+    </g>
+
+    <!-- 孤舟渔翁 -->
+    <g stroke="#1F242D" stroke-linecap="round" fill="none">
+      <path d="M408 818 Q470 840 532 818" stroke-width="13" fill="#1F242D"/>
+      <path d="M470 818 L470 740" stroke-width="9"/>
+      <path d="M470 740 Q506 762 476 796" stroke-width="8"/>
+    </g>
+
+    <!-- 墨梅一枝，左下斜入 -->
+    <g fill="none" stroke="#2B2620" stroke-linecap="round">
+      <path d="M-20 1010 Q150 900 250 786 Q318 710 348 644" stroke-width="18"/>
+      <path d="M208 834 Q268 814 318 824" stroke-width="10"/>
+      <path d="M300 712 Q340 680 384 674" stroke-width="9"/>
+      <path d="M150 898 Q186 902 214 922" stroke-width="8"/>
+    </g>
+    <g fill="#9E2B25">
+      <circle cx="324" cy="826" r="19"/>
+      <circle cx="352" cy="804" r="13" opacity=".85"/>
+      <circle cx="390" cy="672" r="18"/>
+      <circle cx="414" cy="696" r="12" opacity=".85"/>
+      <circle cx="252" cy="772" r="13" opacity=".9"/>
+      <circle cx="350" cy="632" r="11" opacity=".75"/>
+      <circle cx="218" cy="928" r="12" opacity=".8"/>
+    </g>
+    <g fill="#C9A144" opacity=".9">
+      <circle cx="324" cy="826" r="6"/>
+      <circle cx="390" cy="672" r="6"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,35 @@
+/* ============================================================
+ * theme.css — 设计令牌（Design Tokens）
+ * 所有颜色 / 圆角 / 阴影 / 字体在此统一调整，其他文件只引用变量
+ * ============================================================ */
+:root {
+  /* 主色板：宣纸 + 墨色 + 朱砂 + 烫金 */
+  --paper:      #F7F2E7;   /* 页面底色（宣纸） */
+  --paper-2:    #FDFBF4;   /* 卡片底色 */
+  --ink:        #2B2620;   /* 主文字 */
+  --ink-2:      #6B6154;   /* 次级文字 */
+  --ink-3:      #9A8F7E;   /* 弱化文字 */
+  --red:        #9E2B25;   /* 主题红（朱砂）：主按钮 / 价格 / 强调 */
+  --red-light:  #F3E2DE;   /* 红 - 浅底（商业标签底色） */
+  --gold:       #B8912E;   /* 金（招募 / 分类标签） */
+  --gold-light: #F5ECD4;
+  --green:      #4A6B4F;   /* 绿（非商业 / 开放接稿状态） */
+  --green-light:#E3EDE2;
+  --line:       #E5DCC9;   /* 描边 / 分割线 */
+  --viewer-bg:  #171512;   /* 沉浸式浏览页底色 */
+
+  /* 布局参数 */
+  --phone-w: 390px;
+  --phone-h: 820px;
+  --radius-card: 22px;
+  --radius-sheet: 32px;
+  --shadow-card: 3px 4px 0 rgba(43, 38, 32, .12);
+
+  /* 手绘风：不对称圆角（简笔画抉笔感） */
+  --squiggle: 255px 18px 225px 18px / 18px 225px 18px 255px;
+  --squiggle-sm: 18px 6px 16px 8px / 8px 16px 6px 18px;
+
+  /* 字体：圆体优先，更软萌 */
+  --font-serif: "Yuanti SC", "YouYuan", "Chalkboard SE", "Comic Sans MS", "Noto Serif SC", serif;
+  --font-sans: "Yuanti SC", "YouYuan", -apple-system, sans-serif;
+}
