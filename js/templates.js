@@ -451,6 +451,9 @@ function groupAvatarHTML(gname) {
     `<i style="background:${avatarBg(n)}">${esc(n[0])}</i>`).join("")}</div>`;
 }
 
+/** 被划掉的铃铛（免打扰标记） */
+const muteBellSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.9 17.9 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
+
 function messageHTML(m) {
   const muted = state.muted.has(m.name);
   return `<div class="msg-item" onclick="openChat('${esc(m.name)}')">
@@ -458,7 +461,7 @@ function messageHTML(m) {
       ? groupAvatarHTML(m.name)
       : `<div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>`}
     <div class="msg-body">
-      <div class="r1"><span class="mname">${esc(m.name)}${muted ? `<i class="mute-ic" title="免打扰">⋘</i>` : ""}</span><span class="time">${m.time}</span></div>
+      <div class="r1"><span class="mname">${esc(m.name)}${muted ? `<i class="mute-ic" title="免打扰">${muteBellSVG}</i>` : ""}</span><span class="time">${m.time}</span></div>
       <div class="txt">${esc(m.txt)}</div>
     </div>
     ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}</div>`;

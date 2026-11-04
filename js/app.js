@@ -1631,20 +1631,27 @@ function gpCandidates(excl) {
   return friendPool().filter(n => isFriend(n) && !state.blocked.has(n) && !(excl || []).includes(n));
 }
 
-/** 选人面板：groupName 传入则为「添加成员」；preset 为预选中的人（单聊拉群） */
+/** 选人面板：groupName 传入则为「添加成员」；preset 为预选中的人（单聊拉群）
+ *  已在群内的好友也会列出，底色深色且不可再选 */
 function openGroupPicker(groupName, preset) {
   gpTarget = groupName || null;
   const g = groupName ? GROUPS[groupName] : null;
-  let cands = gpCandidates(g ? g.members : []);
+  let cands = gpCandidates([]);
   if (preset && !cands.includes(preset)) cands = [preset, ...cands];
-  if (!cands.length) return toast(g ? "好友都已在群里啦" : "暂无可邀请的好友，互相关注后才能拉群");
+  if (!cands.length) return toast("暂无可邀请的好友，互相关注后才能拉群");
+  const inGroup = n => !!(g && g.members.includes(n));
   openSheet(g ? "添加群成员" : "发起群聊", `
-    <p class="se-note" style="margin-bottom:10px">互相关注的好友才能加入群聊</p>
+    <p class="se-note" style="margin-bottom:10px">互相关注的好友才能加入群聊${g ? " · 深色为已在群里" : ""}</p>
     <div class="search-box" style="margin-bottom:10px"><span class="si" data-icon="search"></span>
       <input id="gpSearch" placeholder="搜好友圈名 / 简介关键词" oninput="gpFilter()"></div>
     ${g ? "" : `<input class="post-input" id="gpName" placeholder="群聊名称（选填，默认用成员名）">`}
     <div id="gpList">
-    ${cands.map(n => `<div class="person-row gp-row${preset === n ? " sel" : ""}" data-name="${esc(n)}" data-kw="${esc(n)} ${esc(bioOf(n))}" onclick="gpToggle(this)">
+    ${cands.map(n => inGroup(n)
+      ? `<div class="person-row gp-row ing" data-kw="${esc(n)} ${esc(bioOf(n))}">
+      <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
+      <div class="p-info"><b>${esc(n)}</b><span>已在群里</span></div>
+      <i class="gp-check">✓</i></div>`
+      : `<div class="person-row gp-row${preset === n ? " sel" : ""}" data-name="${esc(n)}" data-kw="${esc(n)} ${esc(bioOf(n))}" onclick="gpToggle(this)">
       <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
       <div class="p-info"><b>${esc(n)}</b><span>${esc(bioOf(n))}</span></div>
       <i class="gp-check">✓</i></div>`).join("")}
@@ -1720,7 +1727,7 @@ function openChatMore() {
   const name = state.currentChat;
   if (!name) return;
   const muted = state.muted.has(name);
-  const muteEntry = `<div class="af-entry" onclick="closeSheet();toggleMute('${esc(name)}')"><span>${muted ? "铃" : "静"}</span><div><b>${muted ? "取消免打扰" : "消息免打扰"}</b><i>${muted ? "恢复新消息提醒与角标" : "新消息不再提醒，列表不显示角标"}</i></div><em>›</em></div>`;
+  const muteEntry = `<div class="af-entry${muted ? " danger" : ""}" onclick="closeSheet();toggleMute('${esc(name)}')"><span>${muted ? "铃" : "静"}</span><div><b>${muted ? "取消免打扰" : "消息免打扰"}</b><i>${muted ? "恢复新消息提醒与角标" : "新消息不再提醒，列表不显示角标"}</i></div><em>›</em></div>`;
   if (name === "平台助手")
     return openSheet("聊天设置", muteEntry);
   const g = GROUPS[name];
@@ -2037,15 +2044,27 @@ function onPubCover(input) {
   if (!file) return;
   const kind = file.type.startsWith("video") ? "video" : file.type.startsWith("image") ? "image" : null;
   if (!kind) { toast("封面仅支持图片或视频格式"); input.value = ""; return; }
+  if (kind === "image") {
+    openCrop(URL.createObjectURL(file), {
+      w: 272, h: 153, round: false, title: "裁剪作品封面", out: 1200, q: .82,
+      done(url) {
+        pubState.cover = { kind: "image", url };
+        const prev = $("#pubCoverPrev");
+        prev.innerHTML = `<img src="${url}">`;
+        prev.classList.add("has");
+        toast("封面已裁剪 · 点击缩略图可查看");
+      },
+    });
+    input.value = "";
+    return;
+  }
   const reader = new FileReader();
   reader.onload = e => {
     pubState.cover = { kind, url: e.target.result };
     const prev = $("#pubCoverPrev");
-    prev.innerHTML = kind === "image"
-      ? `<img src="${pubState.cover.url}">`
-      : `<video src="${pubState.cover.url}"></video><span class="play-mini">▶</span>`;
+    prev.innerHTML = `<video src="${pubState.cover.url}"></video><span class="play-mini">▶</span>`;
     prev.classList.add("has");
-    toast(`已识别封面：${kind === "image" ? "图片" : "视频"} · 点击缩略图可查看`);
+    toast("已识别视频封面 · 点击缩略图可查看");
   };
   reader.readAsDataURL(file);
   input.value = "";
@@ -3153,26 +3172,30 @@ function editCover(kind, idx) {
 function onCoverEdit(input) {
   const f = input.files && input.files[0];
   if (!f || !coverCtx) return;
-  const rd = new FileReader();
-  rd.onload = () => {
-    const url = rd.result;
-    const { kind, idx } = coverCtx;
-    if (kind === "work") {
-      MY_WORKS[idx].coverImg = url;
-      renderManage(); renderMyWorks();
-      toast(`已更新《${MY_WORKS[idx].title}》封面`);
-    } else if (kind === "demand") {
-      DEMANDS[idx].cover = `url(${url}) center/cover`;
-      closeSheet(); renderHome();
-      toast("企划封面已更新，招募卡片将展示新封面");
-    } else if (kind === "fav") {
-      state.favFolders[idx].coverImg = url;
-      renderFavs(); renderFavStrip();
-      toast("收藏夹封面已更新");
-    }
-    coverCtx = null;
-  };
-  rd.readAsDataURL(f);
+  input.value = "";
+  const { kind, idx } = coverCtx;
+  const dims = kind === "demand"
+    ? { w: 272, h: 120, out: 1200 }
+    : { w: 200, h: 200, out: 640 };
+  openCrop(URL.createObjectURL(f), {
+    ...dims, round: false, q: .85, title: "裁剪封面",
+    done(url) {
+      if (kind === "work") {
+        MY_WORKS[idx].coverImg = url;
+        renderManage(); renderMyWorks();
+        toast(`已更新《${MY_WORKS[idx].title}》封面`);
+      } else if (kind === "demand") {
+        DEMANDS[idx].cover = `url(${url}) center/cover`;
+        closeSheet(); renderHome();
+        toast("企划封面已更新，招募卡片将展示新封面");
+      } else if (kind === "fav") {
+        state.favFolders[idx].coverImg = url;
+        renderFavs(); renderFavStrip();
+        toast("收藏夹封面已更新");
+      }
+      coverCtx = null;
+    },
+  });
 }
 
 /* ---------- 管理 · 编辑弹层（风格 / 橱窗商品 / 报价项） ---------- */
@@ -3292,11 +3315,23 @@ function onMgCover(input) {
   if (!file) return;
   const kind = file.type.startsWith("video") ? "video" : file.type.startsWith("image") ? "image" : null;
   if (!kind) { toast("封面仅支持图片或视频格式"); input.value = ""; return; }
+  if (kind === "image") {
+    openCrop(URL.createObjectURL(file), {
+      w: 272, h: 153, round: false, title: "裁剪商品封面", out: 1200, q: .82,
+      done(url) {
+        mgEditCtx.cover = { kind: "image", url };
+        renderMgUploads();
+        toast("封面已裁剪 · 点击缩略图可查看");
+      },
+    });
+    input.value = "";
+    return;
+  }
   const reader = new FileReader();
   reader.onload = e => {
     mgEditCtx.cover = { kind, url: e.target.result };
     renderMgUploads();
-    toast(`已识别封面：${kind === "image" ? "图片" : "视频"} · 点击缩略图可查看`);
+    toast("已识别视频封面 · 点击缩略图可查看");
   };
   reader.readAsDataURL(file);
   input.value = "";
