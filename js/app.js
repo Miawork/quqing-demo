@@ -23,9 +23,7 @@ const state = {
     name: "", uid: "", gender: "保密", bio: "",
     avatar: null,         // 自定义头像 dataURL；null = 用简笔画头像
   },
-  following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式可互关）
-  friends: new Set(["绾绾", "青梧"]),   // 我的好友（可互发私信）
-  friendReqsSent: new Set(),            // 我已发出的好友申请
+  following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
     { name: "默认收藏", ids: [2] },
@@ -409,68 +407,42 @@ function uidOf(name) {
   return "quqi_" + (100000 + h);
 }
 
-/** 全站可加好友的用户池（音乐人 + 普通用户） */
+/** 全站可添加的用户池（音乐人 + 普通用户） */
 const friendPool = () => [...new Set([...ARTISTS.map(a => a.name), ...allUserNames()])];
 
 const bioOf = n => ARTISTS.find(a => a.name === n)?.bio || USERS_EXTRA[n]?.bio || "曲境用户";
 
-/** 好友按钮：加好友 → 已申请；对方先申请我 → 接受；已是好友 → 发消息 */
-function friendBtnHTML(name) {
+/** 小红书式：互相关注即好友 */
+const isFriend = n => state.following.has(n) && FANS.includes(n);
+
+/** 好友场景按钮：互关好友=发消息；否则复用关注钮（关注/回关/已关注） */
+function afBtnHTML(name) {
   const n = esc(name);
-  if (state.friends.has(name))
+  if (isFriend(name))
     return `<button class="fbtn off" onclick="event.stopPropagation();closeScan();closeOverlay('ovAddFriend');closeOverlay('ovArtist');openChat('${n}')">发消息</button>`;
-  if (state.friendReqsSent.has(name))
-    return `<button class="fbtn off" style="pointer-events:none">已申请</button>`;
-  if (FRIEND_REQS.some(r => r.name === name && r.status === "pending"))
-    return `<button class="fbtn" onclick="event.stopPropagation();acceptFriendReq('${n}')">接受</button>`;
-  return `<button class="fbtn" onclick="event.stopPropagation();sendFriendReq('${n}')">加好友</button>`;
+  return followBtnHTML(name);
 }
 
-/** 好友状态变化后刷新所有可能打开的界面 */
+/** 关注状态变化后刷新好友相关界面 */
 function refreshFriendUI(name) {
   if ($("#ovAddFriend").classList.contains("show") && $("#afInput")) afSearch();
   const w = $("#scanBtnWrap");
-  if (w && w.dataset.name === name) w.innerHTML = friendBtnHTML(name);
-  const f = $("#artFriendWrap");
-  if (f && currentArtistName === name) f.innerHTML = friendBtnHTML(name);
+  if (w && w.dataset.name === name) w.innerHTML = afBtnHTML(name);
 }
 
-function sendFriendReq(name) {
-  state.friendReqsSent.add(name);
-  refreshFriendUI(name);
-  toast(`好友申请已发送给「${name}」💌`);
-  /* Demo：对方稍后自动通过 */
-  setTimeout(() => {
-    if (!state.friendReqsSent.has(name)) return;
-    state.friendReqsSent.delete(name);
-    state.friends.add(name);
-    const greet = "我通过了你的好友申请，现在我们可以开始聊天啦～";
-    MESSAGES.unshift({ name, txt: greet, time: "刚刚", unread: 1 });
-    if (!CHATS[name]) CHATS[name] = [];
-    CHATS[name].push({ who: "them", type: "text", txt: greet });
-    renderMessages();
-    refreshFriendUI(name);
-    toast(`「${name}」通过了你的好友申请 ✦`);
-  }, 2600);
-}
-
-function acceptFriendReq(name) {
+/** 新朋友（关注了我的人）回关：互相关注即成为好友 */
+function followBack(name) {
   const r = FRIEND_REQS.find(x => x.name === name && x.status === "pending");
   if (r) r.status = "accepted";
-  state.friends.add(name);
-  const greet = "我们已经是好友啦，有企划随时聊～";
-  MESSAGES.unshift({ name, txt: greet, time: "刚刚", unread: 1 });
-  if (!CHATS[name]) CHATS[name] = [];
-  CHATS[name].push({ who: "them", type: "text", txt: greet });
-  renderMessages();
-  refreshFriendUI(name);
-  toast(`已添加「${name}」为好友 ✦`);
+  if (!FANS.includes(name)) FANS.push(name);
+  if (!state.following.has(name)) toggleFollow(name);
+  else refreshFriendUI(name);
 }
 
 /** 消息页「＋」菜单（微信式） */
 function openMsgPlus() {
   openSheet("更多功能", `
-    <div class="af-entry" onclick="closeSheet();openAddFriend()"><span>👤</span><div><b>添加好友</b><i>通过圈名 / ID 搜索添加</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();openAddFriend()"><span>👤</span><div><b>添加好友</b><i>搜索关注，互关即好友</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();openScan()"><span>📷</span><div><b>扫一扫</b><i>扫描好友二维码</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();openMyQR()"><span>▦</span><div><b>我的二维码</b><i>让对方扫码加我</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();shareApp()"><span>↗</span><div><b>分享应用</b><i>把「曲境」推荐给朋友</i></div><em>›</em></div>`);
@@ -503,26 +475,26 @@ function afSearch() {
   }
   const pending = FRIEND_REQS.filter(r => r.status === "pending");
   $("#afResults").innerHTML = `
-    <div class="af-myid" onclick="openMyQR()">我的 ID：<b>${esc(uidOf(state.profile.name))}</b><em>出示二维码 ›</em></div>
+    <div class="af-myid">我的 ID：<b>${esc(uidOf(state.profile.name))}</b></div>
     <div class="af-entry" onclick="openScan()"><span>📷</span><div><b>扫一扫</b><i>扫描对方的好友二维码</i></div><em>›</em></div>
-    <div class="af-entry" onclick="openMyQR()"><span>▦</span><div><b>我的二维码</b><i>邀请对方扫码加我</i></div><em>›</em></div>
-    ${pending.length ? `<div class="search-sec">🎐 新朋友<small>${pending.length}</small></div>` + pending.map(afReqRowHTML).join("") : ""}
+    <div class="af-entry" onclick="openMyQR()"><span>▦</span><div><b>我的二维码</b><i>邀请对方扫码关注我</i></div><em>›</em></div>
+    ${pending.length ? `<div class="search-sec">🎐 新朋友 · 关注了你<small>${pending.length}</small></div>` + pending.map(afReqRowHTML).join("") : ""}
     <div class="search-sec">可能认识的人</div>
-    ${pool.filter(n => !state.friends.has(n)).slice(0, 6).map(afRowHTML).join("")}`;
+    ${pool.filter(n => !state.following.has(n) && !pending.some(r => r.name === n)).slice(0, 6).map(afRowHTML).join("")}`;
 }
 
 function afRowHTML(n) {
   return `<div class="person-row" onclick="closeOverlay('ovAddFriend');openArtistByName('${esc(n)}')">
     <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
     <div class="p-info"><b>${esc(n)}</b><span>ID：${uidOf(n)} · ${esc(bioOf(n))}</span></div>
-    ${friendBtnHTML(n)}</div>`;
+    ${afBtnHTML(n)}</div>`;
 }
 
 function afReqRowHTML(r) {
   return `<div class="person-row" onclick="closeOverlay('ovAddFriend');openArtistByName('${esc(r.name)}')">
     <div class="avatar" style="background:${avatarBg(r.name)}">${esc(r.name[0])}</div>
     <div class="p-info"><b>${esc(r.name)}</b><span>${esc(r.msg)} · ${r.time}</span></div>
-    <button class="fbtn" onclick="event.stopPropagation();acceptFriendReq('${esc(r.name)}')">接受</button></div>`;
+    <button class="fbtn" onclick="event.stopPropagation();followBack('${esc(r.name)}')">回关</button></div>`;
 }
 
 /* --- 二维码（装饰性示意码，由 ID 确定性生成） --- */
@@ -560,7 +532,7 @@ function openMyQR() {
       <div><b>${esc(state.profile.name || "未注册")}</b><span>ID：${esc(uid)}</span></div>
     </div>
     <div class="qr-box">${qrSVG("quqi-friend:" + uid)}</div>
-    <p class="qr-tip">扫一扫上面的二维码图案，加我为好友</p>
+    <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>
     <div class="qr-acts">
       <span onclick="toast('二维码已保存到相册（Demo）📥')">保存图片</span><i></i>
       <span onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">分享名片</span><i></i>
@@ -583,14 +555,14 @@ function openScan() {
   $("#ovScan").classList.add("show");
   clearTimeout(scanTimer);
   scanTimer = setTimeout(() => {
-    const pool = friendPool().filter(n => !state.friends.has(n));
+    const pool = friendPool().filter(n => !isFriend(n));
     const n = pool[Math.floor(Math.random() * pool.length)];
     $("#scanStage").innerHTML = `
       <div class="scan-result">
         <div class="avatar" style="background:${avatarBg(n)};width:56px;height:56px;font-size:20px">${esc(n[0])}</div>
         <b>${esc(n)}</b><span>ID：${uidOf(n)}</span>
         <p>${esc(bioOf(n))}</p>
-        <div id="scanBtnWrap" data-name="${esc(n)}">${friendBtnHTML(n)}</div>
+        <div id="scanBtnWrap" data-name="${esc(n)}">${afBtnHTML(n)}</div>
         <em onclick="openScan()">↻ 继续扫</em>
       </div>`;
   }, 1800);
@@ -653,11 +625,20 @@ function toggleFollow(name) {
     toast("已取消关注");
   } else {
     state.following.add(name);
-    toast(FANS.includes(name) ? "已回关，你们现在互相关注 ✦" : "关注成功 ✦");
+    if (FANS.includes(name)) {
+      if (!CHATS[name]) { // 首次互关：对方打招呼，成为好友
+        const greet = "我们互相关注啦，随时可以聊企划～";
+        MESSAGES.unshift({ name, txt: greet, time: "刚刚", unread: 1 });
+        CHATS[name] = [{ who: "them", type: "text", txt: greet }];
+        renderMessages();
+      }
+      toast(`你和「${name}」互相关注，成为好友啦 ✦`);
+    } else toast("关注成功 ✦");
   }
   renderFollowStats();
   renderFollowList();
   updateArtFollowBtn();
+  refreshFriendUI(name);
   if (state.homeMode === "artist") renderHome(); // 刷新卡片上的关注钮
 }
 

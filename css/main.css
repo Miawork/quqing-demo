@@ -1378,10 +1378,9 @@ body {
 .af-myid {
   display: flex; align-items: center; margin: 10px 16px; padding: 11px 14px;
   border: 1.5px dashed var(--ink-3); border-radius: 12px;
-  font-size: 12px; color: var(--ink-2); cursor: pointer;
+  font-size: 12px; color: var(--ink-2);
 }
 .af-myid b { color: var(--ink); margin-left: 3px; font-family: var(--font-sans); }
-.af-myid em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--red); }
 .af-entry {
   display: flex; align-items: center; gap: 12px; margin: 0 16px 10px; padding: 12px 14px;
   background: var(--paper-2); border: 2px solid var(--ink);
