@@ -491,6 +491,21 @@ function markAllMessages() {
   toast("消息已全部标记为已读 ✓");
 }
 
+/* ---------- 输入规范（行业标准白名单约束，防 XSS / SQL 注入） ---------- */
+
+/** 曲境 ID：仅字母 / 数字 / 下划线，4-16 位（白名单，杜绝注入元字符） */
+const RE_UID = /^[A-Za-z0-9_]{4,16}$/;
+/** 大陆手机号：1 开头、第二位 3-9 的 11 位纯数字 */
+const RE_PHONE = /^1[3-9]\d{9}$/;
+/** 短信 / 邮件验证码：6 位纯数字 */
+const RE_SMS = /^\d{6}$/;
+/** 登录账号输入：中文 / 字母 / 数字 / _ @ . -，1-24 位（覆盖圈名、ID、手机号、邮箱） */
+const RE_ACCT = /^[\u4e00-\u9fa5A-Za-z0-9_@.\-]{1,24}$/;
+
+/** 搜索关键词净化：去掉 SQL / HTML 元字符并限长 30（纵深防御，输出渲染仍走 esc()） */
+const sanitizeKw = s =>
+  String(s || "").replace(/[<>'"`;\\]/g, "").replace(/--+/g, "-").trim().slice(0, 30);
+
 /* ---------- 好友系统（添加好友 / 二维码 / 扫一扫 / 分享应用） ---------- */
 
 /** 每个用户的专属 ID：我用注册 ID，其余用户由圈名确定性生成 */
@@ -560,7 +575,7 @@ function openAddFriend() {
 }
 
 function afSearch() {
-  const kw = $("#afInput").value.trim().toLowerCase();
+  const kw = sanitizeKw($("#afInput").value).toLowerCase();
   const pool = friendPool();
   if (kw) {
     const hits = pool.filter(n => n.toLowerCase().includes(kw) || uidOf(n).toLowerCase().includes(kw));
@@ -1683,7 +1698,7 @@ function openGroupPicker(groupName, preset) {
 
 /** 邀请好友搜索：按圈名/简介关键词过滤，已勾选的始终保留显示 */
 function gpFilter() {
-  const kw = ($("#gpSearch")?.value || "").trim().toLowerCase();
+  const kw = sanitizeKw($("#gpSearch")?.value).toLowerCase();
   let shown = 0;
   [...$$(".gp-row")].forEach(el => {
     const hit = !kw || el.dataset.kw.toLowerCase().includes(kw) || el.classList.contains("sel");
@@ -2388,8 +2403,10 @@ function regNext() {
   if (state.roleSetupMode === "register" && state.regStep === 1) {
     const name = $("#fName").value.trim();
     if (!name) { toast("圈名为必填项"); return; }
+    const uidIn = $("#fUid").value.trim();
+    if (uidIn && !RE_UID.test(uidIn)) { toast("ID 需 4-16 位，仅限字母 / 数字 / 下划线"); return; }
     state.profile.name = name;
-    state.profile.uid = $("#fUid").value.trim() || randomUid();
+    state.profile.uid = uidIn || randomUid();
     state.profile.bio = $("#fBio").value.trim();
     showRegStep(2);
   } else {
@@ -3619,7 +3636,7 @@ let smsCode = null, smsTimer = null;
 
 function sendSmsCode(phoneId, btnId) {
   const phone = $("#" + phoneId).value.trim();
-  if (!/^1\d{10}$/.test(phone)) return toast("请先填写正确的 11 位手机号");
+  if (!RE_PHONE.test(phone)) return toast("请先填写正确的 11 位手机号");
   smsCode = String(Math.floor(100000 + Math.random() * 900000));
   toast(`Demo 短信验证码：${smsCode}`);
   const btn = $("#" + btnId);
@@ -3661,7 +3678,8 @@ function lvLoginSubmit() {
   if (liMode === "code") {
     const phone = $("#liPhone").value.trim();
     const code = $("#liCode").value.trim();
-    if (!/^1\d{10}$/.test(phone)) return toast("请填写正确的 11 位手机号");
+    if (!RE_PHONE.test(phone)) return toast("请填写正确的 11 位手机号");
+    if (!RE_SMS.test(code)) return toast("验证码为 6 位数字");
     if (!smsCode) return toast("请先获取验证码");
     if (code !== smsCode) return toast("验证码不正确，再检查一下");
     smsCode = null;
@@ -3676,6 +3694,7 @@ function lvLoginSubmit() {
   const id = $("#liAcct").value.trim();
   const pwd = $("#liPwd").value;
   if (!id) return toast("请输入账号 / ID / 手机号");
+  if (!RE_ACCT.test(id)) return toast("账号格式不正确：仅支持中文 / 字母 / 数字 / _ @ . -");
   if (!pwd) return toast("请输入密码");
   const acc = state.accounts.find(a => a.uid === id || a.phone === id || a.name === id);
   if (!acc) return toast("账号不存在，可点「注册新账号」");
@@ -3689,7 +3708,8 @@ function lvLoginSubmit() {
 function lvRegSubmit() {
   const phone = $("#lrPhone").value.trim();
   const code = $("#lrCode").value.trim();
-  if (!/^1\d{10}$/.test(phone)) return toast("请填写正确的 11 位手机号");
+  if (!RE_PHONE.test(phone)) return toast("请填写正确的 11 位手机号");
+  if (!RE_SMS.test(code)) return toast("验证码为 6 位数字");
   if (!smsCode) return toast("请先获取验证码");
   if (code !== smsCode) return toast("验证码不正确，再检查一下");
   if (!agreed("lrAgree")) return toast("请先勾选同意《曲境条约》和《隐私政策》");
@@ -3874,7 +3894,7 @@ function saveSetEdit() {
   const v = $("#seInput").value.trim();
   const s = state.settings;
   if (setEditKind === "uid") {
-    if (!/^\w{4,16}$/.test(v)) return toast("ID 需 4-16 位字母 / 数字 / 下划线");
+    if (!RE_UID.test(v)) return toast("ID 需 4-16 位，仅限字母 / 数字 / 下划线");
     state.profile.uid = v;
     renderMyProfile();
     toast("ID 修改成功");
@@ -3886,7 +3906,7 @@ function saveSetEdit() {
     sentCode = null;
     toast("邮箱验证通过，绑定成功");
   } else if (setEditKind === "phone") {
-    if (!/^1\d{10}$/.test(v)) return toast("手机号格式不正确");
+    if (!RE_PHONE.test(v)) return toast("手机号格式不正确");
     if (!sentCode) return toast("请先点「获取验证码」");
     if ($("#seCode").value.trim() !== sentCode) return toast("验证码不正确，再检查一下～");
     s.phone = v;
@@ -4027,7 +4047,7 @@ function searchHit(text, kws) {
 }
 
 function doSearch(commit) {
-  const q = $("#searchInput").value.trim();
+  const q = sanitizeKw($("#searchInput").value);
   $("#searchClear").style.display = q ? "block" : "none";
 
   /* 空输入：热搜 + 历史 */
