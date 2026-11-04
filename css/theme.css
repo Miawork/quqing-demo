@@ -16,8 +16,8 @@
   --gold-light: #F0F4D4;
   --green:      #2FA36B;   /* 绿（非商业 / 开放接稿状态） */
   --green-light:#E2F3EA;
-  --line:       #E6E6EA;   /* 描边 / 分割线 */
-  --card:       #F3F3F5;   /* 输入框 / 小面板底色 */
+  --line:       #DCDCE2;   /* 描边 / 分割线 */
+  --card:       #E2E3E9;   /* 输入框 / 小面板底色（比页面底明显深一度） */
   --viewer-bg:  #0F1013;   /* 沉浸式浏览页底色 */
 
   /* 布局参数 */
@@ -52,8 +52,8 @@ html.dark {
   --gold-light: #2A2D18;
   --green:      #4CC08A;
   --green-light:#1B2E24;
-  --line:       #2C2D33;
-  --card:       #2A2B30;
+  --line:       #303137;
+  --card:       #2F3138;
   --shadow-card: 0 2px 12px rgba(0, 0, 0, .4);
 }
 html.dark body { background: #09090B; }
