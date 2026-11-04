@@ -364,6 +364,7 @@ const POSTS = [
 
 const MESSAGES = [
   { name: "沧海遗音社", txt: "您好，看到您的作曲报价，想邀请您参与《九州录》企划…", time: "10:24", unread: 2 },
+  { name: "九州录企划组", txt: "绾绾：和声小样我传群里啦，大家听听", time: "09:50", unread: 3, group: true },
   { name: "绾绾", txt: "小样收到啦！副歌戏腔部分我录了两版给你参考～", time: "昨天", unread: 1 },
   { name: "平台助手", txt: "您与「半盏茶」的约稿协议已生效，首期稿酬已托管。", time: "昨天", unread: 0 },
   { name: "青梧", txt: "《折枝令》第二段改好了，你看看这版韵脚顺不顺。", time: "周一", unread: 0 },
@@ -479,7 +480,18 @@ const MY_REVIEWS = [
 /* ---------- 聊天记录 ----------
  * who: "me" | "them"；type: "text" | "sticker"（默认表情 key）| "img"（相册导入）
  * ------------------------------------------------------------ */
+/* ---------- 群聊（讨论组）：members 不含自己；owner 为 "me" 表示我是群主 ---------- */
+const GROUPS = {
+  九州录企划组: { members: ["沧海遗音社", "绾绾", "青梧"], owner: "沧海遗音社" },
+};
+
 const CHATS = {
+  九州录企划组: [
+    { who: "sys", type: "sys", txt: "沧海遗音社 邀请你加入了群聊" },
+    { who: "them", name: "沧海遗音社", type: "text", txt: "拉了个企划组，《九州录》的进度都在这里同步～" },
+    { who: "them", name: "绾绾", type: "text", txt: "和声小样我传群里啦，大家听听" },
+    { who: "them", name: "青梧", type: "text", txt: "词稿二校今晚发出，明天对谱面" },
+  ],
   沧海遗音社: [
     { who: "them", type: "text", txt: "您好，看到您的作曲报价，想邀请您参与《九州录》企划～" },
     { who: "them", type: "text", txt: "预算 ¥4,000，商用授权，周期一个月，方便细聊吗？" },

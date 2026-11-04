@@ -24,6 +24,7 @@ const state = {
     avatar: null,         // 自定义头像 dataURL；null = 用简笔画头像
   },
   following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
+  blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
     { name: "默认收藏", ids: [2] },
@@ -476,7 +477,7 @@ function ndReply() {
 /* ---------- 消息 ---------- */
 
 function renderMessages() {
-  $("#msgList").innerHTML = MESSAGES.map(messageHTML).join("");
+  $("#msgList").innerHTML = MESSAGES.filter(m => !state.blocked.has(m.name)).map(messageHTML).join("");
   renderMsgEntries();
 }
 
@@ -534,6 +535,7 @@ function followBack(name) {
 /** 消息页「＋」菜单（微信式） */
 function openMsgPlus() {
   openSheet("更多功能", `
+    <div class="af-entry" onclick="closeSheet();openGroupPicker()"><span>群</span><div><b>发起群聊</b><i>拉互关好友建讨论组</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();openAddFriend()"><span>友</span><div><b>添加好友</b><i>搜索关注，互关即好友</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();openScan()"><span>扫</span><div><b>扫一扫</b><i>扫描好友二维码</i></div><em>›</em></div>
     <div class="af-entry" onclick="closeSheet();openMyQR()"><span>▦</span><div><b>我的二维码</b><i>让对方扫码加我</i></div><em>›</em></div>
@@ -711,6 +713,7 @@ function openArtist(idx) {
 /* ---------- 关注 / 粉丝（小红书式） ---------- */
 
 function toggleFollow(name) {
+  if (state.blocked.has(name)) { confirmUnblock(name); return; }
   if (state.following.has(name)) {
     state.following.delete(name);
     toast("已取消关注");
@@ -1362,13 +1365,16 @@ function viewOrderReviews(id) {
 
 /* ---------- 聊天（小红书式） ---------- */
 
+/** 聊天标题：群聊显示人数 */
+const chatTitle = name => GROUPS[name] ? `${name}（${GROUPS[name].members.length + 1}）` : name;
+
 function openChat(name) {
   state.currentChat = name;
   const m = MESSAGES.find(x => x.name === name);
   if (m) m.unread = 0;
   renderMessages();
   if (!CHATS[name]) CHATS[name] = [];
-  $("#chatName").textContent = name;
+  $("#chatName").textContent = chatTitle(name);
   $("#stickerTray").classList.remove("show");
   renderChat();
   $("#ovChat").classList.add("show");
@@ -1386,6 +1392,7 @@ function sendChatText() {
   const input = $("#chatInput");
   const v = input.value.trim();
   if (!v) return;
+  if (state.blocked.has(state.currentChat)) return toast("你已拉黑对方，解除后才能发送消息");
   CHATS[state.currentChat].push({ who: "me", type: "text", txt: v });
   input.value = "";
   renderChat();
@@ -1431,14 +1438,256 @@ function onStickerImg(input) {
   input.value = "";
 }
 
-/** Demo 自动回复，营造对话感 */
+/** Demo 自动回复，营造对话感；群聊里随机一位成员接话 */
 function autoReply() {
   const name = state.currentChat;
   setTimeout(() => {
     if (state.currentChat !== name || !$("#ovChat").classList.contains("show")) return;
-    CHATS[name].push({ who: "them", type: "text", txt: "收到～稍后回复您" });
+    const g = GROUPS[name];
+    if (g && g.members.length) {
+      const who = g.members[Math.floor(Math.random() * g.members.length)];
+      const lines = ["收到！", "好嘞，稍后看～", "这就去听！", "同步啦，辛苦～"];
+      CHATS[name].push({ who: "them", name: who, type: "text", txt: lines[Math.floor(Math.random() * lines.length)] });
+    } else {
+      CHATS[name].push({ who: "them", type: "text", txt: "收到～稍后回复您" });
+    }
     renderChat();
   }, 900);
+}
+
+/* ---------- 群聊（讨论组，小红书式） ---------- */
+
+let gpTarget = null; // null = 新建群聊；否则为待添加成员的群名
+
+/** 可邀请对象：互关好友（排除已拉黑 / 已在群内） */
+function gpCandidates(excl) {
+  return friendPool().filter(n => isFriend(n) && !state.blocked.has(n) && !(excl || []).includes(n));
+}
+
+/** 选人面板：groupName 传入则为「添加成员」；preset 为预选中的人（单聊拉群） */
+function openGroupPicker(groupName, preset) {
+  gpTarget = groupName || null;
+  const g = groupName ? GROUPS[groupName] : null;
+  let cands = gpCandidates(g ? g.members : []);
+  if (preset && !cands.includes(preset)) cands = [preset, ...cands];
+  if (!cands.length) return toast(g ? "好友都已在群里啦" : "暂无可邀请的好友，互相关注后才能拉群");
+  openSheet(g ? "添加群成员" : "发起群聊", `
+    <p class="se-note" style="margin-bottom:10px">互相关注的好友才能加入群聊</p>
+    ${g ? "" : `<input class="post-input" id="gpName" placeholder="群聊名称（选填，默认用成员名）">`}
+    ${cands.map(n => `<div class="person-row gp-row${preset === n ? " sel" : ""}" data-name="${esc(n)}" onclick="gpToggle(this)">
+      <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
+      <div class="p-info"><b>${esc(n)}</b><span>${esc(bioOf(n))}</span></div>
+      <i class="gp-check">✓</i></div>`).join("")}
+    <button class="btn primary" style="width:100%;margin-top:12px" id="gpBtn" disabled onclick="gpConfirm()"></button>`);
+  gpUpdateBtn();
+}
+
+function gpToggle(el) {
+  el.classList.toggle("sel");
+  gpUpdateBtn();
+}
+
+function gpUpdateBtn() {
+  const n = $$(".gp-row.sel").length;
+  const btn = $("#gpBtn");
+  if (!btn) return;
+  if (gpTarget) {
+    btn.disabled = n < 1;
+    btn.textContent = n ? `添加（${n}）` : "选择要邀请的好友";
+  } else {
+    btn.disabled = n < 2;
+    btn.textContent = n >= 2 ? `发起群聊（${n + 1} 人）` : "至少选 2 位好友";
+  }
+}
+
+function gpConfirm() {
+  const sel = [...$$(".gp-row.sel")].map(el => el.dataset.name);
+  if (gpTarget) { // 往现有群里拉人
+    const g = GROUPS[gpTarget];
+    if (!g || !sel.length) return;
+    g.members.push(...sel);
+    CHATS[gpTarget].push({ who: "sys", type: "sys", txt: `你邀请 ${sel.join("、")} 加入了群聊` });
+    closeSheet();
+    if (state.currentChat === gpTarget) {
+      $("#chatName").textContent = chatTitle(gpTarget);
+      renderChat();
+    }
+    renderMessages();
+    toast(`已邀请 ${sel.length} 位好友进群`);
+    return;
+  }
+  if (sel.length < 2) return toast("至少选择 2 位好友才能发起群聊");
+  let gname = ($("#gpName")?.value || "").trim()
+    || sel.slice(0, 3).join("、") + (sel.length > 3 ? "等" : "") + "的群聊";
+  if (GROUPS[gname] || CHATS[gname]) gname += " " + (Object.keys(GROUPS).length + 1);
+  GROUPS[gname] = { members: [...sel], owner: "me" };
+  CHATS[gname] = [{ who: "sys", type: "sys", txt: `你邀请 ${sel.join("、")} 加入了群聊` }];
+  MESSAGES.unshift({ name: gname, txt: "群聊已创建，打个招呼开始讨论吧", time: "刚刚", unread: 0, group: true });
+  closeSheet();
+  renderMessages();
+  openChat(gname);
+  toast("群聊已创建");
+}
+
+/** 聊天页右上角「⋯」：单聊 / 群聊分别给出操作 */
+function openChatMore() {
+  const name = state.currentChat;
+  if (!name) return;
+  if (name === "平台助手")
+    return openSheet("聊天设置", `
+      <div class="af-entry" onclick="closeSheet();toast('Demo：已开启消息免打扰')"><span>静</span><div><b>消息免打扰</b><i>系统通知不再提醒</i></div><em>›</em></div>`);
+  const g = GROUPS[name];
+  if (g) {
+    openSheet("群聊设置", `
+      <div class="af-entry" onclick="closeSheet();openGroupMembers()"><span>员</span><div><b>群成员</b><i>共 ${g.members.length + 1} 人${g.owner === "me" ? " · 我是群主" : ""}</i></div><em>›</em></div>
+      <div class="af-entry" onclick="closeSheet();openGroupPicker('${esc(name)}')"><span>拉</span><div><b>添加成员</b><i>邀请互关好友进群</i></div><em>›</em></div>
+      <div class="af-entry" onclick="closeSheet();openGroupRename()"><span>名</span><div><b>修改群聊名称</b><i>${esc(name)}</i></div><em>›</em></div>
+      <div class="af-entry danger" onclick="closeSheet();confirmQuitGroup()"><span>退</span><div><b>退出群聊</b><i>退出后不再接收群消息</i></div><em>›</em></div>`);
+  } else {
+    const blocked = state.blocked.has(name);
+    openSheet("聊天设置", `
+      <div class="af-entry" onclick="closeSheet();openArtistByName('${esc(name)}')"><span>主</span><div><b>查看主页</b><i>看看 TA 的作品与动态</i></div><em>›</em></div>
+      <div class="af-entry" onclick="closeSheet();openGroupPicker(null,'${esc(name)}')"><span>群</span><div><b>拉人组建群聊</b><i>和 TA 一起建个讨论组</i></div><em>›</em></div>
+      <div class="af-entry danger" onclick="closeSheet();${blocked ? `confirmUnblock('${esc(name)}')` : `confirmBlock('${esc(name)}')`}"><span>黑</span><div><b>${blocked ? "解除拉黑" : "拉黑"}</b><i>${blocked ? "恢复关注与私信" : "不再接收 TA 的消息与互动"}</i></div><em>›</em></div>
+      <div class="af-entry" onclick="closeSheet();openReportUser('${esc(name)}')"><span>报</span><div><b>举报</b><i>冒充 / 辱骂 / 广告等违规行为</i></div><em>›</em></div>`);
+  }
+}
+
+/** 群成员列表：点行进主页；我是群主可移除成员 */
+function openGroupMembers() {
+  const name = state.currentChat, g = GROUPS[name];
+  if (!g) return;
+  const meOwner = g.owner === "me";
+  const me = state.profile.name || "我";
+  const row = (n, isMe) => `<div class="person-row" ${isMe ? "" : `onclick="closeSheet();openArtistByName('${esc(n)}')" style="cursor:pointer"`}>
+    <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
+    <div class="p-info"><b>${esc(n)}${isMe ? "（我）" : ""}${(isMe && meOwner) || g.owner === n ? " · 群主" : ""}</b><span>${isMe ? "就是你呀" : esc(bioOf(n))}</span></div>
+    ${meOwner && !isMe ? `<button class="fbtn off" onclick="event.stopPropagation();gpRemove('${esc(n)}')">移除</button>` : ""}</div>`;
+  openSheet(`群成员（${g.members.length + 1}）`,
+    row(me, true) + g.members.map(n => row(n)).join("")
+    + `<div class="af-entry" style="margin-top:10px" onclick="closeSheet();openGroupPicker('${esc(name)}')"><span>＋</span><div><b>添加成员</b><i>邀请互关好友进群</i></div><em>›</em></div>`);
+}
+
+function gpRemove(n) {
+  const name = state.currentChat, g = GROUPS[name];
+  g.members = g.members.filter(x => x !== n);
+  CHATS[name].push({ who: "sys", type: "sys", txt: `你将 ${n} 移出了群聊` });
+  $("#chatName").textContent = chatTitle(name);
+  renderChat();
+  renderMessages();
+  openGroupMembers();
+  toast(`已将「${n}」移出群聊`);
+}
+
+function openGroupRename() {
+  const name = state.currentChat;
+  openSheet("修改群聊名称", `
+    <input class="post-input" id="gnInput" value="${esc(name)}" maxlength="16">
+    <button class="btn primary" style="width:100%;margin-top:6px" onclick="saveGroupRename()">保存</button>`);
+}
+
+function saveGroupRename() {
+  const old = state.currentChat;
+  const v = ($("#gnInput")?.value || "").trim();
+  if (!v) return toast("群名不能为空");
+  if (v === old) { closeSheet(); return; }
+  if (GROUPS[v] || CHATS[v]) return toast("这个名字被占用啦，换一个试试");
+  GROUPS[v] = GROUPS[old]; delete GROUPS[old];
+  CHATS[v] = CHATS[old]; delete CHATS[old];
+  const m = MESSAGES.find(x => x.name === old);
+  if (m) m.name = v;
+  CHATS[v].push({ who: "sys", type: "sys", txt: `你将群名修改为「${v}」` });
+  state.currentChat = v;
+  $("#chatName").textContent = chatTitle(v);
+  closeSheet();
+  renderChat();
+  renderMessages();
+  toast("群名已修改");
+}
+
+function confirmQuitGroup() {
+  const name = state.currentChat;
+  openSheet("退出群聊", `
+    <p class="se-note">退出后将不再接收「${esc(name)}」的消息，聊天记录同步清空。</p>
+    <button class="btn primary danger-btn" style="width:100%;margin-top:14px" onclick="doQuitGroup()">确认退出</button>`);
+}
+
+function doQuitGroup() {
+  const name = state.currentChat;
+  delete GROUPS[name];
+  delete CHATS[name];
+  const i = MESSAGES.findIndex(x => x.name === name);
+  if (i >= 0) MESSAGES.splice(i, 1);
+  closeSheet();
+  closeOverlay("ovChat");
+  renderMessages();
+  toast("已退出群聊");
+}
+
+/* ---------- 拉黑 / 举报（小红书式） ---------- */
+
+/** 用户主页右上角「⋯」 */
+function openUserMore() {
+  const name = currentArtistName;
+  if (!name) return;
+  const blocked = state.blocked.has(name);
+  openSheet("更多操作", `
+    ${isFriend(name) && !blocked ? `<div class="af-entry" onclick="closeSheet();openChat('${esc(name)}')"><span>信</span><div><b>发消息</b><i>你们是互关好友</i></div><em>›</em></div>` : ""}
+    <div class="af-entry danger" onclick="closeSheet();${blocked ? `confirmUnblock('${esc(name)}')` : `confirmBlock('${esc(name)}')`}"><span>黑</span><div><b>${blocked ? "解除拉黑" : "加入黑名单"}</b><i>${blocked ? "恢复关注与私信" : "TA 将无法关注、私信、评论你"}</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();openReportUser('${esc(name)}')"><span>报</span><div><b>举报用户</b><i>冒充 / 辱骂 / 广告等违规行为</i></div><em>›</em></div>`);
+}
+
+function confirmBlock(name) {
+  openSheet("拉黑用户", `
+    <p class="se-note">拉黑后，「${esc(name)}」将无法关注你、给你发私信或评论你的作品；你们将自动解除关注关系。可在「设置 › 黑名单管理」中解除。</p>
+    <button class="btn primary danger-btn" style="width:100%;margin-top:14px" onclick="doBlock('${esc(name)}')">确认拉黑</button>`);
+}
+
+function doBlock(name) {
+  state.blocked.add(name);
+  state.following.delete(name);
+  closeSheet();
+  if (state.currentChat === name) closeOverlay("ovChat");
+  renderMessages();
+  renderFollowStats();
+  renderFollowList();
+  updateArtFollowBtn();
+  if ($("#ovSettings").classList.contains("show")) renderSettings();
+  toast(`已拉黑「${name}」`);
+}
+
+function confirmUnblock(name) {
+  openSheet("解除拉黑", `
+    <p class="se-note">解除后，「${esc(name)}」可以重新关注你、给你发私信和评论。</p>
+    <button class="btn primary" style="width:100%;margin-top:14px" onclick="doUnblock('${esc(name)}')">解除拉黑</button>`);
+}
+
+function doUnblock(name) {
+  state.blocked.delete(name);
+  closeSheet();
+  renderMessages();
+  renderFollowList();
+  updateArtFollowBtn();
+  if ($("#ovSettings").classList.contains("show")) renderSettings();
+  toast(`已解除对「${name}」的拉黑`);
+}
+
+/** 设置 › 黑名单管理 */
+function openBlocklist() {
+  const list = [...state.blocked];
+  openSheet("黑名单管理", list.length
+    ? list.map(n => `<div class="person-row">
+        <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
+        <div class="p-info"><b>${esc(n)}</b><span>${esc(bioOf(n))}</span></div>
+        <button class="fbtn off" onclick="doUnblock('${esc(n)}');openBlocklist()">解除</button></div>`).join("")
+    : `<div class="rev-hint">黑名单空空如也，和气生财～</div>`);
+}
+
+function openReportUser(name) {
+  const reasons = ["冒充他人 / 盗用作品", "辱骂攻击", "垃圾广告营销", "色情低俗", "侵权搬运", "其他违规"];
+  openSheet(`举报「${name}」`, `
+    <p class="se-note" style="margin-bottom:10px">请选择举报原因，我们会尽快核实处理</p>
+    ${reasons.map(r => `<div class="af-entry" onclick="closeSheet();toast('已收到举报，审核团队将在 24 小时内处理')"><span>报</span><div><b>${r}</b></div><em>›</em></div>`).join("")}`);
 }
 
 /** 打开任意用户主页：音乐人走完整主页，其余用户走简版名片页 */
@@ -2960,6 +3209,7 @@ function renderSettings() {
       <div class="set-item"><span>允许通过手机号找到我</span>${sw(s.privacy.findByPhone, "togglePriv('findByPhone',this)")}</div>
       <div class="set-item"><span>个性化推荐</span>${sw(s.privacy.personalized, "togglePriv('personalized',this)")}</div>
       <div class="set-item"><span>公开我收到的评价</span>${sw(state.showMyReviews, "toggleMyReviews();renderSettings()")}</div>
+      <div class="set-item" onclick="openBlocklist()"><span>黑名单管理</span><b>${state.blocked.size ? state.blocked.size + " 人" : "空"}</b><i>›</i></div>
     </div>
     <div class="set-group"><h4>通用</h4>
       <div class="set-item" onclick="openClearCache()"><span>清理缓存</span><b>${cacheSizeLabel()}</b><i>›</i></div>

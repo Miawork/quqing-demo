@@ -114,6 +114,9 @@ function workCardHTML(w, idx) {
 
 /** 小红书式关注钮：未关注=红底「关注」；已关注=灰边「已关注」；对方关注我时互关/回关 */
 function followBtnHTML(name) {
+  if (state.blocked.has(name))
+    return `<button class="fbtn blocked"
+      onclick="event.stopPropagation();confirmUnblock('${esc(name)}')">已拉黑</button>`;
   const followed = state.following.has(name);
   const isFan = FANS.includes(name);
   const label = followed ? (isFan ? "互相关注" : "已关注") : (isFan ? "回关" : "关注");
@@ -431,9 +434,19 @@ function noticeDetailHTML(n) {
 
 /* ---------- 消息 / 聊天 ---------- */
 
+/** 群聊头像：成员首字拼贴（小红书式九宫格，取前 4 人含自己） */
+function groupAvatarHTML(gname) {
+  const g = GROUPS[gname];
+  const ms = [state.profile.name || "我", ...g.members].slice(0, 4);
+  return `<div class="avatar gavatar">${ms.map(n =>
+    `<i style="background:${avatarBg(n)}">${esc(n[0])}</i>`).join("")}</div>`;
+}
+
 function messageHTML(m) {
   return `<div class="msg-item" onclick="openChat('${esc(m.name)}')">
-    <div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>
+    ${GROUPS[m.name]
+      ? groupAvatarHTML(m.name)
+      : `<div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>`}
     <div class="msg-body">
       <div class="r1"><span class="mname">${esc(m.name)}</span><span class="time">${m.time}</span></div>
       <div class="txt">${esc(m.txt)}</div>
@@ -443,8 +456,10 @@ function messageHTML(m) {
 
 /** 聊天气泡：文字 / 默认贴纸 / 相册导入表情包 */
 function chatBubbleHTML(m, name) {
+  if (m.type === "sys") return `<div class="chat-sys">${esc(m.txt)}</div>`;
   const mine = m.who === "me";
-  const av = mine ? (state.profile.name || "我") : name;
+  const isGroup = !!GROUPS[name];
+  const av = mine ? (state.profile.name || "我") : (m.name || name);
   let content;
   if (m.type === "sticker") {
     const s = CONFIG.stickers.find(x => x.key === m.key);
@@ -454,8 +469,12 @@ function chatBubbleHTML(m, name) {
   } else {
     content = `<div class="bubble">${esc(m.txt)}</div>`;
   }
+  if (isGroup && !mine) content = `<div class="c-col"><div class="chat-sender">${esc(av)}</div>${content}</div>`;
+  const avClick = !mine && av !== "平台助手"
+    ? ` onclick="openArtistByName('${esc(av)}')" style="background:${avatarBg(av)};cursor:pointer"`
+    : ` style="background:${avatarBg(av)}"`;
   return `<div class="chat-row ${mine ? "me" : ""}">
-    <div class="avatar" style="background:${avatarBg(av)}">${esc(av[0])}</div>
+    <div class="avatar"${avClick}>${esc(av[0])}</div>
     ${content}</div>`;
 }
 
