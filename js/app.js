@@ -24,6 +24,8 @@ const state = {
     avatar: null,         // 自定义头像 dataURL；null = 用简笔画头像
   },
   following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式可互关）
+  friends: new Set(["绾绾", "青梧"]),   // 我的好友（可互发私信）
+  friendReqsSent: new Set(),            // 我已发出的好友申请
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
     { name: "默认收藏", ids: [2] },
@@ -392,6 +394,228 @@ function markAllMessages() {
   MESSAGES.forEach(m => { m.unread = 0; });
   renderMessages();
   toast("消息已全部标记为已读 ✓");
+}
+
+/* ---------- 好友系统（添加好友 / 二维码 / 扫一扫 / 分享应用） ---------- */
+
+/** 每个用户的专属 ID：我用注册 ID，其余用户由圈名确定性生成 */
+function uidOf(name) {
+  if (!name) return "quqi_000000";
+  if (name === state.profile.name) return state.profile.uid || "quqi_000000";
+  let h = 7;
+  for (const c of name) h = (h * 131 + c.codePointAt(0)) % 900000;
+  return "quqi_" + (100000 + h);
+}
+
+/** 全站可加好友的用户池（音乐人 + 普通用户） */
+const friendPool = () => [...new Set([...ARTISTS.map(a => a.name), ...allUserNames()])];
+
+const bioOf = n => ARTISTS.find(a => a.name === n)?.bio || USERS_EXTRA[n]?.bio || "曲境用户";
+
+/** 好友按钮：加好友 → 已申请；对方先申请我 → 接受；已是好友 → 发消息 */
+function friendBtnHTML(name) {
+  const n = esc(name);
+  if (state.friends.has(name))
+    return `<button class="fbtn off" onclick="event.stopPropagation();closeScan();closeOverlay('ovAddFriend');closeOverlay('ovArtist');openChat('${n}')">发消息</button>`;
+  if (state.friendReqsSent.has(name))
+    return `<button class="fbtn off" style="pointer-events:none">已申请</button>`;
+  if (FRIEND_REQS.some(r => r.name === name && r.status === "pending"))
+    return `<button class="fbtn" onclick="event.stopPropagation();acceptFriendReq('${n}')">接受</button>`;
+  return `<button class="fbtn" onclick="event.stopPropagation();sendFriendReq('${n}')">加好友</button>`;
+}
+
+/** 好友状态变化后刷新所有可能打开的界面 */
+function refreshFriendUI(name) {
+  if ($("#ovAddFriend").classList.contains("show") && $("#afInput")) afSearch();
+  const w = $("#scanBtnWrap");
+  if (w && w.dataset.name === name) w.innerHTML = friendBtnHTML(name);
+  const f = $("#artFriendWrap");
+  if (f && currentArtistName === name) f.innerHTML = friendBtnHTML(name);
+}
+
+function sendFriendReq(name) {
+  state.friendReqsSent.add(name);
+  refreshFriendUI(name);
+  toast(`好友申请已发送给「${name}」💌`);
+  /* Demo：对方稍后自动通过 */
+  setTimeout(() => {
+    if (!state.friendReqsSent.has(name)) return;
+    state.friendReqsSent.delete(name);
+    state.friends.add(name);
+    const greet = "我通过了你的好友申请，现在我们可以开始聊天啦～";
+    MESSAGES.unshift({ name, txt: greet, time: "刚刚", unread: 1 });
+    if (!CHATS[name]) CHATS[name] = [];
+    CHATS[name].push({ who: "them", type: "text", txt: greet });
+    renderMessages();
+    refreshFriendUI(name);
+    toast(`「${name}」通过了你的好友申请 ✦`);
+  }, 2600);
+}
+
+function acceptFriendReq(name) {
+  const r = FRIEND_REQS.find(x => x.name === name && x.status === "pending");
+  if (r) r.status = "accepted";
+  state.friends.add(name);
+  const greet = "我们已经是好友啦，有企划随时聊～";
+  MESSAGES.unshift({ name, txt: greet, time: "刚刚", unread: 1 });
+  if (!CHATS[name]) CHATS[name] = [];
+  CHATS[name].push({ who: "them", type: "text", txt: greet });
+  renderMessages();
+  refreshFriendUI(name);
+  toast(`已添加「${name}」为好友 ✦`);
+}
+
+/** 消息页「＋」菜单（微信式） */
+function openMsgPlus() {
+  openSheet("更多功能", `
+    <div class="af-entry" onclick="closeSheet();openAddFriend()"><span>👤</span><div><b>添加好友</b><i>通过圈名 / ID 搜索添加</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();openScan()"><span>📷</span><div><b>扫一扫</b><i>扫描好友二维码</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();openMyQR()"><span>▦</span><div><b>我的二维码</b><i>让对方扫码加我</i></div><em>›</em></div>
+    <div class="af-entry" onclick="closeSheet();shareApp()"><span>↗</span><div><b>分享应用</b><i>把「曲境」推荐给朋友</i></div><em>›</em></div>`);
+}
+
+/* --- 添加好友页 --- */
+
+function openAddFriend() {
+  $("#afBody").innerHTML = `
+    <div class="af-search">
+      <div class="search-box"><span class="si" data-icon="search"></span>
+        <input id="afInput" placeholder="搜圈名 / ID（如 quqi_123456）" oninput="afSearch()">
+      </div>
+    </div>
+    <div id="afResults"></div>`;
+  injectIcons();
+  afSearch();
+  $("#ovAddFriend").classList.add("show");
+}
+
+function afSearch() {
+  const kw = $("#afInput").value.trim().toLowerCase();
+  const pool = friendPool();
+  if (kw) {
+    const hits = pool.filter(n => n.toLowerCase().includes(kw) || uidOf(n).toLowerCase().includes(kw));
+    $("#afResults").innerHTML = hits.length
+      ? `<div class="search-sec">搜索结果<small>${hits.length}</small></div>` + hits.map(afRowHTML).join("")
+      : emptyHTML(`没有找到相关用户，核对圈名或 ID 后再试 ✦`);
+    return;
+  }
+  const pending = FRIEND_REQS.filter(r => r.status === "pending");
+  $("#afResults").innerHTML = `
+    <div class="af-myid" onclick="openMyQR()">我的 ID：<b>${esc(uidOf(state.profile.name))}</b><em>出示二维码 ›</em></div>
+    <div class="af-entry" onclick="openScan()"><span>📷</span><div><b>扫一扫</b><i>扫描对方的好友二维码</i></div><em>›</em></div>
+    <div class="af-entry" onclick="openMyQR()"><span>▦</span><div><b>我的二维码</b><i>邀请对方扫码加我</i></div><em>›</em></div>
+    ${pending.length ? `<div class="search-sec">🎐 新朋友<small>${pending.length}</small></div>` + pending.map(afReqRowHTML).join("") : ""}
+    <div class="search-sec">可能认识的人</div>
+    ${pool.filter(n => !state.friends.has(n)).slice(0, 6).map(afRowHTML).join("")}`;
+}
+
+function afRowHTML(n) {
+  return `<div class="person-row" onclick="closeOverlay('ovAddFriend');openArtistByName('${esc(n)}')">
+    <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
+    <div class="p-info"><b>${esc(n)}</b><span>ID：${uidOf(n)} · ${esc(bioOf(n))}</span></div>
+    ${friendBtnHTML(n)}</div>`;
+}
+
+function afReqRowHTML(r) {
+  return `<div class="person-row" onclick="closeOverlay('ovAddFriend');openArtistByName('${esc(r.name)}')">
+    <div class="avatar" style="background:${avatarBg(r.name)}">${esc(r.name[0])}</div>
+    <div class="p-info"><b>${esc(r.name)}</b><span>${esc(r.msg)} · ${r.time}</span></div>
+    <button class="fbtn" onclick="event.stopPropagation();acceptFriendReq('${esc(r.name)}')">接受</button></div>`;
+}
+
+/* --- 二维码（装饰性示意码，由 ID 确定性生成） --- */
+
+function qrSVG(seed) {
+  let h = 2166136261;
+  for (const c of seed) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); }
+  const rnd = () => {
+    h ^= h << 13; h ^= h >>> 17; h ^= h << 5;
+    return (h >>> 0) / 4294967296;
+  };
+  const n = 25;
+  const g = Array.from({ length: n }, () => Array(n).fill(false));
+  const finder = (ox, oy) => {
+    for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++)
+      g[oy + y][ox + x] = x === 0 || x === 6 || y === 0 || y === 6 || (x >= 2 && x <= 4 && y >= 2 && y <= 4);
+  };
+  finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
+  for (let i = 8; i < n - 8; i++) { g[6][i] = i % 2 === 0; g[i][6] = i % 2 === 0; }
+  const inFinder = (x, y) => (x < 8 && y < 8) || (x >= n - 8 && y < 8) || (x < 8 && y >= n - 8);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++)
+    if (!inFinder(x, y) && x !== 6 && y !== 6) g[y][x] = rnd() < .46;
+  let rects = "";
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++)
+    if (g[y][x]) rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" fill="#2B2620">${rects}</svg>`;
+}
+
+function openMyQR() {
+  closeSheet();
+  const uid = uidOf(state.profile.name);
+  $("#qrCard").innerHTML = `
+    <div class="qr-user">
+      <div class="avatar">${avatarInnerHTML()}</div>
+      <div><b>${esc(state.profile.name || "未注册")}</b><span>ID：${esc(uid)}</span></div>
+    </div>
+    <div class="qr-box">${qrSVG("quqi-friend:" + uid)}</div>
+    <p class="qr-tip">扫一扫上面的二维码图案，加我为好友</p>
+    <div class="qr-acts">
+      <span onclick="toast('二维码已保存到相册（Demo）📥')">保存图片</span><i></i>
+      <span onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">分享名片</span><i></i>
+      <span onclick="closeQR()">关闭</span>
+    </div>`;
+  $("#qrMask").classList.add("show");
+}
+
+function closeQR() { $("#qrMask").classList.remove("show"); }
+
+/* --- 扫一扫（Demo 模拟识别） --- */
+
+let scanTimer = null;
+
+function openScan() {
+  closeSheet();
+  $("#scanStage").innerHTML = `
+    <div class="scan-frame"><i class="scan-line"></i></div>
+    <p class="scan-tip">将好友二维码放入框内即可自动识别（Demo 模拟）</p>`;
+  $("#ovScan").classList.add("show");
+  clearTimeout(scanTimer);
+  scanTimer = setTimeout(() => {
+    const pool = friendPool().filter(n => !state.friends.has(n));
+    const n = pool[Math.floor(Math.random() * pool.length)];
+    $("#scanStage").innerHTML = `
+      <div class="scan-result">
+        <div class="avatar" style="background:${avatarBg(n)};width:56px;height:56px;font-size:20px">${esc(n[0])}</div>
+        <b>${esc(n)}</b><span>ID：${uidOf(n)}</span>
+        <p>${esc(bioOf(n))}</p>
+        <div id="scanBtnWrap" data-name="${esc(n)}">${friendBtnHTML(n)}</div>
+        <em onclick="openScan()">↻ 继续扫</em>
+      </div>`;
+  }, 1800);
+}
+
+function closeScan() { clearTimeout(scanTimer); $("#ovScan").classList.remove("show"); }
+
+/* --- 分享应用 --- */
+
+const APP_SHARE_URL = "https://miawork.github.io/quqing-demo/";
+
+function shareApp() {
+  closeSheet();
+  const plats = [["💬", "微信好友"], ["🌿", "朋友圈"], ["🐧", "QQ"], ["📣", "微博"]];
+  openSheet("分享「曲境」给朋友", `
+    <div class="share-app-qr">${qrSVG("quqing-app:" + APP_SHARE_URL)}</div>
+    <p class="qr-tip">扫码体验「曲境 · 古风音乐约稿平台」</p>
+    <div class="share-grid">
+      ${plats.map(([e, p]) => `<div class="share-it" onclick="closeSheet();toast('已分享到${p}（Demo）↗')"><span>${e}</span><b>${p}</b></div>`).join("")}
+      <div class="share-it" onclick="copyAppLink()"><span>🔗</span><b>复制链接</b></div>
+    </div>`);
+}
+
+function copyAppLink() {
+  closeSheet();
+  navigator.clipboard?.writeText(APP_SHARE_URL).catch(() => {});
+  toast("应用链接已复制，快去分享吧 🔗");
 }
 
 /* ---------- 沉浸式作品浏览 ---------- */
@@ -2888,11 +3112,11 @@ function doSearch(commit) {
   ].join("/"), kws));
 
   const users = allUserNames().filter(n =>
-    searchHit(n + "/" + (USERS_EXTRA[n]?.bio || "曲境用户"), kws));
+    searchHit(n + "/" + uidOf(n) + "/" + (USERS_EXTRA[n]?.bio || "曲境用户"), kws));
 
   /* 命中自己：跳转到我的主页 */
   const me = state.profile.name && searchHit(
-    state.profile.name + "/" + (state.profile.bio || ""), kws);
+    state.profile.name + "/" + uidOf(state.profile.name) + "/" + (state.profile.bio || ""), kws);
 
   const demands = DEMANDS.filter(d => searchHit(
     [d.title, d.desc, d.who, d.biz, d.tags.join("/")].join("/"), kws));

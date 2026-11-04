@@ -54,7 +54,10 @@
     <div class="screen" id="scr-msg">
       <div class="header">
         <div class="logo" style="font-size:20px">消息</div>
-        <div class="header-action" onclick="markAllMessages()">全部已读</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-left:auto">
+          <div class="header-action" onclick="markAllMessages()">全部已读</div>
+          <div class="header-action af-plus" onclick="openMsgPlus()" title="添加好友 / 分享">＋</div>
+        </div>
       </div>
       <div class="sys-notice">📜 平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
       <div id="msgList"></div>
@@ -564,6 +567,29 @@
     <input type="file" id="heroBgFile" accept="image/*" hidden onchange="onHeroBgFile(this)">
     <input type="file" id="avatarFile" accept="image/*" hidden onchange="onAvatarFile(this)">
     <input type="file" id="stickerFile" accept="image/*" hidden onchange="onStickerImg(this)">
+
+    <!-- ========== 添加好友 ========== -->
+    <div class="overlay" id="ovAddFriend">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovAddFriend')">‹</div>
+        <h3>添加好友</h3>
+      </div>
+      <div class="ov-body" id="afBody"></div>
+    </div>
+
+    <!-- ========== 扫一扫（Demo 模拟） ========== -->
+    <div class="overlay scan-ov" id="ovScan">
+      <div class="scan-head">
+        <div class="back-btn" onclick="closeScan()" style="border-color:rgba(255,255,255,.4);color:#fff">‹</div>
+        <h3 style="color:#fff">扫一扫</h3>
+      </div>
+      <div class="scan-stage" id="scanStage"></div>
+    </div>
+
+    <!-- ========== 我的好友二维码 ========== -->
+    <div class="qr-mask" id="qrMask" onclick="if(event.target===this)closeQR()">
+      <div class="qr-card" id="qrCard"></div>
+    </div>
 
     <div class="toast" id="toast"></div>
 

@@ -156,8 +156,8 @@ function userProfileHTML(name) {
       <div class="ph-top">
         <div class="avatar" style="background:${avatarBg(name)}">${esc(name[0])}</div>
         <div style="flex:1">
-          <div class="ph-name-row"><h2>${esc(name)}</h2><span id="artFollowWrap">${followBtnHTML(name)}</span></div>
-          <div class="uid">${FANS.includes(name) ? "TA 关注了我 · " : ""}暂未开通接稿主页</div>
+          <div class="ph-name-row"><h2>${esc(name)}</h2><span id="artFriendWrap">${friendBtnHTML(name)}</span><span id="artFollowWrap">${followBtnHTML(name)}</span></div>
+          <div class="uid">ID：${uidOf(name)}${FANS.includes(name) ? " · TA 关注了我" : ""} · 暂未开通接稿主页</div>
         </div>
       </div>
     </div>
@@ -503,8 +503,8 @@ function artistProfileHTML(a) {
       <div class="ph-top">
         <div class="avatar" style="background:${avatarBg(a.name)}">${esc(a.name[0])}</div>
         <div style="flex:1">
-          <div class="ph-name-row"><h2>${esc(a.name)}</h2><span id="artFollowWrap">${followBtnHTML(a.name)}</span></div>
-          <div class="uid">开放约稿中 · 平均响应 2 小时</div>
+          <div class="ph-name-row"><h2>${esc(a.name)}</h2><span id="artFriendWrap">${friendBtnHTML(a.name)}</span><span id="artFollowWrap">${followBtnHTML(a.name)}</span></div>
+          <div class="uid">ID：${uidOf(a.name)} · 开放约稿中 · 平均响应 2 小时</div>
           <div class="ph-roles">${a.roles.map(r => `<span class="tag">${r}</span>`).join("")}</div>
         </div>
       </div>

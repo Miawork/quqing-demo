@@ -1366,3 +1366,94 @@ body {
 .wd-st { text-align: right; font-size: 11px; font-weight: 700; color: var(--gold); }
 .wd-st.ok { color: var(--green, #4A6B4F); }
 .wd-st span { display: block; font-size: 9.5px; font-weight: 400; color: var(--ink-3); }
+
+/* ---------- 好友系统：添加好友 / 二维码 / 扫一扫 / 分享应用 ---------- */
+.af-plus { font-size: 20px; line-height: 1; }
+.af-search { padding: 12px 16px 2px; }
+.af-myid {
+  display: flex; align-items: center; margin: 10px 16px; padding: 11px 14px;
+  border: 1.5px dashed var(--ink-3); border-radius: 12px;
+  font-size: 12px; color: var(--ink-2); cursor: pointer;
+}
+.af-myid b { color: var(--ink); margin-left: 3px; font-family: var(--font-sans); }
+.af-myid em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--red); }
+.af-entry {
+  display: flex; align-items: center; gap: 12px; margin: 0 16px 10px; padding: 12px 14px;
+  background: var(--paper-2); border: 2px solid var(--ink);
+  border-radius: 12px 9px 13px 9px; cursor: pointer; box-shadow: var(--shadow-card);
+}
+.af-entry > span {
+  width: 34px; height: 34px; flex: none; border-radius: 10px;
+  background: var(--paper); border: 1.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.af-entry b { display: block; font-size: 13px; }
+.af-entry i { font-style: normal; font-size: 10.5px; color: var(--ink-3); }
+.af-entry em { margin-left: auto; font-style: normal; color: var(--ink-3); }
+
+/* 二维码名片 */
+.qr-mask {
+  position: absolute; inset: 0; z-index: 55; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(43,38,32,.6); backdrop-filter: blur(3px);
+}
+.qr-mask.show { display: flex; }
+.qr-card {
+  width: 268px; padding: 20px 22px;
+  background: var(--paper-2); border: 2px solid var(--ink);
+  border-radius: 18px 14px 18px 14px; box-shadow: var(--shadow-card);
+}
+.qr-user { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.qr-user .avatar { width: 44px; height: 44px; overflow: hidden; }
+.qr-user .avatar img, .qr-user .avatar svg { width: 100%; height: 100%; object-fit: cover; }
+.qr-user b { display: block; font-size: 14px; }
+.qr-user span { font-size: 10.5px; color: var(--ink-3); font-family: var(--font-sans); }
+.qr-box {
+  width: 180px; height: 180px; margin: 0 auto; padding: 10px;
+  background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
+}
+.qr-box svg { width: 100%; height: 100%; display: block; }
+.qr-tip { text-align: center; font-size: 10.5px; color: var(--ink-3); margin: 10px 0 12px; }
+.qr-acts { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 12px; color: var(--red); }
+.qr-acts span { cursor: pointer; }
+.qr-acts i { width: 1px; height: 12px; background: var(--line); }
+
+/* 扫一扫 */
+.scan-ov { background: #16130F; z-index: 28; }
+.scan-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; flex-shrink: 0; }
+.scan-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 0 30px 60px; }
+.scan-frame {
+  position: relative; width: 208px; height: 208px; overflow: hidden;
+  border: 2px solid rgba(255,255,255,.85); border-radius: 14px;
+}
+.scan-frame .scan-line {
+  position: absolute; left: 8px; right: 8px; height: 2px;
+  background: linear-gradient(90deg, transparent, #B8912E, transparent);
+  animation: scanmove 1.6s linear infinite;
+}
+@keyframes scanmove { from { top: 6px; } to { top: calc(100% - 8px); } }
+.scan-tip { font-size: 11px; color: rgba(255,255,255,.55); letter-spacing: 1px; text-align: center; }
+.scan-result {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  width: 238px; padding: 22px 24px;
+  background: var(--paper-2); border: 2px solid var(--ink); border-radius: 16px 13px 17px 13px;
+}
+.scan-result b { font-size: 15px; }
+.scan-result > span { font-size: 10.5px; color: var(--ink-3); font-family: var(--font-sans); }
+.scan-result p { font-size: 11.5px; color: var(--ink-2); text-align: center; margin: 2px 0 4px; line-height: 1.6; }
+.scan-result em { font-style: normal; font-size: 11px; color: #C9A86A; cursor: pointer; margin-top: 6px; }
+
+/* 分享应用 */
+.share-app-qr {
+  width: 128px; height: 128px; margin: 4px auto 0; padding: 8px;
+  background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
+}
+.share-app-qr svg { width: 100%; height: 100%; display: block; }
+.share-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 4px 0 6px; }
+.share-it { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+.share-it span {
+  width: 44px; height: 44px; border-radius: 12px; font-size: 19px;
+  background: var(--paper); border: 1.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+}
+.share-it b { font-size: 10px; color: var(--ink-2); font-weight: 400; }
