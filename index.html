@@ -97,6 +97,13 @@
         <div class="switch" onclick="toggleAccepting(this)"></div>
       </div>
 
+      <!-- 工作区置顶：订单 / 报价（方便第一时间查看和工作） -->
+      <div class="section-title"><h3>我的订单</h3><a href="javascript:;" onclick="openOrders()">全部 ›</a></div>
+      <div class="order-entry" id="orderEntry"></div>
+
+      <div class="section-title"><h3>我的报价</h3><a href="javascript:;" onclick="openManage('price')">编辑 ›</a></div>
+      <div class="price-list" id="myPrices"></div>
+
       <!-- 钱包：托管中 / 可提现 -->
       <div class="wallet-card">
         <div class="w-item"><b id="wEscrow">¥0</b><span>托管中稿酬</span></div>
@@ -113,14 +120,9 @@
       <div class="section-title"><h3>我的收藏夹</h3><a href="javascript:;" onclick="openFavs()">全部 ›</a></div>
       <div class="fav-strip" id="favStrip"></div>
 
-      <div class="section-title"><h3>我的订单</h3><a href="javascript:;" onclick="openOrders()">全部 ›</a></div>
-      <div class="order-entry" id="orderEntry"></div>
-
       <div class="section-title"><h3>我收到的评价</h3><a href="javascript:;" onclick="openSettings()">设置 ›</a></div>
       <div id="myReviews" style="padding:0 16px"></div>
 
-      <div class="section-title"><h3>我的报价</h3><a href="javascript:;" onclick="openManage('price')">编辑 ›</a></div>
-      <div class="price-list" id="myPrices"></div>
       <div class="section-title"><h3>我的作品</h3><a href="javascript:;" onclick="openManage('work')">管理 ›</a></div>
       <div class="mini-works" id="myWorks"></div>
     </div>
