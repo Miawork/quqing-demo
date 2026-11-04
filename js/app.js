@@ -43,6 +43,8 @@ const state = {
   searchHistory: ["古风作曲", "水墨 PV"], // 搜索历史（最多 8 条）
   settings: {              // 设置（小红书式）
     email: "", phone: "",
+    theme: "system",       // 夜间模式：system | light | dark
+    cacheMB: 12.6,         // 模拟缓存大小
     privacy: { showFollow: true, allowDM: true, findByPhone: false, personalized: true },
   },
 };
@@ -2870,8 +2872,8 @@ function renderSettings() {
       <div class="set-item"><span>公开我收到的评价</span>${sw(state.showMyReviews, "toggleMyReviews();renderSettings()")}</div>
     </div>
     <div class="set-group"><h4>通用</h4>
-      <div class="set-item" onclick="toast('缓存已清理 12.6 MB ✨')"><span>清理缓存</span><b>12.6 MB</b><i>›</i></div>
-      <div class="set-item" onclick="toast('Demo：夜间模式即将上线 🌙')"><span>夜间模式</span><b>跟随系统</b><i>›</i></div>
+      <div class="set-item" onclick="openClearCache()"><span>清理缓存</span><b>${cacheSizeLabel()}</b><i>›</i></div>
+      <div class="set-item" onclick="openThemeSheet()"><span>夜间模式</span><b>${THEME_LABELS[s.theme]}</b><i>›</i></div>
     </div>
     <div class="set-group"><h4>关于曲境</h4>
       <div class="set-item" onclick="openTerms('terms')"><span>我们的条约（用户协议）</span><i>›</i></div>
@@ -2886,6 +2888,72 @@ function togglePriv(key, el) {
   state.settings.privacy[key] = !state.settings.privacy[key];
   el.classList.toggle("off", !state.settings.privacy[key]);
   toast(state.settings.privacy[key] ? "已开启 ✓" : "已关闭");
+}
+
+/* ---------- 设置 · 清理缓存 ---------- */
+
+function cacheSizeLabel() {
+  const m = state.settings.cacheMB;
+  return m <= 0 ? "0 B" : m.toFixed(1) + " MB";
+}
+
+function openClearCache() {
+  const m = state.settings.cacheMB;
+  if (m <= 0) { toast("已经很干净啦 ✨"); return; }
+  const row = (name, mb) => `<div class="set-item"><span>${name}</span><b>${mb.toFixed(1)} MB</b></div>`;
+  openSheet("清理缓存", `
+    ${row("🖼 图片缓存", m * .58)}
+    ${row("🎵 音频试听缓存", m * .31)}
+    ${row("📦 其他数据", m * .11)}
+    <p class="se-note" style="margin-top:10px">清理后作品图片与试听音频需重新加载，不影响草稿与聊天记录</p>
+    <button class="btn primary" style="width:100%;margin-top:14px" id="ccBtn" onclick="doClearCache()">清理 ${m.toFixed(1)} MB</button>`);
+}
+
+function doClearCache() {
+  const btn = $("#ccBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "清理中…"; }
+  setTimeout(() => {
+    const m = state.settings.cacheMB;
+    state.settings.cacheMB = 0;
+    closeSheet();
+    renderSettings();
+    toast(`已清理 ${m.toFixed(1)} MB ✨`);
+  }, 700);
+}
+
+/* ---------- 设置 · 夜间模式 ---------- */
+
+const THEME_LABELS = { system: "跟随系统", light: "浅色", dark: "夜间" };
+
+function applyTheme() {
+  const t = state.settings.theme;
+  const dark = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", dark);
+}
+
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (state.settings.theme === "system") applyTheme();
+});
+
+function openThemeSheet() {
+  const opt = (key, icon, desc) => `
+    <div class="set-item" onclick="setTheme('${key}')">
+      <span>${icon} ${THEME_LABELS[key]}</span>
+      <b style="font-size:11px;opacity:.7">${desc}</b>
+      <i>${state.settings.theme === key ? "✓" : ""}</i>
+    </div>`;
+  openSheet("夜间模式", `
+    ${opt("system", "🌗", "随系统自动切换")}
+    ${opt("light", "☀︎", "始终宣纸浅色")}
+    ${opt("dark", "🌙", "始终夜色水墨")}`);
+}
+
+function setTheme(t) {
+  state.settings.theme = t;
+  applyTheme();
+  closeSheet();
+  renderSettings();
+  toast(t === "dark" ? "已切换夜色水墨 🌙" : t === "light" ? "已切换宣纸浅色 ☀︎" : "已跟随系统 🌗");
 }
 
 /* 设置 · 编辑弹层（改 ID / 绑邮箱 / 绑手机） */
@@ -3264,6 +3332,7 @@ function startBannerAuto() {
 }
 
 /* ---------- 启动 ---------- */
+applyTheme();
 injectIcons();
 renderBanner();
 renderCategories();

@@ -16,6 +16,7 @@
   --green:      #4A6B4F;   /* 绿（非商业 / 开放接稿状态） */
   --green-light:#E3EDE2;
   --line:       #E5DCC9;   /* 描边 / 分割线 */
+  --card:       #ffffff;   /* 输入框 / 小面板底色 */
   --viewer-bg:  #171512;   /* 沉浸式浏览页底色 */
 
   /* 布局参数 */
@@ -33,3 +34,27 @@
   --font-serif: "Yuanti SC", "YouYuan", "Chalkboard SE", "Comic Sans MS", "Noto Serif SC", serif;
   --font-sans: "Yuanti SC", "YouYuan", -apple-system, sans-serif;
 }
+
+/* ============================================================
+ * 夜间模式（html.dark 由 js/app.js applyTheme() 控制）
+ * 夜色水墨：深褐墨底 + 米白文字，保留朱砂 / 烫金点缀
+ * ============================================================ */
+html.dark {
+  --paper:      #1C1915;   /* 页面底色（夜墨） */
+  --paper-2:    #27221C;   /* 卡片底色 */
+  --ink:        #EAE2D3;   /* 主文字 */
+  --ink-2:      #B3A892;   /* 次级文字 */
+  --ink-3:      #837866;   /* 弱化文字 */
+  --red:        #C9655B;   /* 朱砂提亮，保证对比度 */
+  --red-light:  #3B2723;
+  --gold:       #CDA94E;
+  --gold-light: #342B17;
+  --green:      #85AB8B;
+  --green-light:#243027;
+  --line:       #3B342A;
+  --card:       #322C24;
+  --shadow-card: 3px 4px 0 rgba(0, 0, 0, .35);
+}
+html.dark body { background: #121009; }
+html.dark img { filter: brightness(.88); }
+html.dark .sinfo { background: rgba(28, 25, 21, .9); border-top-color: rgba(255, 255, 255, .06); }

@@ -41,7 +41,7 @@ body {
   padding: 10px 18px 12px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 5;
-  background: linear-gradient(var(--paper) 80%, rgba(247, 242, 231, 0));
+  background: linear-gradient(var(--paper) 80%, transparent);
 }
 .logo { font-size: 24px; font-weight: 700; letter-spacing: 2px; color: var(--ink); }
 .logo .seal {
@@ -926,7 +926,7 @@ body {
 .star-row i.on { opacity: 1; transform: rotate(-6deg) scale(1.08); }
 .rate-box textarea {
   width: 100%; padding: 10px 12px; font: inherit; font-size: 13px; outline: none;
-  background: #fff; border: 2px solid var(--ink); border-radius: 14px; resize: none;
+  background: var(--card); border: 2px solid var(--ink); border-radius: 14px; resize: none;
 }
 .rate-acts { display: flex; gap: 10px; margin-top: 14px; }
 .rate-acts .btn { flex: 1; }
@@ -944,7 +944,7 @@ body {
 }
 .chat-row.me .bubble { background: var(--red-light); }
 .sticker {
-  text-align: center; padding: 10px 18px; background: #fff;
+  text-align: center; padding: 10px 18px; background: var(--card);
   border: 2px dashed var(--ink); border-radius: var(--squiggle-sm); transform: rotate(-1.5deg);
 }
 .sticker span { font-size: 32px; display: block; }
@@ -959,14 +959,14 @@ body {
 }
 .chat-bar input {
   flex: 1; min-width: 0; padding: 9px 14px; font: inherit; font-size: 13px; outline: none;
-  background: #fff; border: 2px solid var(--ink); border-radius: 999px;
+  background: var(--card); border: 2px solid var(--ink); border-radius: 999px;
 }
 .chat-bar input:focus { border-color: var(--red); }
 .send-btn { padding: 9px 16px; font-size: 12.5px; flex: none; }
 .cbtn {
   width: 36px; height: 36px; flex: none; cursor: pointer; font-size: 18px;
   display: flex; align-items: center; justify-content: center;
-  background: #fff; border: 2px solid var(--ink); border-radius: 50%;
+  background: var(--card); border: 2px solid var(--ink); border-radius: 50%;
   box-shadow: 2px 2.5px 0 rgba(43,38,32,.15);
 }
 .cbtn:active { transform: translate(1.5px,1.5px); box-shadow: none; }
@@ -980,7 +980,7 @@ body {
   width: 66px; text-align: center; cursor: pointer; padding: 8px 2px;
   border: 2px solid transparent; border-radius: 14px;
 }
-.tray-item:active { border-color: var(--ink); background: #fff; }
+.tray-item:active { border-color: var(--ink); background: var(--card); }
 .tray-item span { font-size: 26px; display: block; }
 .tray-item b { font-size: 9.5px; color: var(--ink-2); letter-spacing: 1px; }
 .tray-item img { width: 42px; height: 42px; object-fit: cover; border: 2px solid var(--ink); border-radius: 10px; }
@@ -1024,7 +1024,7 @@ body {
 
 .post-input {
   width: 100%; padding: 10px 12px; margin-bottom: 10px; font: inherit; font-size: 13px; outline: none;
-  background: #fff; border: 2px solid var(--ink); border-radius: 14px;
+  background: var(--card); border: 2px solid var(--ink); border-radius: 14px;
 }
 .post-input:focus { border-color: var(--red); }
 
@@ -1032,7 +1032,7 @@ body {
 .pm-row { display: inline-flex; gap: 4px; }
 .pm-opt {
   font-size: 10px; padding: 2.5px 8px; cursor: pointer; letter-spacing: .5px;
-  color: var(--ink-3); background: #fff;
+  color: var(--ink-3); background: var(--card);
   border: 1.5px dashed var(--ink-3); border-radius: 999px;
 }
 .pm-opt.on { color: var(--red); border: 2px solid var(--red); background: var(--red-light); font-weight: 700; }
@@ -1054,7 +1054,7 @@ body {
 
 .cmt-sticker {
   display: inline-block; text-align: center; padding: 8px 14px; margin-top: 2px;
-  background: #fff; border: 2px dashed var(--ink); border-radius: 14px 10px 16px 10px;
+  background: var(--card); border: 2px dashed var(--ink); border-radius: 14px 10px 16px 10px;
   transform: rotate(-1deg);
 }
 .cmt-sticker span { font-size: 24px; display: block; }
@@ -1138,7 +1138,7 @@ body {
 .pch {
   display: flex; align-items: center; gap: 9px; cursor: pointer;
   padding: 10px 13px; margin-bottom: 8px; font-size: 13px;
-  background: #fff; border: 2px solid var(--ink); border-radius: 14px 11px 15px 11px;
+  background: var(--card); border: 2px solid var(--ink); border-radius: 14px 11px 15px 11px;
 }
 .pch span { font-size: 18px; }
 .pch b { font-weight: 700; }
