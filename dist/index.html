@@ -540,6 +540,9 @@ body {
 .ph-name-row { display: flex; align-items: center; gap: 10px; }
 .ph-name-row .fbtn { margin-left: auto; flex-shrink: 0; }
 .ph-top .uid { font: 10.5px var(--font-sans); opacity: .65; margin-top: 3px; }
+.uid-row { display: flex; align-items: center; gap: 7px; }
+.uid-qr { display: inline-flex; align-items: center; margin-top: 3px; opacity: .7; cursor: pointer; color: inherit; }
+.uid-qr:active { opacity: 1; }
 .ph-roles { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; cursor: pointer; }
 .ph-roles .tag { background: rgba(255,255,255,.16); color: var(--paper); }
 .ph-stats { display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,.15); padding-top: 12px; }
@@ -1565,6 +1568,7 @@ body {
     <div class="screen" id="scr-me">
       <div class="header">
         <div class="logo" style="font-size:20px">我的主页</div>
+        <div class="header-action af-plus" onclick="openMsgPlus()" title="添加好友 / 分享">＋</div>
         <div class="header-action icon-btn" data-icon="gear" onclick="openSettings()"></div>
       </div>
       <div class="profile-hero" id="myHero">
@@ -1574,7 +1578,7 @@ body {
           <div class="avatar avatar-photo" id="myAvatar" onclick="pickAvatar()" title="点击更换头像"></div>
           <div>
             <h2 id="myName">洛云笙</h2>
-            <div class="uid" id="myUid">ID: quqi_180324</div>
+            <div class="uid-row"><div class="uid" id="myUid">ID: quqi_180324</div><span class="uid-qr" onclick="openMyQR()" title="我的二维码"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3z"/><path d="M21 14v2M19 19h2M14 21h3"/></svg></span></div>
             <div class="ph-roles" id="myRoles" onclick="openRoleSetup('edit')"></div>
           </div>
         </div>
