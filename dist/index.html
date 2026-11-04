@@ -122,6 +122,8 @@ body {
   vertical-align: super; margin-left: 6px; letter-spacing: 0;
 }
 .header-action { font-size: 13px; color: var(--ink-3); cursor: pointer; }
+.hdr-ic { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; color: var(--ink-2); }
+.hdr-ic svg, .hdr-ic .li { width: 19px; height: 19px; display: block; }
 
 .search {
   margin: 0 18px 12px; padding: 9px 16px;
@@ -1593,10 +1595,10 @@ body {
     <div class="screen" id="scr-me">
       <div class="header">
         <div class="logo" style="font-size:20px">我的主页</div>
-        <div style="display:flex;align-items:center;gap:14px;margin-left:auto">
-          <div class="header-action af-plus" onclick="openAddFriend()" title="添加好友">＋</div>
-          <div class="header-action" onclick="openScan()" title="扫一扫"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M4 12h16"/></svg></div>
-          <div class="header-action icon-btn" data-icon="gear" onclick="openSettings()"></div>
+        <div style="display:flex;align-items:center;gap:15px;margin-left:auto">
+          <div class="header-action hdr-ic" onclick="openAddFriend()" title="添加好友"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.4"/><path d="M3.5 20c.8-3.6 3.4-5.4 6.5-5.4s5.7 1.8 6.5 5.4"/><path d="M19 8v6M16 11h6"/></svg></div>
+          <div class="header-action hdr-ic" onclick="openScan()" title="扫一扫"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M4 12h16"/></svg></div>
+          <div class="header-action hdr-ic icon-btn" data-icon="gear" onclick="openSettings()"></div>
         </div>
       </div>
       <div class="profile-hero" id="myHero">
@@ -3445,7 +3447,7 @@ const state = {
   searchHistory: ["古风作曲", "水墨 PV"], // 搜索历史（最多 8 条）
   settings: {              // 设置（小红书式）
     email: "", phone: "", password: "",
-    theme: "system",       // 夜间模式：system | light | dark
+    theme: "light",        // 夜间模式：system | light | dark（默认日间）
     cacheMB: 12.6,         // 模拟缓存大小
     privacy: { showFollow: true, allowDM: true, findByPhone: false, personalized: true },
   },

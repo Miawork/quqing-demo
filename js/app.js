@@ -43,7 +43,7 @@ const state = {
   searchHistory: ["古风作曲", "水墨 PV"], // 搜索历史（最多 8 条）
   settings: {              // 设置（小红书式）
     email: "", phone: "", password: "",
-    theme: "system",       // 夜间模式：system | light | dark
+    theme: "light",        // 夜间模式：system | light | dark（默认日间）
     cacheMB: 12.6,         // 模拟缓存大小
     privacy: { showFollow: true, allowDM: true, findByPhone: false, personalized: true },
   },

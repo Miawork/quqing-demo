@@ -50,6 +50,8 @@ body {
   vertical-align: super; margin-left: 6px; letter-spacing: 0;
 }
 .header-action { font-size: 13px; color: var(--ink-3); cursor: pointer; }
+.hdr-ic { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; color: var(--ink-2); }
+.hdr-ic svg, .hdr-ic .li { width: 19px; height: 19px; display: block; }
 
 .search {
   margin: 0 18px 12px; padding: 9px 16px;
