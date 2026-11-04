@@ -1098,6 +1098,8 @@ body { background: #D9DADE; }
   display: flex; align-items: center; justify-content: center; font-size: 12px;
 }
 .gp-row.sel .gp-check { background: var(--red); border-color: var(--red); color: #fff; }
+.mute-ic { font-style: normal; font-size: 12px; color: var(--ink-3); margin-left: 5px; }
+.mute-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-3); flex: none; opacity: .55; }
 .fbtn.blocked { background: var(--ink-3); color: #fff; }
 .af-entry.danger b, .af-entry.danger > span { color: #F53F3F; }
 .btn.danger-btn { background: #F53F3F; }
@@ -3515,15 +3517,16 @@ function groupAvatarHTML(gname) {
 }
 
 function messageHTML(m) {
+  const muted = state.muted.has(m.name);
   return `<div class="msg-item" onclick="openChat('${esc(m.name)}')">
     ${GROUPS[m.name]
       ? groupAvatarHTML(m.name)
       : `<div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>`}
     <div class="msg-body">
-      <div class="r1"><span class="mname">${esc(m.name)}</span><span class="time">${m.time}</span></div>
+      <div class="r1"><span class="mname">${esc(m.name)}${muted ? `<i class="mute-ic" title="免打扰">⋘</i>` : ""}</span><span class="time">${m.time}</span></div>
       <div class="txt">${esc(m.txt)}</div>
     </div>
-    ${m.unread ? `<div class="badge">${m.unread}</div>` : ""}</div>`;
+    ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}</div>`;
 }
 
 /** 聊天气泡：文字 / 默认贴纸 / 相册导入表情包 */
@@ -3817,6 +3820,7 @@ const state = {
   },
   following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
+  muted: new Set(),        // 消息免打扰（用户 / 讨论组通用）
   accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
@@ -5427,13 +5431,32 @@ function openGroupPicker(groupName, preset) {
   if (!cands.length) return toast(g ? "好友都已在群里啦" : "暂无可邀请的好友，互相关注后才能拉群");
   openSheet(g ? "添加群成员" : "发起群聊", `
     <p class="se-note" style="margin-bottom:10px">互相关注的好友才能加入群聊</p>
+    <div class="search-box" style="margin-bottom:10px"><span class="si" data-icon="search"></span>
+      <input id="gpSearch" placeholder="搜好友圈名 / 简介关键词" oninput="gpFilter()"></div>
     ${g ? "" : `<input class="post-input" id="gpName" placeholder="群聊名称（选填，默认用成员名）">`}
-    ${cands.map(n => `<div class="person-row gp-row${preset === n ? " sel" : ""}" data-name="${esc(n)}" onclick="gpToggle(this)">
+    <div id="gpList">
+    ${cands.map(n => `<div class="person-row gp-row${preset === n ? " sel" : ""}" data-name="${esc(n)}" data-kw="${esc(n)} ${esc(bioOf(n))}" onclick="gpToggle(this)">
       <div class="avatar" style="background:${avatarBg(n)}">${esc(n[0])}</div>
       <div class="p-info"><b>${esc(n)}</b><span>${esc(bioOf(n))}</span></div>
       <i class="gp-check">✓</i></div>`).join("")}
+    <div class="rev-hint" id="gpEmpty" style="display:none">没有匹配的好友，换个关键词试试</div>
+    </div>
     <button class="btn primary" style="width:100%;margin-top:12px" id="gpBtn" disabled onclick="gpConfirm()"></button>`);
+  injectIcons();
   gpUpdateBtn();
+}
+
+/** 邀请好友搜索：按圈名/简介关键词过滤，已勾选的始终保留显示 */
+function gpFilter() {
+  const kw = ($("#gpSearch")?.value || "").trim().toLowerCase();
+  let shown = 0;
+  [...$$(".gp-row")].forEach(el => {
+    const hit = !kw || el.dataset.kw.toLowerCase().includes(kw) || el.classList.contains("sel");
+    el.style.display = hit ? "" : "none";
+    if (hit) shown++;
+  });
+  const empty = $("#gpEmpty");
+  if (empty) empty.style.display = shown ? "none" : "";
 }
 
 function gpToggle(el) {
@@ -5487,24 +5510,39 @@ function gpConfirm() {
 function openChatMore() {
   const name = state.currentChat;
   if (!name) return;
+  const muted = state.muted.has(name);
+  const muteEntry = `<div class="af-entry" onclick="closeSheet();toggleMute('${esc(name)}')"><span>${muted ? "铃" : "静"}</span><div><b>${muted ? "取消免打扰" : "消息免打扰"}</b><i>${muted ? "恢复新消息提醒与角标" : "新消息不再提醒，列表不显示角标"}</i></div><em>›</em></div>`;
   if (name === "平台助手")
-    return openSheet("聊天设置", `
-      <div class="af-entry" onclick="closeSheet();toast('Demo：已开启消息免打扰')"><span>静</span><div><b>消息免打扰</b><i>系统通知不再提醒</i></div><em>›</em></div>`);
+    return openSheet("聊天设置", muteEntry);
   const g = GROUPS[name];
   if (g) {
     openSheet("群聊设置", `
       <div class="af-entry" onclick="closeSheet();openGroupMembers()"><span>员</span><div><b>群成员</b><i>共 ${g.members.length + 1} 人${g.owner === "me" ? " · 我是群主" : ""}</i></div><em>›</em></div>
       <div class="af-entry" onclick="closeSheet();openGroupPicker('${esc(name)}')"><span>拉</span><div><b>添加成员</b><i>邀请互关好友进群</i></div><em>›</em></div>
+      ${muteEntry}
       <div class="af-entry" onclick="closeSheet();openGroupRename()"><span>名</span><div><b>修改群聊名称</b><i>${esc(name)}</i></div><em>›</em></div>
       <div class="af-entry danger" onclick="closeSheet();confirmQuitGroup()"><span>退</span><div><b>退出群聊</b><i>退出后不再接收群消息</i></div><em>›</em></div>`);
   } else {
     const blocked = state.blocked.has(name);
     openSheet("聊天设置", `
       <div class="af-entry" onclick="closeSheet();openArtistByName('${esc(name)}')"><span>主</span><div><b>查看主页</b><i>看看 TA 的作品与动态</i></div><em>›</em></div>
+      ${muteEntry}
       <div class="af-entry" onclick="closeSheet();openGroupPicker(null,'${esc(name)}')"><span>群</span><div><b>拉人组建群聊</b><i>和 TA 一起建个讨论组</i></div><em>›</em></div>
       <div class="af-entry danger" onclick="closeSheet();${blocked ? `confirmUnblock('${esc(name)}')` : `confirmBlock('${esc(name)}')`}"><span>黑</span><div><b>${blocked ? "解除拉黑" : "拉黑"}</b><i>${blocked ? "恢复关注与私信" : "不再接收 TA 的消息与互动"}</i></div><em>›</em></div>
       <div class="af-entry" onclick="closeSheet();openReportUser('${esc(name)}')"><span>报</span><div><b>举报</b><i>冒充 / 辱骂 / 广告等违规行为</i></div><em>›</em></div>`);
   }
+}
+
+/** 消息免打扰：用户与讨论组通用 */
+function toggleMute(name) {
+  if (state.muted.has(name)) {
+    state.muted.delete(name);
+    toast(`已取消「${name}」的免打扰`);
+  } else {
+    state.muted.add(name);
+    toast(`已对「${name}」开启消息免打扰`);
+  }
+  renderMessages();
 }
 
 /** 群成员列表：点行进主页；我是群主可移除成员 */

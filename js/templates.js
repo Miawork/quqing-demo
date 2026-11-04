@@ -452,15 +452,16 @@ function groupAvatarHTML(gname) {
 }
 
 function messageHTML(m) {
+  const muted = state.muted.has(m.name);
   return `<div class="msg-item" onclick="openChat('${esc(m.name)}')">
     ${GROUPS[m.name]
       ? groupAvatarHTML(m.name)
       : `<div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>`}
     <div class="msg-body">
-      <div class="r1"><span class="mname">${esc(m.name)}</span><span class="time">${m.time}</span></div>
+      <div class="r1"><span class="mname">${esc(m.name)}${muted ? `<i class="mute-ic" title="免打扰">⋘</i>` : ""}</span><span class="time">${m.time}</span></div>
       <div class="txt">${esc(m.txt)}</div>
     </div>
-    ${m.unread ? `<div class="badge">${m.unread}</div>` : ""}</div>`;
+    ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}</div>`;
 }
 
 /** 聊天气泡：文字 / 默认贴纸 / 相册导入表情包 */
