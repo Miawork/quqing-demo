@@ -1063,6 +1063,19 @@ body { background: #D9DADE; }
   background: var(--paper-2); border-style: dashed;
 }
 .login-tip { font-size: 10.5px; color: var(--ink-3); letter-spacing: 1px; margin: 40px 0 46px; }
+.agree-row {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+  font-size: 11px; color: var(--ink-3); margin-top: 14px; cursor: pointer; user-select: none;
+}
+.agree-row a { color: var(--red); text-decoration: none; }
+.agree-box {
+  width: 15px; height: 15px; flex: none; margin-right: 6px; border-radius: 50%;
+  border: 1.5px solid var(--line); font-style: normal; font-size: 10px;
+  display: inline-flex; align-items: center; justify-content: center; color: transparent;
+}
+.agree-box.on { background: var(--red); border-color: var(--red); color: #fff; }
+.agree-box.on::after { content: "✓"; }
+#ovTerms { z-index: 46; }
 .login-form { width: 100%; max-width: 320px; margin-top: 8px; }
 .login-links { display: flex; justify-content: space-between; margin-top: 14px; }
 .login-links a { font-size: 12px; color: var(--red); text-decoration: none; }

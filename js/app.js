@@ -681,7 +681,7 @@ function buildCardCanvas(cb) {
       ctx.textAlign = "center";
       ctx.fillText("扫一扫关注我 · 互关即好友", W / 2, 660);
       ctx.fillStyle = "#5C5F66"; ctx.font = "600 21px 'Noto Serif SC', serif";
-      ctx.fillText("曲境 · 古风音乐约稿平台", W / 2, 736);
+      ctx.fillText("曲境 · 音乐约稿平台", W / 2, 736);
       ctx.textAlign = "left";
       cb(cv);
     };
@@ -781,7 +781,7 @@ function shareApp() {
   const plats = [["微", "微信好友"], ["圈", "朋友圈"], ["Q", "QQ"], ["博", "微博"]];
   openSheet("分享「曲境」给朋友", `
     <div class="share-app-qr">${qrSVG("quqing-app:" + APP_SHARE_URL)}</div>
-    <p class="qr-tip">扫码体验「曲境 · 古风音乐约稿平台」</p>
+    <p class="qr-tip">扫码体验「曲境 · 音乐约稿平台」</p>
     <div class="share-grid">
       ${plats.map(([e, p]) => `<div class="share-it" onclick="closeSheet();toast('已分享到${p}（Demo）↗')"><span>${e}</span><b>${p}</b></div>`).join("")}
       <div class="share-it" onclick="copyAppLink()"><span>链</span><b>复制链接</b></div>
@@ -3504,7 +3504,6 @@ function doLogout() {
 
 function lvShow(id) {
   ["lvPick", "lvLogin", "lvReg"].forEach(v => { $("#" + v).style.display = v === id ? "" : "none"; });
-  if (id === "lvReg") lrSetMethod(lrMethod);
 }
 
 function acctAvatarHTML(a) {
@@ -3530,7 +3529,7 @@ function reloginAcct(i, el) {
   setTimeout(() => enterApp(state.accounts[i], false), 450);
 }
 
-/** 登录成功：恢复账号资料；新用户进选工种，老用户直进首页 */
+/** 登录成功：恢复账号资料；新用户进资料+选工种初始流程，老用户直进首页 */
 function enterApp(acc, isNew) {
   state.profile.name = acc.name;
   state.profile.uid = acc.uid;
@@ -3544,7 +3543,9 @@ function enterApp(acc, isNew) {
   renderMyProfile();
   if (isNew) {
     state.roleSetupMode = "register";
-    showRegStep(2);
+    showRegStep(1);
+    const nameIn = $("#fName");
+    if (nameIn) nameIn.value = acc.name || "";
     $("#regOverlay").classList.add("show");
   } else {
     switchTab(document.querySelector('.tab[data-scr="scr-home"]'));
@@ -3552,54 +3553,96 @@ function enterApp(acc, isNew) {
   }
 }
 
-/** 账号密码登录（老用户） */
+/* --- 验证码（Demo：生成后直接 toast 告知） --- */
+
+let smsCode = null, smsTimer = null;
+
+function sendSmsCode(phoneId, btnId) {
+  const phone = $("#" + phoneId).value.trim();
+  if (!/^1\d{10}$/.test(phone)) return toast("请先填写正确的 11 位手机号");
+  smsCode = String(Math.floor(100000 + Math.random() * 900000));
+  toast(`Demo 短信验证码：${smsCode}`);
+  const btn = $("#" + btnId);
+  let left = 60;
+  btn.disabled = true;
+  btn.textContent = `重发 ${left}s`;
+  clearInterval(smsTimer);
+  smsTimer = setInterval(() => {
+    left--;
+    if (left <= 0) {
+      clearInterval(smsTimer);
+      btn.disabled = false;
+      btn.textContent = "获取验证码";
+    } else btn.textContent = `重发 ${left}s`;
+  }, 1000);
+}
+
+/* --- 协议勾选 --- */
+
+function toggleAgree(id) {
+  $("#" + id).classList.toggle("on");
+}
+
+const agreed = id => $("#" + id).classList.contains("on");
+
+/* --- 登录：验证码（默认） / 密码 两种方式 --- */
+
+let liMode = "code"; // "code" | "pwd"
+
+function liToggleMode() {
+  liMode = liMode === "code" ? "pwd" : "code";
+  $("#liCodeForm").style.display = liMode === "code" ? "" : "none";
+  $("#liPwdForm").style.display = liMode === "pwd" ? "" : "none";
+  $("#liModeLink").textContent = liMode === "code" ? "密码登录" : "验证码登录";
+}
+
 function lvLoginSubmit() {
+  if (!agreed("liAgree")) return toast("请先勾选同意《曲境条约》和《隐私政策》");
+  if (liMode === "code") {
+    const phone = $("#liPhone").value.trim();
+    const code = $("#liCode").value.trim();
+    if (!/^1\d{10}$/.test(phone)) return toast("请填写正确的 11 位手机号");
+    if (!smsCode) return toast("请先获取验证码");
+    if (code !== smsCode) return toast("验证码不正确，再检查一下");
+    smsCode = null;
+    const acc = state.accounts.find(a => a.phone === phone);
+    if (acc) return enterApp(acc, false);
+    // 未注册手机号：验证通过后自动创建账号（小红书式）
+    const nu = { name: "曲友" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
+    state.accounts.push(nu);
+    toast("新账号已创建，完善一下资料吧");
+    return enterApp(nu, true);
+  }
   const id = $("#liAcct").value.trim();
   const pwd = $("#liPwd").value;
   if (!id) return toast("请输入账号 / ID / 手机号");
   if (!pwd) return toast("请输入密码");
   const acc = state.accounts.find(a => a.uid === id || a.phone === id || a.name === id);
   if (!acc) return toast("账号不存在，可点「注册新账号」");
-  if (acc.password && acc.password !== pwd) return toast("密码不正确，再试试");
+  if (!acc.password) return toast("该账号未设置密码，请用验证码登录");
+  if (acc.password !== pwd) return toast("密码不正确，再试试");
   enterApp(acc, false);
 }
 
-/* --- 注册新账号：手机号 / 邮箱 / 取名，均需绑手机 + 设 ID 和密码 --- */
-
-let lrMethod = "手机号";
-
-function lrSetMethod(m, el) {
-  lrMethod = m;
-  if (el) [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
-  $("#lrMain").innerHTML = m === "手机号" ? ""
-    : m === "邮箱"
-      ? `<label>邮箱 <b>*</b></label><input id="lrEmail" maxlength="40" placeholder="如：mia@example.com">`
-      : `<label>圈名 <b>*</b></label><input id="lrName" maxlength="12" placeholder="在曲境里的名字">`;
-  $("#lrPhoneWrap label").innerHTML = m === "手机号" ? "手机号（即绑定号码） <b>*</b>" : "绑定手机号 <b>*</b>";
-}
+/* --- 注册新账号（小红书式：手机号 + 验证码，验证即创建） --- */
 
 function lvRegSubmit() {
   const phone = $("#lrPhone").value.trim();
-  const pwd = $("#lrPwd").value;
+  const code = $("#lrCode").value.trim();
   if (!/^1\d{10}$/.test(phone)) return toast("请填写正确的 11 位手机号");
-  if (pwd.length < 6) return toast("密码至少 6 位");
-  let name;
-  if (lrMethod === "邮箱") {
-    const em = ($("#lrEmail")?.value || "").trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return toast("邮箱格式不对，再检查一下");
-    name = em.split("@")[0].slice(0, 12);
-  } else if (lrMethod === "取名") {
-    name = ($("#lrName")?.value || "").trim();
-    if (!name) return toast("圈名为必填项");
-  } else {
-    name = "曲友" + phone.slice(-4);
+  if (!smsCode) return toast("请先获取验证码");
+  if (code !== smsCode) return toast("验证码不正确，再检查一下");
+  if (!agreed("lrAgree")) return toast("请先勾选同意《曲境条约》和《隐私政策》");
+  smsCode = null;
+  const old = state.accounts.find(a => a.phone === phone);
+  if (old) {
+    toast("该手机号已注册，已为你直接登录");
+    return enterApp(old, false);
   }
-  const uid = $("#lrUid").value.trim() || randomUid();
-  if (state.accounts.some(a => a.uid === uid)) return toast("这个 ID 已被注册，换一个试试");
-  const acc = { name, uid, avatar: null, gender: "保密", bio: "", roles: [], phone, password: pwd };
+  const acc = { name: "曲友" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
   state.accounts.push(acc);
   toast("注册成功，手机号已绑定");
-  enterApp(acc, true); // 新用户 → 选工种初始界面
+  enterApp(acc, true); // 新用户 → 完善资料 → 选工种
 }
 
 function togglePriv(key, el) {
