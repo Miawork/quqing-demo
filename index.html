@@ -67,8 +67,11 @@
     <div class="screen" id="scr-me">
       <div class="header">
         <div class="logo" style="font-size:20px">我的主页</div>
-        <div class="header-action af-plus" onclick="openMsgPlus()" title="添加好友 / 分享">＋</div>
-        <div class="header-action icon-btn" data-icon="gear" onclick="openSettings()"></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-left:auto">
+          <div class="header-action af-plus" onclick="openAddFriend()" title="添加好友">＋</div>
+          <div class="header-action" onclick="openScan()" title="扫一扫"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M4 12h16"/></svg></div>
+          <div class="header-action icon-btn" data-icon="gear" onclick="openSettings()"></div>
+        </div>
       </div>
       <div class="profile-hero" id="myHero">
         <div class="ph-bg-blur"></div><div class="ph-bg-sharp"></div>
