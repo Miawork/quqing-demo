@@ -1174,6 +1174,7 @@ body {
 .code-row { display: flex; gap: 8px; align-items: stretch; }
 .code-row input { flex: 1; min-width: 0; }
 .code-row .btn { flex: none; padding: 8px 12px; font-size: 11.5px; white-space: nowrap; }
+.code-row .btn:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
 
 .terms-txt { padding: 16px 20px 40px; font-size: 12.5px; line-height: 1.9; color: var(--ink-2); }
 .terms-txt h5 { font-size: 13.5px; color: var(--ink); margin: 14px 0 4px; letter-spacing: 1px; }
@@ -3440,7 +3441,7 @@ const state = {
   currentRepost: null,     // 当前转发的帖子下标
   searchHistory: ["古风作曲", "水墨 PV"], // 搜索历史（最多 8 条）
   settings: {              // 设置（小红书式）
-    email: "", phone: "",
+    email: "", phone: "", password: "",
     theme: "system",       // 夜间模式：system | light | dark
     cacheMB: 12.6,         // 模拟缓存大小
     privacy: { showFollow: true, allowDM: true, findByPhone: false, personalized: true },
@@ -6260,7 +6261,7 @@ function renderSettings() {
       <div class="set-item" onclick="openSetEdit('uid')"><span>修改曲境 ID</span><b>${esc(p.uid || "未设置")}</b><i>›</i></div>
       <div class="set-item" onclick="openSetEdit('email')"><span>绑定邮箱</span><b>${s.email ? esc(maskEmail(s.email)) : "未绑定"}</b><i>›</i></div>
       <div class="set-item" onclick="openSetEdit('phone')"><span>绑定手机号</span><b>${s.phone ? maskPhone(s.phone) : "未绑定"}</b><i>›</i></div>
-      <div class="set-item" onclick="toast(state.settings.email ? '改密链接已发送至绑定邮箱 ✉️' : '请先绑定邮箱再修改密码')"><span>修改密码</span><i>›</i></div>
+      <div class="set-item" onclick="openSetEdit('password')"><span>修改密码</span><b>${s.password ? "已设置" : "未设置"}</b><i>›</i></div>
     </div>
     <div class="set-group"><h4>隐私设置</h4>
       <div class="set-item"><span>公开我的关注 / 粉丝列表</span>${sw(s.privacy.showFollow, "togglePriv('showFollow',this)")}</div>
@@ -6358,9 +6359,13 @@ function setTheme(t) {
 
 let setEditKind = null;
 let sentCode = null;
+let codeTimer = null;
 
 function openSetEdit(kind) {
   setEditKind = kind;
+  sentCode = null;
+  clearInterval(codeTimer);
+  const s = state.settings;
   const cfg = {
     uid: {
       title: "修改曲境 ID",
@@ -6369,20 +6374,36 @@ function openSetEdit(kind) {
         <p class="se-note">每 30 天仅可修改一次，修改后旧 ID 立即释放</p>`,
     },
     email: {
-      title: "绑定邮箱",
+      title: s.email ? "更换绑定邮箱" : "绑定邮箱",
       body: `<label>邮箱地址</label>
-        <input id="seInput" maxlength="40" placeholder="name@example.com" value="${esc(state.settings.email)}">
-        <p class="se-note">绑定后可用于登录、找回密码与接收订单提醒</p>`,
-    },
-    phone: {
-      title: "绑定手机号",
-      body: `<label>手机号</label>
-        <input id="seInput" maxlength="11" placeholder="11 位手机号" value="${state.settings.phone}">
-        <label>验证码</label>
+        <input id="seInput" maxlength="40" placeholder="name@example.com" value="${esc(s.email)}">
+        <label>邮件验证码</label>
         <div class="code-row">
           <input id="seCode" maxlength="6" placeholder="6 位验证码">
-          <button class="btn ghost" onclick="sendVerifyCode()">获取验证码</button>
-        </div>`,
+          <button class="btn ghost" id="seCodeBtn" onclick="sendVerifyCode()">发送验证邮件</button>
+        </div>
+        <p class="se-note">我们会向该邮箱发送一封验证邮件，填入邮件中的 6 位验证码完成绑定；绑定后可用于登录、找回密码与接收订单提醒</p>`,
+    },
+    phone: {
+      title: s.phone ? "更换手机号" : "绑定手机号",
+      body: `<label>手机号</label>
+        <input id="seInput" maxlength="11" placeholder="11 位手机号" value="${s.phone}">
+        <label>短信验证码</label>
+        <div class="code-row">
+          <input id="seCode" maxlength="6" placeholder="6 位验证码">
+          <button class="btn ghost" id="seCodeBtn" onclick="sendVerifyCode()">获取验证码</button>
+        </div>
+        <p class="se-note">验证码短信可能有延迟，60 秒内请勿重复获取</p>`,
+    },
+    password: {
+      title: s.password ? "修改密码" : "设置密码",
+      body: `${s.password ? `<label>当前密码</label>
+        <input id="seOld" type="password" maxlength="24" placeholder="请输入当前密码">` : ""}
+        <label>新密码（8-24 位，需同时包含字母和数字）</label>
+        <input id="seInput" type="password" maxlength="24" placeholder="请输入新密码">
+        <label>确认新密码</label>
+        <input id="seConfirm" type="password" maxlength="24" placeholder="再输入一次新密码">
+        <p class="se-note">修改成功后其他设备需重新登录；请勿使用生日、连续数字等弱密码</p>`,
     },
   }[kind];
   $("#seTitle").textContent = cfg.title;
@@ -6390,16 +6411,46 @@ function openSetEdit(kind) {
   $("#setEditMask").classList.add("show");
 }
 
-function closeSetEdit() { $("#setEditMask").classList.remove("show"); }
+function closeSetEdit() {
+  clearInterval(codeTimer);
+  $("#setEditMask").classList.remove("show");
+}
 
 function sendVerifyCode() {
-  if (!/^1\d{10}$/.test($("#seInput").value.trim())) return toast("请先输入正确的 11 位手机号");
-  sentCode = "246810";
-  toast("验证码已发送（Demo 验证码：246810）📨");
+  const v = $("#seInput").value.trim();
+  if (setEditKind === "email") {
+    if (!/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(v)) return toast("请先输入正确的邮箱地址");
+    sentCode = "135790";
+    toast(`验证邮件已发至 ${maskEmail(v)}（Demo 验证码：135790）✉️`);
+  } else {
+    if (!/^1\d{10}$/.test(v)) return toast("请先输入正确的 11 位手机号");
+    sentCode = "246810";
+    toast("验证码短信已发送（Demo 验证码：246810）📱");
+  }
+  startCodeCountdown();
+}
+
+/** 发码按钮 60s 倒计时防重发 */
+function startCodeCountdown() {
+  const btn = $("#seCodeBtn");
+  if (!btn) return;
+  let n = 60;
+  btn.disabled = true;
+  btn.textContent = `${n}s 后重发`;
+  clearInterval(codeTimer);
+  codeTimer = setInterval(() => {
+    n--;
+    if (n <= 0) {
+      clearInterval(codeTimer);
+      btn.disabled = false;
+      btn.textContent = "重新发送";
+    } else btn.textContent = `${n}s 后重发`;
+  }, 1000);
 }
 
 function saveSetEdit() {
   const v = $("#seInput").value.trim();
+  const s = state.settings;
   if (setEditKind === "uid") {
     if (!/^\w{4,16}$/.test(v)) return toast("ID 需 4-16 位字母 / 数字 / 下划线");
     state.profile.uid = v;
@@ -6407,15 +6458,24 @@ function saveSetEdit() {
     toast("ID 修改成功 ✦");
   } else if (setEditKind === "email") {
     if (!/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(v)) return toast("邮箱格式不正确 ✂️");
-    state.settings.email = v;
-    toast("邮箱绑定成功，确认信已发送 ✉️");
-  } else {
+    if (!sentCode) return toast("请先点「发送验证邮件」获取验证码");
+    if ($("#seCode").value.trim() !== sentCode) return toast("验证码不正确，再检查一下邮件～");
+    s.email = v;
+    sentCode = null;
+    toast("邮箱验证通过，绑定成功 ✉️");
+  } else if (setEditKind === "phone") {
     if (!/^1\d{10}$/.test(v)) return toast("手机号格式不正确 ✂️");
     if (!sentCode) return toast("请先点「获取验证码」");
     if ($("#seCode").value.trim() !== sentCode) return toast("验证码不正确，再检查一下～");
-    state.settings.phone = v;
+    s.phone = v;
     sentCode = null;
     toast("手机号绑定成功 ✦");
+  } else if (setEditKind === "password") {
+    if (s.password && $("#seOld").value !== s.password) return toast("当前密码不正确 ✂️");
+    if (!/^(?=.*[A-Za-z])(?=.*\d)\S{8,24}$/.test(v)) return toast("密码需 8-24 位，且同时包含字母和数字");
+    if ($("#seConfirm").value !== v) return toast("两次输入的密码不一致 ✂️");
+    s.password = v;
+    toast("密码修改成功，请妥善保管 🔐");
   }
   closeSetEdit();
   renderSettings();
