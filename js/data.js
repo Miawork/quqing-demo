@@ -370,16 +370,22 @@ const MESSAGES = [
 ];
 /* ---------- 通知中心 ----------
  * type: order（约稿/订单）| comment（评论和@）| like（点赞）| fav（收藏）| fan（新增关注）| system
+ * from: 触发用户；target: 关联作品/帖子；cmt: 评论正文
  * ------------------------------------------------------------ */
 const NOTICES = [
   { type: "order", icon: "单", txt: "《九州录》主题曲订单：定金 ¥2,000 已托管，可以开工啦", time: "10 分钟前", unread: true },
-  { type: "comment", icon: "评", txt: "「绤绤」评论了你的作品《掬水月》：副歌戲腔这里起得真好！", time: "28 分钟前", unread: true },
+  { type: "comment", icon: "评", txt: "「绢绢」评论了你的作品《掬水月》：副歌戲腔这里起得真好！", time: "28 分钟前", unread: true,
+    from: ["绢绢"], target: { kind: "work", title: "掬水月" }, cmt: "副歌戲腔这里起得真好！间奏的笛子也很惊艳，已单曲循环一下午。" },
   { type: "fan", icon: "粉", txt: "「白鹭洲」关注了你，去看看 TA 的主页吧", time: "1 小时前", unread: true },
-  { type: "like", icon: "赞", txt: "「二十四桥」赞了你的作品《掬水月》", time: "3 小时前", unread: true },
-  { type: "fav", icon: "藏", txt: "「孤鹤」收藏了你的作品《山河入梦》到「宝藏 BGM」", time: "5 小时前", unread: true },
-  { type: "comment", icon: "@", txt: "「沈昼」在帖子里 @ 了你：这个混音思路可以听听他的", time: "昨天", unread: false },
+  { type: "like", icon: "赞", txt: "「二十四桥」赞了你的作品《掬水月》", time: "3 小时前", unread: true,
+    from: ["二十四桥"], target: { kind: "work", title: "掬水月" } },
+  { type: "fav", icon: "藏", txt: "「孤鹤」收藏了你的作品《雁归引》到「宝藏 BGM」", time: "5 小时前", unread: true,
+    from: ["孤鹤"], target: { kind: "work", title: "雁归引" }, fold: "宝藏 BGM" },
+  { type: "comment", icon: "@", txt: "「沈昼」在帖子里 @ 了你：这个混音思路可以听听他的", time: "昨天", unread: false,
+    from: ["沈昼"], target: { kind: "post", idx: 1 }, cmt: "@洛云笙 这个混音思路可以听听他的，他之前处理琵琶的方法很巧。" },
   { type: "order", icon: "评", txt: "「二十四桥」给了你一条 5 星评价，已展示在你的主页", time: "昨天", unread: false },
-  { type: "like", icon: "赞", txt: "「半盏茶」等 3 人赞了你的帖子「接单避坑实录」", time: "昨天", unread: false },
+  { type: "like", icon: "赞", txt: "「半盏茶」等 3 人赞了帖子「提醒：接 PV 单一定走平台协议托管」", time: "昨天", unread: false,
+    from: ["半盏茶", "青梓", "墨临溪"], target: { kind: "post", idx: 5 } },
   { type: "system", icon: "告", txt: "平台提示：商单请务必签署电子协议并托管稿酬", time: "昨天", unread: false },
 ];/* ---------- 关注 / 粉丝（小红书式：可互关） ---------- */
 

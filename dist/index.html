@@ -1150,6 +1150,53 @@ body { background: #D9DADE; }
 .notice-item .n-body span { font-size: 10px; color: var(--ink-3); }
 .ndot-i { width: 8px; height: 8px; background: var(--red); border-radius: 50%; flex: none; margin-top: 6px; }
 
+/* 通知详情（赞/收藏/评论/@） */
+.nd-target {
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  padding: 12px 14px; margin-bottom: 14px;
+  background: var(--paper-2); border-radius: var(--squiggle-sm); box-shadow: var(--shadow-card);
+}
+.nd-cover {
+  width: 46px; height: 46px; flex: none; border-radius: 12px; color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 19px;
+}
+.nd-post-ic { background: var(--ink); font-size: 14px; font-weight: 700; }
+.nd-tinfo { flex: 1; min-width: 0; }
+.nd-tinfo b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.nd-tinfo span {
+  font-size: 11px; color: var(--ink-3); display: block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nd-target i { font-style: normal; color: var(--ink-3); font-size: 16px; }
+.nd-fold {
+  margin: -6px 2px 14px; font-size: 11.5px; color: var(--ink-2);
+  padding: 8px 12px; background: var(--card); border-radius: 10px; display: inline-block;
+}
+.nd-sec { font-size: 11px; font-weight: 700; color: var(--ink-3); letter-spacing: 2px; margin: 4px 2px 10px; }
+.nd-cmt { display: flex; gap: 10px; margin-bottom: 14px; }
+.nd-cmt .avatar { width: 38px; height: 38px; font-size: 15px; flex: none; cursor: pointer; }
+.nd-cmt-body { flex: 1; min-width: 0; }
+.nd-cmt-body b { font-size: 12px; color: var(--ink-2); font-weight: 600; }
+.nd-cmt-body p { font-size: 13.5px; line-height: 1.7; margin: 3px 0 4px; }
+.nd-cmt-body span { font-size: 10px; color: var(--ink-3); }
+.nd-cmt-acts { margin-top: 6px; }
+.nd-cmt-acts em {
+  font-style: normal; font-size: 12px; color: var(--ink-2); cursor: pointer;
+  padding: 4px 12px; background: var(--card); border-radius: 999px;
+}
+.nd-cmt-acts em.on { color: #F53F3F; background: rgba(245,63,63,.1); }
+.nd-reply { display: flex; gap: 8px; margin-bottom: 14px; }
+.nd-reply input {
+  flex: 1; min-width: 0; padding: 10px 14px; font: inherit; font-size: 13px; outline: none;
+  background: var(--card); border: 1.5px solid transparent; border-radius: 999px;
+}
+.nd-reply input:focus { border-color: var(--red); }
+.nd-mine .nd-cmt-body p { color: var(--ink-2); }
+
+/* 作品定位高亮 */
+.mini-work.flash { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 12px; }
+
+
 .post-input {
   width: 100%; padding: 10px 12px; margin-bottom: 10px; font: inherit; font-size: 13px; outline: none;
   background: var(--card); border: 1.5px solid transparent; border-radius: 14px;
@@ -1820,6 +1867,15 @@ body { background: #D9DADE; }
         <div class="head-act" onclick="markAllNotices()">全部已读</div>
       </div>
       <div class="ov-body" id="noticeList"></div>
+    </div>
+
+    <!-- ========== 通知详情（赞/收藏/评论/@） ========== -->
+    <div class="overlay" id="ovNoticeDetail" style="z-index:22">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovNoticeDetail')">‹</div>
+        <h3 id="ndTitle">详情</h3>
+      </div>
+      <div class="ov-body" id="ndBody"></div>
     </div>
 
     <!-- ========== 发帖弹层 ========== -->
@@ -2731,16 +2787,22 @@ const MESSAGES = [
 ];
 /* ---------- 通知中心 ----------
  * type: order（约稿/订单）| comment（评论和@）| like（点赞）| fav（收藏）| fan（新增关注）| system
+ * from: 触发用户；target: 关联作品/帖子；cmt: 评论正文
  * ------------------------------------------------------------ */
 const NOTICES = [
   { type: "order", icon: "单", txt: "《九州录》主题曲订单：定金 ¥2,000 已托管，可以开工啦", time: "10 分钟前", unread: true },
-  { type: "comment", icon: "评", txt: "「绤绤」评论了你的作品《掬水月》：副歌戲腔这里起得真好！", time: "28 分钟前", unread: true },
+  { type: "comment", icon: "评", txt: "「绢绢」评论了你的作品《掬水月》：副歌戲腔这里起得真好！", time: "28 分钟前", unread: true,
+    from: ["绢绢"], target: { kind: "work", title: "掬水月" }, cmt: "副歌戲腔这里起得真好！间奏的笛子也很惊艳，已单曲循环一下午。" },
   { type: "fan", icon: "粉", txt: "「白鹭洲」关注了你，去看看 TA 的主页吧", time: "1 小时前", unread: true },
-  { type: "like", icon: "赞", txt: "「二十四桥」赞了你的作品《掬水月》", time: "3 小时前", unread: true },
-  { type: "fav", icon: "藏", txt: "「孤鹤」收藏了你的作品《山河入梦》到「宝藏 BGM」", time: "5 小时前", unread: true },
-  { type: "comment", icon: "@", txt: "「沈昼」在帖子里 @ 了你：这个混音思路可以听听他的", time: "昨天", unread: false },
+  { type: "like", icon: "赞", txt: "「二十四桥」赞了你的作品《掬水月》", time: "3 小时前", unread: true,
+    from: ["二十四桥"], target: { kind: "work", title: "掬水月" } },
+  { type: "fav", icon: "藏", txt: "「孤鹤」收藏了你的作品《雁归引》到「宝藏 BGM」", time: "5 小时前", unread: true,
+    from: ["孤鹤"], target: { kind: "work", title: "雁归引" }, fold: "宝藏 BGM" },
+  { type: "comment", icon: "@", txt: "「沈昼」在帖子里 @ 了你：这个混音思路可以听听他的", time: "昨天", unread: false,
+    from: ["沈昼"], target: { kind: "post", idx: 1 }, cmt: "@洛云笙 这个混音思路可以听听他的，他之前处理琵琶的方法很巧。" },
   { type: "order", icon: "评", txt: "「二十四桥」给了你一条 5 星评价，已展示在你的主页", time: "昨天", unread: false },
-  { type: "like", icon: "赞", txt: "「半盏茶」等 3 人赞了你的帖子「接单避坑实录」", time: "昨天", unread: false },
+  { type: "like", icon: "赞", txt: "「半盏茶」等 3 人赞了帖子「提醒：接 PV 单一定走平台协议托管」", time: "昨天", unread: false,
+    from: ["半盏茶", "青梓", "墨临溪"], target: { kind: "post", idx: 5 } },
   { type: "system", icon: "告", txt: "平台提示：商单请务必签署电子协议并托管稿酬", time: "昨天", unread: false },
 ];/* ---------- 关注 / 粉丝（小红书式：可互关） ---------- */
 
@@ -3223,6 +3285,67 @@ function noticeHTML(n, i) {
     <span class="n-icon">${n.icon}</span>
     <div class="n-body"><p>${esc(n.txt)}</p><span>${n.time}</span></div>
     ${n.unread ? `<i class="ndot-i"></i>` : ""}</div>`;
+}
+
+/* ---------- 通知详情（赞/收藏/评论/@） ---------- */
+
+/** 详情内的关联对象卡：我的作品 / 社区帖子 */
+function ndTargetHTML(t) {
+  if (!t) return "";
+  if (t.kind === "work") {
+    const w = MY_WORKS.find(x => x.title === t.title);
+    return `<div class="nd-target" onclick="ndOpenWork('${esc(t.title)}')">
+      <div class="nd-cover" style="background:${w ? w.grad : "var(--card)"}">${w ? w.glyph : "♪"}</div>
+      <div class="nd-tinfo"><b>《${esc(t.title)}》</b><span>${w ? esc(w.role) + " · 播放 " + esc(w.plays) : "我的作品"}</span></div>
+      <i>›</i></div>`;
+  }
+  const p = POSTS[t.idx];
+  return `<div class="nd-target" onclick="ndOpenPost(${t.idx})">
+    <div class="nd-cover nd-post-ic">帖</div>
+    <div class="nd-tinfo"><b>${esc(p.title)}</b><span>${esc(p.txt.slice(0, 26))}…</span></div>
+    <i>›</i></div>`;
+}
+
+/** 详情内的用户行（可进主页 / 关注） */
+function ndPersonHTML(name) {
+  const artist = ARTISTS.find(a => a.name === name);
+  const bio = artist ? artist.bio : (USERS_EXTRA[name]?.bio || "曲境用户");
+  return `<div class="person-row" onclick="ndOpenUser('${esc(name)}')">
+    <div class="avatar" style="background:${avatarBg(name)}">${esc(name[0])}</div>
+    <div class="p-info"><b>${esc(name)}</b><span>${esc(bio)}</span></div>
+    ${followBtnHTML(name)}</div>`;
+}
+
+function noticeDetailHTML(n) {
+  const who = n.from || [];
+  if (n.type === "comment") {
+    const name = who[0];
+    return `
+      ${ndTargetHTML(n.target)}
+      <div class="nd-sec">${n.icon === "@" ? "@ 提到你" : "评论内容"}</div>
+      <div class="nd-cmt">
+        <div class="avatar" style="background:${avatarBg(name)}" onclick="ndOpenUser('${esc(name)}')">${esc(name[0])}</div>
+        <div class="nd-cmt-body">
+          <b>${esc(name)}</b>
+          <p>${esc(n.cmt || "")}</p>
+          <span>${n.time}</span>
+          <div class="nd-cmt-acts">
+            <em class="${n.cmtLiked ? "on" : ""}" onclick="ndLikeCmt(this)">${n.cmtLiked ? "♥" : "♡"} 赞</em>
+          </div>
+        </div>
+      </div>
+      <div class="nd-reply">
+        <input id="ndReplyInput" placeholder="回复 ${esc(name)}…" onkeydown="if(event.key==='Enter')ndReply()">
+        <button class="btn primary send-btn" onclick="ndReply()">回复</button>
+      </div>
+      <div id="ndReplies"></div>`;
+  }
+  /* like / fav：谁赞了 / 谁收藏了 */
+  return `
+    ${ndTargetHTML(n.target)}
+    ${n.fold ? `<div class="nd-fold">收藏到：「${esc(n.fold)}」</div>` : ""}
+    <div class="nd-sec">${n.type === "fav" ? "收藏的人" : "点赞的人"}（${who.length}）</div>
+    ${who.map(ndPersonHTML).join("")}`;
 }
 
 /* ---------- 消息 / 聊天 ---------- */
@@ -3893,16 +4016,78 @@ function noticeGo(i) {
   const n = NOTICES[i];
   n.unread = false;
   renderNoticeDot();
+  if (n.type === "like" || n.type === "fav" || n.type === "comment") { openNoticeDetail(i); return; }
   closeOverlay("ovNotice");
   if (n.type === "order") openOrders();
   else if (n.type === "fan") {
     switchTab($$(".tab[data-scr='scr-me']")[0] || $$(".tab")[4]);
     openFollow("fans");
   }
-  else if (n.type === "like") toast("Demo：查看被赞的作品");
-  else if (n.type === "fav") toast("Demo：查看被收藏的作品");
-  else if (n.type === "comment") toast("Demo：查看评论详情");
   else toast("已阅平台提示");
+}
+
+/* ---------- 通知详情（赞/收藏/评论/@） ---------- */
+
+let ndCurrent = null;
+
+function openNoticeDetail(i) {
+  const n = NOTICES[i];
+  ndCurrent = i;
+  $("#ndTitle").textContent =
+    n.type === "fav" ? "收藏详情"
+    : n.type === "like" ? "点赞详情"
+    : n.icon === "@" ? "@ 我的" : "评论详情";
+  $("#ndBody").innerHTML = noticeDetailHTML(n);
+  $("#ovNoticeDetail").classList.add("show");
+}
+
+/** 详情内打开关联作品：跳到我的主页作品区 */
+function ndOpenWork(title) {
+  closeOverlay("ovNoticeDetail");
+  closeOverlay("ovNotice");
+  switchTab($$(".tab[data-scr='scr-me']")[0]);
+  const card = $$("#myWorks .mini-work").find(el => el.textContent.includes(title));
+  if (card) { card.scrollIntoView({ block: "center" }); card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1600); }
+  toast(`已定位到作品《${title}》`);
+}
+
+/** 详情内打开关联帖子 */
+function ndOpenPost(idx) {
+  closeOverlay("ovNoticeDetail");
+  closeOverlay("ovNotice");
+  switchTab($$(".tab[data-scr='scr-comm']")[0] || $$(".tab")[1]);
+  openPost(idx);
+}
+
+/** 详情内打开用户主页 */
+function ndOpenUser(name) {
+  closeOverlay("ovNoticeDetail");
+  closeOverlay("ovNotice");
+  openArtistByName(name);
+}
+
+/** 赞评论（详情内） */
+function ndLikeCmt(el) {
+  const n = NOTICES[ndCurrent];
+  n.cmtLiked = !n.cmtLiked;
+  el.classList.toggle("on", n.cmtLiked);
+  el.innerHTML = `${n.cmtLiked ? "♥" : "♡"} 赞`;
+}
+
+/** 回复评论（详情内） */
+function ndReply() {
+  const input = $("#ndReplyInput");
+  const v = input.value.trim();
+  if (!v) return;
+  const n = NOTICES[ndCurrent];
+  const me = state.profile.name || "我";
+  $("#ndReplies").insertAdjacentHTML("beforeend", `
+    <div class="nd-cmt nd-mine">
+      <div class="avatar" style="background:${avatarBg(me)}">${esc(me[0])}</div>
+      <div class="nd-cmt-body"><b>${esc(me)}·回复 ${esc((n.from || [])[0] || "")}</b><p>${esc(v)}</p><span>刚刚</span></div>
+    </div>`);
+  input.value = "";
+  toast("回复成功，对方会收到通知");
 }
 
 /* ---------- 消息 ---------- */

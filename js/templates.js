@@ -368,6 +368,67 @@ function noticeHTML(n, i) {
     ${n.unread ? `<i class="ndot-i"></i>` : ""}</div>`;
 }
 
+/* ---------- 通知详情（赞/收藏/评论/@） ---------- */
+
+/** 详情内的关联对象卡：我的作品 / 社区帖子 */
+function ndTargetHTML(t) {
+  if (!t) return "";
+  if (t.kind === "work") {
+    const w = MY_WORKS.find(x => x.title === t.title);
+    return `<div class="nd-target" onclick="ndOpenWork('${esc(t.title)}')">
+      <div class="nd-cover" style="background:${w ? w.grad : "var(--card)"}">${w ? w.glyph : "♪"}</div>
+      <div class="nd-tinfo"><b>《${esc(t.title)}》</b><span>${w ? esc(w.role) + " · 播放 " + esc(w.plays) : "我的作品"}</span></div>
+      <i>›</i></div>`;
+  }
+  const p = POSTS[t.idx];
+  return `<div class="nd-target" onclick="ndOpenPost(${t.idx})">
+    <div class="nd-cover nd-post-ic">帖</div>
+    <div class="nd-tinfo"><b>${esc(p.title)}</b><span>${esc(p.txt.slice(0, 26))}…</span></div>
+    <i>›</i></div>`;
+}
+
+/** 详情内的用户行（可进主页 / 关注） */
+function ndPersonHTML(name) {
+  const artist = ARTISTS.find(a => a.name === name);
+  const bio = artist ? artist.bio : (USERS_EXTRA[name]?.bio || "曲境用户");
+  return `<div class="person-row" onclick="ndOpenUser('${esc(name)}')">
+    <div class="avatar" style="background:${avatarBg(name)}">${esc(name[0])}</div>
+    <div class="p-info"><b>${esc(name)}</b><span>${esc(bio)}</span></div>
+    ${followBtnHTML(name)}</div>`;
+}
+
+function noticeDetailHTML(n) {
+  const who = n.from || [];
+  if (n.type === "comment") {
+    const name = who[0];
+    return `
+      ${ndTargetHTML(n.target)}
+      <div class="nd-sec">${n.icon === "@" ? "@ 提到你" : "评论内容"}</div>
+      <div class="nd-cmt">
+        <div class="avatar" style="background:${avatarBg(name)}" onclick="ndOpenUser('${esc(name)}')">${esc(name[0])}</div>
+        <div class="nd-cmt-body">
+          <b>${esc(name)}</b>
+          <p>${esc(n.cmt || "")}</p>
+          <span>${n.time}</span>
+          <div class="nd-cmt-acts">
+            <em class="${n.cmtLiked ? "on" : ""}" onclick="ndLikeCmt(this)">${n.cmtLiked ? "♥" : "♡"} 赞</em>
+          </div>
+        </div>
+      </div>
+      <div class="nd-reply">
+        <input id="ndReplyInput" placeholder="回复 ${esc(name)}…" onkeydown="if(event.key==='Enter')ndReply()">
+        <button class="btn primary send-btn" onclick="ndReply()">回复</button>
+      </div>
+      <div id="ndReplies"></div>`;
+  }
+  /* like / fav：谁赞了 / 谁收藏了 */
+  return `
+    ${ndTargetHTML(n.target)}
+    ${n.fold ? `<div class="nd-fold">收藏到：「${esc(n.fold)}」</div>` : ""}
+    <div class="nd-sec">${n.type === "fav" ? "收藏的人" : "点赞的人"}（${who.length}）</div>
+    ${who.map(ndPersonHTML).join("")}`;
+}
+
 /* ---------- 消息 / 聊天 ---------- */
 
 function messageHTML(m) {

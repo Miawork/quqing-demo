@@ -399,16 +399,78 @@ function noticeGo(i) {
   const n = NOTICES[i];
   n.unread = false;
   renderNoticeDot();
+  if (n.type === "like" || n.type === "fav" || n.type === "comment") { openNoticeDetail(i); return; }
   closeOverlay("ovNotice");
   if (n.type === "order") openOrders();
   else if (n.type === "fan") {
     switchTab($$(".tab[data-scr='scr-me']")[0] || $$(".tab")[4]);
     openFollow("fans");
   }
-  else if (n.type === "like") toast("Demo：查看被赞的作品");
-  else if (n.type === "fav") toast("Demo：查看被收藏的作品");
-  else if (n.type === "comment") toast("Demo：查看评论详情");
   else toast("已阅平台提示");
+}
+
+/* ---------- 通知详情（赞/收藏/评论/@） ---------- */
+
+let ndCurrent = null;
+
+function openNoticeDetail(i) {
+  const n = NOTICES[i];
+  ndCurrent = i;
+  $("#ndTitle").textContent =
+    n.type === "fav" ? "收藏详情"
+    : n.type === "like" ? "点赞详情"
+    : n.icon === "@" ? "@ 我的" : "评论详情";
+  $("#ndBody").innerHTML = noticeDetailHTML(n);
+  $("#ovNoticeDetail").classList.add("show");
+}
+
+/** 详情内打开关联作品：跳到我的主页作品区 */
+function ndOpenWork(title) {
+  closeOverlay("ovNoticeDetail");
+  closeOverlay("ovNotice");
+  switchTab($$(".tab[data-scr='scr-me']")[0]);
+  const card = $$("#myWorks .mini-work").find(el => el.textContent.includes(title));
+  if (card) { card.scrollIntoView({ block: "center" }); card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1600); }
+  toast(`已定位到作品《${title}》`);
+}
+
+/** 详情内打开关联帖子 */
+function ndOpenPost(idx) {
+  closeOverlay("ovNoticeDetail");
+  closeOverlay("ovNotice");
+  switchTab($$(".tab[data-scr='scr-comm']")[0] || $$(".tab")[1]);
+  openPost(idx);
+}
+
+/** 详情内打开用户主页 */
+function ndOpenUser(name) {
+  closeOverlay("ovNoticeDetail");
+  closeOverlay("ovNotice");
+  openArtistByName(name);
+}
+
+/** 赞评论（详情内） */
+function ndLikeCmt(el) {
+  const n = NOTICES[ndCurrent];
+  n.cmtLiked = !n.cmtLiked;
+  el.classList.toggle("on", n.cmtLiked);
+  el.innerHTML = `${n.cmtLiked ? "♥" : "♡"} 赞`;
+}
+
+/** 回复评论（详情内） */
+function ndReply() {
+  const input = $("#ndReplyInput");
+  const v = input.value.trim();
+  if (!v) return;
+  const n = NOTICES[ndCurrent];
+  const me = state.profile.name || "我";
+  $("#ndReplies").insertAdjacentHTML("beforeend", `
+    <div class="nd-cmt nd-mine">
+      <div class="avatar" style="background:${avatarBg(me)}">${esc(me[0])}</div>
+      <div class="nd-cmt-body"><b>${esc(me)}·回复 ${esc((n.from || [])[0] || "")}</b><p>${esc(v)}</p><span>刚刚</span></div>
+    </div>`);
+  input.value = "";
+  toast("回复成功，对方会收到通知");
 }
 
 /* ---------- 消息 ---------- */
