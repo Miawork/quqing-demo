@@ -622,9 +622,10 @@ function artistProfileHTML(a) {
     </div>
     <div class="detail-section"><h4>代表作品</h4></div>
     <div style="display:flex;gap:10px;overflow-x:auto">
-      ${[1, 2, 3].map(n => `<div class="mini-work" onclick="toast('Demo：试听作品')">
-        <div class="cover" style="background:${CONFIG.avatarColors[n % CONFIG.avatarColors.length]}">♪</div>
-        <b>作品示例 ${n}</b><span>试听 · 0${n}:${n}0</span></div>`).join("")}
+      ${WORKS.filter(w => w.author === a.name).map((w, i) => `<div class="mini-work" onclick="openArtistWork('${esc(a.name)}', ${i})">
+        <div class="cover" style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || w.title[w.title.startsWith("《") ? 1 : 0] || "♪")}</div>
+        <b>${esc(w.title)}</b><span>${esc(w.type)} · ${w.dur || w.biz}</span></div>`).join("")
+      || `<div class="rev-hint">暂无公开作品</div>`}
     </div>`;
 }
 
@@ -656,7 +657,6 @@ function pubWorkFormHTML() {
     <label>作品品类 <b>*</b></label>
     <div class="gender-row" style="flex-wrap:wrap" id="pubTypeRow">
       ${cats.map(c => `<div class="chip" onclick="pubToggleType('${c}', this)">${c}</div>`).join("")}
-      ${state.customRoles.map(c => `<div class="chip" onclick="pubToggleType('${c}', this)">${c}</div>`).join("")}
       <div class="chip" onclick="pubAddCustomType(this)">＋ 其他</div>
     </div>
     <label>标题 <b>*</b></label>
@@ -715,7 +715,6 @@ function pubDemandFormHTML() {
     <label>招募工种（可多选）</label>
     <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">
       ${CONFIG.roles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
-      ${state.customRoles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
       <div class="chip" onclick="pubAddCustomRole(this)">＋ 其他</div>
     </div>
     ${pubTagChipsHTML()}

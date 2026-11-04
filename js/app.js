@@ -794,12 +794,18 @@ function copyAppLink() {
 
 /* ---------- 沉浸式作品浏览 ---------- */
 
-/** @param idx state.filteredWorks 的下标；打开后滚动定位到该作品 */
-function openViewer(idx) {
+/** @param idx 列表下标；可传入自定义作品列表（如音乐人主页），默认用首页筛选结果 */
+function openViewer(idx, list) {
+  const works = list || state.filteredWorks;
   const scroller = $("#vscroll");
-  scroller.innerHTML = state.filteredWorks.map(slideHTML).join("");
+  scroller.innerHTML = works.map(slideHTML).join("");
   $("#viewer").classList.add("show");
   requestAnimationFrame(() => { scroller.scrollTop = scroller.clientHeight * idx; });
+}
+
+/** 音乐人主页：点代表作品，进入与首页一致的作品页 */
+function openArtistWork(name, i) {
+  openViewer(i, WORKS.filter(w => w.author === name));
 }
 
 function closeViewer() {
@@ -2310,7 +2316,8 @@ function regNext() {
 }
 
 function renderRoleGrid() {
-  $("#roleGrid").innerHTML = [...CONFIG.roles, ...state.customRoles].map(r => `
+  const customSel = state.myRoles.filter(r => !CONFIG.roles.includes(r)); // 仅展示已选中的自定义工种，固定栅格不变
+  $("#roleGrid").innerHTML = [...CONFIG.roles, ...customSel].map(r => `
     <div class="role-item ${state.myRoles.includes(r) ? "on" : ""}" onclick="toggleRole('${r}', this)">
       <div class="icon">${CONFIG.roleIcons[r] || CONFIG.icons.pencil}</div><b>${r}</b><span class="check">✓</span>
     </div>`).join("") + `
@@ -2340,8 +2347,20 @@ let roleNameCb = null;
 function askRoleName(cb) {
   roleNameCb = cb;
   $("#roleNameInput").value = "";
+  $("#roleNameHistory").innerHTML = state.customRoles.length
+    ? `<label>我创建过的</label><div class="gender-row" style="flex-wrap:wrap">
+        ${state.customRoles.map(r => `<div class="chip" onclick="pickRoleHistory('${r}')">${r}</div>`).join("")}</div>`
+    : "";
   $("#roleNameMask").classList.add("show");
   setTimeout(() => $("#roleNameInput").focus(), 80);
+}
+
+/** 复用历史自定义工种 */
+function pickRoleHistory(name) {
+  const cb = roleNameCb;
+  closeRoleName();
+  cb && cb(name);
+  toast(`已添加工种「${name}」`);
 }
 
 function closeRoleName() {
@@ -2359,13 +2378,10 @@ function confirmRoleName() {
   toast(`已添加自定义工种「${name}」`);
 }
 
-/** 全局登记自定义工种：进入工种池与首页「工种」检索标签 */
+/** 全局登记自定义工种：仅存入历史池供「其他》弹层复用，不改动固定标签 */
 function registerCustomRole(name) {
   if (!CONFIG.roles.includes(name) && !state.customRoles.includes(name))
     state.customRoles.push(name);
-  const g = CONFIG.tagGroups.find(g => g.key === "工种");
-  if (g && !g.tags.includes(name)) g.tags.push(name);
-  renderCategories();
 }
 
 /** @param mode "register" 注册引导（可跳过） | "edit" 主页二次编辑 */
@@ -2626,7 +2642,6 @@ function openCommission(to, refTitle) {
     <label>约稿品类（可多选） <b>*</b></label>
     <div class="gender-row" style="flex-wrap:wrap">
       ${cats.map(c => `<div class="chip" onclick="cmToggleType('${c}', this)">${c}</div>`).join("")}
-      ${state.customRoles.map(c => `<div class="chip" onclick="cmToggleType('${c}', this)">${c}</div>`).join("")}
       <div class="chip" onclick="cmAddCustomType(this)">＋ 其他</div>
     </div>
     <label>需求描述 <b>*</b></label>
