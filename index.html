@@ -584,6 +584,57 @@
         <button class="btn primary" id="regBtn" onclick="regNext()">下一步</button>
       </div>
     </div>
+
+    <!-- ========== 账号登录（QQ 式多账号选择） ========== -->
+    <div class="login-overlay" id="loginOverlay">
+      <!-- 视图一：账号选择 -->
+      <div class="lv" id="lvPick">
+        <div class="login-logo">曲境</div>
+        <p class="login-sub">古风音乐约稿平台</p>
+        <div class="acct-grid" id="acctGrid"></div>
+        <p class="login-tip">点头像重新登录 · 点 ＋ 登录或注册新账号</p>
+      </div>
+      <!-- 视图二：账号密码登录 -->
+      <div class="lv" id="lvLogin" style="display:none">
+        <div class="login-logo">登录</div>
+        <div class="reg-form login-form">
+          <label>账号 / ID / 手机号</label>
+          <input id="liAcct" maxlength="24" placeholder="如：quqi_123456">
+          <label>密码</label>
+          <input id="liPwd" type="password" maxlength="20" onkeydown="if(event.key==='Enter')lvLoginSubmit()">
+          <button class="btn primary" style="width:100%;margin-top:16px" onclick="lvLoginSubmit()">登录</button>
+          <div class="login-links">
+            <a href="javascript:;" onclick="lvShow('lvReg')">注册新账号</a>
+            <a href="javascript:;" onclick="toast('Demo：重置链接已发送至绑定手机')">忘记密码</a>
+          </div>
+        </div>
+        <div class="login-back" onclick="lvShow('lvPick')">‹ 返回</div>
+      </div>
+      <!-- 视图三：注册新账号 -->
+      <div class="lv" id="lvReg" style="display:none">
+        <div class="login-logo">注册</div>
+        <div class="reg-form login-form">
+          <label>注册方式</label>
+          <div class="gender-row" id="lrMethodRow">
+            <div class="chip on" onclick="lrSetMethod('手机号', this)">手机号</div>
+            <div class="chip" onclick="lrSetMethod('邮箱', this)">邮箱</div>
+            <div class="chip" onclick="lrSetMethod('取名', this)">取名</div>
+          </div>
+          <div id="lrMain"></div>
+          <div id="lrPhoneWrap">
+            <label>绑定手机号 <b>*</b></label>
+            <input id="lrPhone" maxlength="11" placeholder="所有账号均需绑定手机号">
+          </div>
+          <label>账号 / ID（留空随机分配）</label>
+          <input id="lrUid" maxlength="16" placeholder="如：quqi_123456">
+          <label>设定密码 <b>*</b></label>
+          <input id="lrPwd" type="password" maxlength="20" placeholder="6–20 位">
+          <button class="btn primary" style="width:100%;margin-top:16px" onclick="lvRegSubmit()">注册并绑定</button>
+        </div>
+        <div class="login-back" onclick="lvShow('lvPick')">‹ 返回</div>
+      </div>
+    </div>
+
     <!-- 头像 / 名片背景裁剪 -->
     <div class="crop-mask" id="cropMask" onclick="if(event.target===this)closeCrop()">
       <div class="crop-panel">

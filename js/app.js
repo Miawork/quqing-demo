@@ -25,6 +25,7 @@ const state = {
   },
   following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
+  accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
     { name: "默认收藏", ids: [2] },
@@ -3398,7 +3399,128 @@ function renderSettings() {
       <div class="set-item" onclick="openTerms('privacy')"><span>隐私政策</span><i>›</i></div>
       <div class="set-item"><span>版本</span><b>v2.6.0（Demo）</b></div>
     </div>
-    <button class="btn ghost logout-btn" onclick="toast('Demo：已退出登录，下次再会')">退出登录</button>`;
+    <button class="btn ghost logout-btn" onclick="doLogout()">退出登录</button>`;
+}
+
+/* ---------- 账号登录 / 退出（QQ 式多账号） ---------- */
+
+/** 退出登录：快照当前账号 → 展示账号选择页 */
+function doLogout() {
+  const p = state.profile;
+  if (p.name) {
+    const acc = {
+      name: p.name, uid: p.uid || randomUid(), avatar: p.avatar,
+      gender: p.gender, bio: p.bio, roles: [...state.myRoles],
+      phone: state.settings.phone || "", password: state.settings.password || "",
+    };
+    const i = state.accounts.findIndex(a => a.uid === acc.uid);
+    i >= 0 ? state.accounts[i] = acc : state.accounts.push(acc);
+  }
+  closeOverlay("ovSettings");
+  lvShow("lvPick");
+  renderAcctGrid();
+  $("#loginOverlay").classList.add("show");
+  toast("已退出登录");
+}
+
+function lvShow(id) {
+  ["lvPick", "lvLogin", "lvReg"].forEach(v => { $("#" + v).style.display = v === id ? "" : "none"; });
+  if (id === "lvReg") lrSetMethod(lrMethod);
+}
+
+function acctAvatarHTML(a) {
+  return a.avatar ? `<img src="${a.avatar}" alt="头像">` : stickAvatarSVG(a.gender || "保密");
+}
+
+/** 账号圆圈栅格：头像变暗，点击恢复亮度并重新登录；末尾「＋》新账号 */
+function renderAcctGrid() {
+  $("#acctGrid").innerHTML = state.accounts.map((a, i) => `
+    <div class="acct-item" onclick="reloginAcct(${i}, this)">
+      <div class="acct-circle">${acctAvatarHTML(a)}</div>
+      <b>${esc(a.name)}</b>
+    </div>`).join("") + `
+    <div class="acct-item" onclick="lvShow('lvLogin')">
+      <div class="acct-circle acct-add">＋</div>
+      <b>新账号</b>
+    </div>`;
+}
+
+/** 点头像重新登录：先恢复原色，稍停后进入 app */
+function reloginAcct(i, el) {
+  el.querySelector(".acct-circle").classList.add("lit");
+  setTimeout(() => enterApp(state.accounts[i], false), 450);
+}
+
+/** 登录成功：恢复账号资料；新用户进选工种，老用户直进首页 */
+function enterApp(acc, isNew) {
+  state.profile.name = acc.name;
+  state.profile.uid = acc.uid;
+  state.profile.avatar = acc.avatar || null;
+  state.profile.gender = acc.gender || "保密";
+  state.profile.bio = acc.bio || "";
+  state.myRoles = [...(acc.roles || [])];
+  state.settings.phone = acc.phone || "";
+  state.settings.password = acc.password || "";
+  $("#loginOverlay").classList.remove("show");
+  renderMyProfile();
+  if (isNew) {
+    state.roleSetupMode = "register";
+    showRegStep(2);
+    $("#regOverlay").classList.add("show");
+  } else {
+    switchTab(document.querySelector('.tab[data-scr="scr-home"]'));
+    toast(`欢迎回来，${acc.name}`);
+  }
+}
+
+/** 账号密码登录（老用户） */
+function lvLoginSubmit() {
+  const id = $("#liAcct").value.trim();
+  const pwd = $("#liPwd").value;
+  if (!id) return toast("请输入账号 / ID / 手机号");
+  if (!pwd) return toast("请输入密码");
+  const acc = state.accounts.find(a => a.uid === id || a.phone === id || a.name === id);
+  if (!acc) return toast("账号不存在，可点「注册新账号」");
+  if (acc.password && acc.password !== pwd) return toast("密码不正确，再试试");
+  enterApp(acc, false);
+}
+
+/* --- 注册新账号：手机号 / 邮箱 / 取名，均需绑手机 + 设 ID 和密码 --- */
+
+let lrMethod = "手机号";
+
+function lrSetMethod(m, el) {
+  lrMethod = m;
+  if (el) [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
+  $("#lrMain").innerHTML = m === "手机号" ? ""
+    : m === "邮箱"
+      ? `<label>邮箱 <b>*</b></label><input id="lrEmail" maxlength="40" placeholder="如：mia@example.com">`
+      : `<label>圈名 <b>*</b></label><input id="lrName" maxlength="12" placeholder="在曲境里的名字">`;
+  $("#lrPhoneWrap label").innerHTML = m === "手机号" ? "手机号（即绑定号码） <b>*</b>" : "绑定手机号 <b>*</b>";
+}
+
+function lvRegSubmit() {
+  const phone = $("#lrPhone").value.trim();
+  const pwd = $("#lrPwd").value;
+  if (!/^1\d{10}$/.test(phone)) return toast("请填写正确的 11 位手机号");
+  if (pwd.length < 6) return toast("密码至少 6 位");
+  let name;
+  if (lrMethod === "邮箱") {
+    const em = ($("#lrEmail")?.value || "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return toast("邮箱格式不对，再检查一下");
+    name = em.split("@")[0].slice(0, 12);
+  } else if (lrMethod === "取名") {
+    name = ($("#lrName")?.value || "").trim();
+    if (!name) return toast("圈名为必填项");
+  } else {
+    name = "曲友" + phone.slice(-4);
+  }
+  const uid = $("#lrUid").value.trim() || randomUid();
+  if (state.accounts.some(a => a.uid === uid)) return toast("这个 ID 已被注册，换一个试试");
+  const acc = { name, uid, avatar: null, gender: "保密", bio: "", roles: [], phone, password: pwd };
+  state.accounts.push(acc);
+  toast("注册成功，手机号已绑定");
+  enterApp(acc, true); // 新用户 → 选工种初始界面
 }
 
 function togglePriv(key, el) {
