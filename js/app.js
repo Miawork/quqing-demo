@@ -1462,6 +1462,8 @@ function closeSheet() {
 function openDemandDetail(i) {
   const d = DEMANDS[i];
   if (!d) return;
+  const mine = d.whoName === "我" || d.whoName === state.profile.name
+    || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
   openSheet("招募详情", `
     <div class="dtitle" style="margin:2px 0 6px">${esc(d.title)}</div>
     <div class="dtags" style="margin-bottom:8px">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}</div>
@@ -1470,7 +1472,9 @@ function openDemandDetail(i) {
       <div class="pay-row"><span>发起方</span><b>${demandWhoHTML(d)}</b></div>
       <div class="pay-row total"><span>预算</span><b>${esc(d.budget)}</b></div>
     </div>
-    ${d.applied
+    ${mine
+      ? `<button class="btn ghost" style="width:100%;margin-top:10px" onclick="editCover('demand',${i})">${d.cover ? "更换企划封面" : "添加企划封面"}</button>`
+      : d.applied
       ? `<p class="escrow-note">已投递 · 对方通过后将私信与你签约，稿酬经平台托管</p>`
       : `<textarea id="applyNote" rows="3" placeholder="自荐留言：擅长风格、代表作、档期…（选填）"></textarea>
          <div class="rate-acts">
@@ -2505,7 +2509,7 @@ function renderMyWorks() {
     .sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0));
   $("#myWorks").innerHTML = list.map(w => `
     <div class="mini-work" onclick="toast('Demo：作品《${esc(w.title)}》')">
-      <div class="cover" style="background:${w.grad}">${esc(w.glyph)}${w.top ? `<i class="mw-top">置顶</i>` : ""}</div>
+      <div class="cover" style="background:${w.coverImg ? `url(${w.coverImg}) center/cover` : w.grad}">${w.coverImg ? "" : esc(w.glyph)}${w.top ? `<i class="mw-top">置顶</i>` : ""}</div>
       <b>${esc(w.title)}</b><span>${esc(w.role)} · 播放 ${esc(w.plays)}</span>
     </div>`).join("") || `<div class="rev-hint" style="width:100%">暂无公开作品 · 去发布页上传</div>`;
 }
@@ -2871,7 +2875,9 @@ function workMiniCover(w) {
     <span class="fav-glyph">${w.lyric ? "词" : esc(w.glyph || "♪")}</span>`;
 }
 
-const favCoverHTML = f => workMiniCover(findWork(f.ids[0]));
+const favCoverHTML = f => f.coverImg
+  ? `<img src="${f.coverImg}" style="width:100%;height:100%;object-fit:cover" alt="">`
+  : workMiniCover(findWork(f.ids[0]));
 
 /* --- 收藏动作：选夹 / 新建 --- */
 
@@ -2983,7 +2989,8 @@ function renderFavs() {
   $("#favBody").innerHTML = `
     <div class="fav-head">
       <span>${f.ids.length} 个内容 · 点击可直接浏览</span>
-      <button class="mini-btn" style="margin-left:auto" onclick="favRenameToggle()">重命名</button>
+      <button class="mini-btn" style="margin-left:auto" onclick="editCover('fav',${favOpenIdx})">封面</button>
+      <button class="mini-btn" onclick="favRenameToggle()">重命名</button>
       <button class="mini-btn danger" onclick="favDelFolder()">删除</button>
     </div>
     <div id="favRenameRow" class="code-row" style="display:none;margin:0 16px 10px">
@@ -3087,15 +3094,16 @@ function renderManage() {
       </div>`).join("");
 
   } else {
-    html = `<p class="se-note" style="margin:0 0 10px">新作品请从「发布」页上传；此处可置顶、隐藏或删除已发布作品</p>`
+    html = `<p class="se-note" style="margin:0 0 10px">新作品请从「发布」页上传；此处可换封面、置顶、隐藏或删除已发布作品</p>`
       + MY_WORKS.map((w, i) => `
       <div class="mg-item ${w.hidden ? "off" : ""}">
-        <div class="mg-cover" style="background:${w.grad}">${esc(w.glyph)}</div>
+        <div class="mg-cover" style="background:${w.coverImg ? `url(${w.coverImg}) center/cover` : w.grad}" onclick="editCover('work',${i})" title="点击更换封面">${w.coverImg ? "" : esc(w.glyph)}</div>
         <div class="mg-info">
           <b>${esc(w.title)}${w.top ? " · 置顶" : ""}</b>
           <span>${esc(w.role)} · 播放 ${esc(w.plays)}${w.hidden ? " · <i>已隐藏</i>" : ""}</span>
         </div>
         <div class="mg-acts">
+          <button class="mini-btn" onclick="editCover('work',${i})">封面</button>
           <button class="mini-btn" onclick="mgWorkTop(${i})">${w.top ? "取消置顶" : "置顶"}</button>
           <button class="mini-btn" onclick="mgWorkHide(${i})">${w.hidden ? "公开" : "隐藏"}</button>
           <button class="mini-btn danger" onclick="mgDel('work',${i})">删除</button>
@@ -3129,6 +3137,42 @@ function mgDel(kind, i) {
   pool.splice(i, 1);
   renderManage(); renderMyStyleShop();
   toast(`已删除「${name}」`);
+}
+
+/* ---------- 封面编辑（作品 / 企划招募 / 收藏夹通用；橱窗商品在编辑表单内换） ---------- */
+
+let coverCtx = null; // { kind: "work" | "demand" | "fav", idx }
+
+function editCover(kind, idx) {
+  coverCtx = { kind, idx };
+  const input = $("#coverEditFile");
+  input.value = "";
+  input.click();
+}
+
+function onCoverEdit(input) {
+  const f = input.files && input.files[0];
+  if (!f || !coverCtx) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const url = rd.result;
+    const { kind, idx } = coverCtx;
+    if (kind === "work") {
+      MY_WORKS[idx].coverImg = url;
+      renderManage(); renderMyWorks();
+      toast(`已更新《${MY_WORKS[idx].title}》封面`);
+    } else if (kind === "demand") {
+      DEMANDS[idx].cover = `url(${url}) center/cover`;
+      closeSheet(); renderHome();
+      toast("企划封面已更新，招募卡片将展示新封面");
+    } else if (kind === "fav") {
+      state.favFolders[idx].coverImg = url;
+      renderFavs(); renderFavStrip();
+      toast("收藏夹封面已更新");
+    }
+    coverCtx = null;
+  };
+  rd.readAsDataURL(f);
 }
 
 /* ---------- 管理 · 编辑弹层（风格 / 橱窗商品 / 报价项） ---------- */
