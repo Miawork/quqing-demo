@@ -4826,9 +4826,12 @@ function workCmtsListHTML(id) {
     </div>`).join("");
 }
 
-/** 点「评论」按钮：平滑滚到当前 slide 的内嵌评论区 */
+/** 点「评论」按钮：只滚动当前 slide 的信息面板到评论区（不触碰外层翻页容器，避免误切作品） */
 function scrollToCmts(id) {
-  $(`#scmts-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const cmts = $(`#scmts-${id}`);
+  if (!cmts) return;
+  const sinfo = cmts.closest(".sinfo");
+  sinfo.scrollTo({ top: cmts.offsetTop, behavior: "smooth" }); // offsetTop 相对 sinfo（relative 定位）
 }
 
 function sendWorkCmt(id) {
