@@ -1739,8 +1739,7 @@ function confirmCrop() {
 function heroBgMenu() {
   openSheet("名片背景", `
     <div class="set-item" onclick="closeSheet();$('#heroBgFile').click()"><span>🌄 从相册选择背景</span><i>›</i></div>
-    <div class="set-item" onclick="closeSheet();resetHeroBg()"><span>↩︎ 恢复默认底色</span><i>›</i></div>
-    <p class="se-note" style="margin-top:10px">背景图中心清晰、边缘景深模糊，文字始终清晰可读</p>`);
+    <div class="set-item" onclick="closeSheet();resetHeroBg()"><span>↩︎ 恢复默认底色</span><i>›</i></div>`);
 }
 
 function onHeroBgFile(input) {
