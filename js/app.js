@@ -1642,42 +1642,56 @@ function pickAvatar() {
   $("#avatarFile").click();
 }
 
-/* ---------- 头像裁剪（拖动平移 + 滑杆缩放，圆形预览） ---------- */
+/* ---------- 图片裁剪（拖动平移 + 滑杆缩放）：头像圆形 / 名片背景矩形 ---------- */
 
-let cropCtx = null;  // { img, z, x, y }
+let cropCtx = null;  // { img, z, x, y, w, h, out, q, done }
 let cropDrag = null;
-const CROP_VIEW = 240; // 裁剪视窗边长 px
 
 function onAvatarFile(input) {
   const file = input.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => openCrop(e.target.result);
-  reader.readAsDataURL(file);
   input.value = "";
+  openCrop(URL.createObjectURL(file), {
+    w: 240, h: 240, round: true, title: "裁剪头像", out: 480, q: .9,
+    done(dataURL) {
+      state.profile.avatar = dataURL;
+      if ($("#regOverlay").classList.contains("show")) renderAvatarPreview();
+      renderMyProfile();
+      toast("头像已更新 ✓");
+    },
+  });
 }
 
-function openCrop(src) {
+function openCrop(src, opts) {
   const img = new Image();
   img.onload = () => {
-    cropCtx = { img, z: 1, x: 0, y: 0 };
+    cropCtx = { img, z: 1, x: 0, y: 0, ...opts };
+    const view = $(".crop-view");
+    view.style.width = opts.w + "px";
+    view.style.height = opts.h + "px";
+    $("#cropTitle").textContent = opts.title;
+    $("#cropMask").classList.toggle("rect", !opts.round);
     $("#cropImg").src = src;
     $("#cropZoom").value = 100;
     cropApply();
     $("#cropMask").classList.add("show");
   };
+  img.onerror = () => {
+    URL.revokeObjectURL(src);
+    toast("图片无法读取，请换一张 JPG / PNG 试试");
+  };
   img.src = src;
 }
 
 function cropApply() {
-  const { img, z, x, y } = cropCtx;
-  const s = CROP_VIEW / Math.min(img.naturalWidth, img.naturalHeight) * z;
-  const w = img.naturalWidth * s, h = img.naturalHeight * s;
+  const { img, z, x, y, w, h } = cropCtx;
+  const s = Math.max(w / img.naturalWidth, h / img.naturalHeight) * z;
+  const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
   const el = $("#cropImg");
-  el.style.width = w + "px";
-  el.style.height = h + "px";
-  el.style.left = (CROP_VIEW / 2 + x - w / 2) + "px";
-  el.style.top = (CROP_VIEW / 2 + y - h / 2) + "px";
+  el.style.width = dw + "px";
+  el.style.height = dh + "px";
+  el.style.left = (w / 2 + x - dw / 2) + "px";
+  el.style.top = (h / 2 + y - dh / 2) + "px";
 }
 
 function cropSetZoom(v) { if (cropCtx) { cropCtx.z = v / 100; cropApply(); } }
@@ -1693,23 +1707,26 @@ function cropMove(e) {
   cropApply();
 }
 function cropUp() { cropDrag = null; }
-function closeCrop() { $("#cropMask").classList.remove("show"); cropCtx = null; cropDrag = null; }
+function closeCrop() {
+  const src = $("#cropImg").src;
+  if (src.startsWith("blob:")) URL.revokeObjectURL(src);
+  $("#cropMask").classList.remove("show");
+  cropCtx = null; cropDrag = null;
+}
 
 function confirmCrop() {
   if (!cropCtx) return;
-  const { img, z, x, y } = cropCtx;
-  const s = CROP_VIEW / Math.min(img.naturalWidth, img.naturalHeight) * z;
-  const w = img.naturalWidth * s, h = img.naturalHeight * s;
-  const left = CROP_VIEW / 2 + x - w / 2, top = CROP_VIEW / 2 + y - h / 2;
-  const out = 480;
+  const { img, z, x, y, w, h, out, q, done } = cropCtx;
+  const s = Math.max(w / img.naturalWidth, h / img.naturalHeight) * z;
+  const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+  const left = w / 2 + x - dw / 2, top = h / 2 + y - dh / 2;
   const cv = document.createElement("canvas");
-  cv.width = cv.height = out;
-  cv.getContext("2d").drawImage(img, -left / s, -top / s, CROP_VIEW / s, CROP_VIEW / s, 0, 0, out, out);
-  state.profile.avatar = cv.toDataURL("image/jpeg", .9);
+  cv.width = out;
+  cv.height = Math.round(out * h / w);
+  cv.getContext("2d").drawImage(img, -left / s, -top / s, w / s, h / s, 0, 0, cv.width, cv.height);
+  const dataURL = cv.toDataURL("image/jpeg", q);
   closeCrop();
-  if ($("#regOverlay").classList.contains("show")) renderAvatarPreview();
-  renderMyProfile();
-  toast("头像已更新 ✓");
+  done(dataURL);
 }
 
 /* ---------- 名片背景（边缘景深模糊） ---------- */
@@ -1723,14 +1740,15 @@ function heroBgMenu() {
 function onHeroBgFile(input) {
   const file = input.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    state.profile.heroBg = e.target.result;
-    applyHeroBg();
-    toast("名片背景已更换");
-  };
-  reader.readAsDataURL(file);
   input.value = "";
+  openCrop(URL.createObjectURL(file), {
+    w: 272, h: 150, round: false, title: "裁剪名片背景", out: 1200, q: .82,
+    done(dataURL) {
+      state.profile.heroBg = dataURL;
+      applyHeroBg();
+      toast("名片背景已更换");
+    },
+  });
 }
 
 function resetHeroBg() {

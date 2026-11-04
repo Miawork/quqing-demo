@@ -571,10 +571,10 @@
         <button class="btn primary" id="regBtn" onclick="regNext()">下一步</button>
       </div>
     </div>
-    <!-- 头像裁剪 -->
+    <!-- 头像 / 名片背景裁剪 -->
     <div class="crop-mask" id="cropMask" onclick="if(event.target===this)closeCrop()">
       <div class="crop-panel">
-        <h4>裁剪头像</h4>
+        <h4 id="cropTitle">裁剪头像</h4>
         <div class="crop-view" onpointerdown="cropDown(event)" onpointermove="cropMove(event)" onpointerup="cropUp()" onpointercancel="cropUp()">
           <img id="cropImg" alt="">
         </div>

@@ -100,7 +100,7 @@ body {
 .section-title a { font-size: 11px; color: var(--ink-3); text-decoration: none; }
 
 .feed { padding: 0 16px 90px; display: flex; flex-direction: column; gap: 12px; }
-.empty { text-align: center; color: var(--ink-3); padding: 40px 0; font-size: 13px; }
+.empty { text-align: center; color: var(--ink-3); padding: 40px 0; font-size: 13px; column-span: all; break-inside: avoid; }
 
 /* 头像（背景色由 JS 依名字生成） */
 .avatar {
@@ -509,7 +509,7 @@ body {
 /* ---------- 8. 我的主页 ---------- */
 .profile-hero {
   margin: 0 16px; padding: 20px; border-radius: 24px;
-  background: linear-gradient(145deg, #DBDCE2, #C9CBD3);
+  background: linear-gradient(145deg, #C4C7D4, #A6AABC);
   color: var(--ink); position: relative; overflow: hidden;
 }
 .ph-top { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
@@ -556,7 +556,7 @@ body {
 }
 .ph-bg-btn:active { transform: scale(.92); }
 
-/* 头像裁剪浮层 */
+/* 头像 / 名片背景裁剪浮层 */
 .crop-mask {
   position: absolute; inset: 0; z-index: 60; display: none;
   align-items: center; justify-content: center; background: rgba(10,12,18,.66);
@@ -565,7 +565,7 @@ body {
 .crop-panel {
   background: var(--paper-2); border: none;
   border-radius: var(--squiggle); box-shadow: var(--shadow-card);
-  padding: 18px; width: 290px;
+  padding: 18px; width: 310px;
 }
 .crop-panel h4 { font-size: 14.5px; letter-spacing: 2px; margin-bottom: 12px; text-align: center; }
 .crop-view {
@@ -578,6 +578,7 @@ body {
   content: ""; position: absolute; inset: 0; border-radius: 50%;
   box-shadow: 0 0 0 999px rgba(0,0,0,.45); pointer-events: none;
 }
+.crop-mask.rect .crop-view::after { display: none; }
 .crop-zoom { width: 100%; margin: 14px 0 2px; accent-color: var(--red); }
 .crop-btns { display: flex; gap: 10px; margin-top: 10px; }
 
