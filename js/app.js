@@ -614,7 +614,7 @@ function qrSVG(seed) {
   let rects = "";
   for (let y = 0; y < n; y++) for (let x = 0; x < n; x++)
     if (g[y][x]) rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-  return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" fill="#17181A">${rects}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" fill="#17181A">${rects}</svg>`;
 }
 
 function openMyQR() {
@@ -628,13 +628,120 @@ function openMyQR() {
     <div class="qr-box">${qrSVG("quqi-friend:" + uid)}</div>
     <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>`;
   $("#qrActs").innerHTML = `
-    <button class="qr-act" onclick="toast('二维码已保存到相册（Demo）')">保存图片</button>
-    <button class="qr-act" onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">↗ 分享名片</button>
+    <button class="qr-act" onclick="saveCardImage()">保存名片</button>
+    <button class="qr-act" onclick="shareCard()">↗ 分享名片</button>
     <button class="qr-act qr-act-close" onclick="closeQR()">✕ 关闭</button>`;
   $("#qrMask").classList.add("show");
 }
 
 function closeQR() { $("#qrMask").classList.remove("show"); }
+
+/* --- 保存 / 分享名片：canvas 绘制名片图 --- */
+
+/** 从 avatarBg 渐变串里取两个色停，给 canvas 用 */
+function gradStops(name) {
+  const m = avatarBg(name).match(/#[0-9A-Fa-f]{3,6}/g) || ["#2152FF", "#6B8CFF"];
+  return [m[0], m[1] || m[0]];
+}
+
+/** 绘制名片图，完成后回调 cb(canvas) */
+function buildCardCanvas(cb) {
+  const name = state.profile.name || "未注册";
+  const uid = uidOf(name);
+  const W = 640, H = 840;
+  const cv = document.createElement("canvas");
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+  // 底色：用户色渐变打底 + 白卡
+  const [c1, c2] = gradStops(name);
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, c1); bg.addColorStop(1, c2);
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#FFFFFF";
+  ctx.beginPath(); ctx.roundRect(36, 36, W - 72, H - 72, 28); ctx.fill();
+
+  const drawRest = avatarDone => {
+    // 名字 / ID
+    ctx.fillStyle = "#17181A"; ctx.font = "700 34px 'Noto Serif SC', serif";
+    ctx.fillText(name, 180, 118);
+    ctx.fillStyle = "#9A9DA6"; ctx.font = "400 20px -apple-system, sans-serif";
+    ctx.fillText("ID：" + uid, 180, 152);
+    // 二维码
+    const svg = qrSVG("quqi-friend:" + uid);
+    const img = new Image();
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, (W - 400) / 2, 210, 400, 400);
+      ctx.imageSmoothingEnabled = true;
+      ctx.fillStyle = "#9A9DA6"; ctx.font = "400 19px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("扫一扫关注我 · 互关即好友", W / 2, 660);
+      ctx.fillStyle = "#5C5F66"; ctx.font = "600 21px 'Noto Serif SC', serif";
+      ctx.fillText("曲境 · 古风音乐约稿平台", W / 2, 736);
+      ctx.textAlign = "left";
+      cb(cv);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); cb(cv); };
+    img.src = url;
+  };
+
+  // 头像：自定义图片裁圆，否则渐变圆 + 首字
+  const ax = 90, ay = 88, ar = 44;
+  if (state.profile.avatar) {
+    const av = new Image();
+    av.onload = () => {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(ax + ar, ay + ar, ar, 0, Math.PI * 2); ctx.clip();
+      ctx.drawImage(av, ax, ay, ar * 2, ar * 2);
+      ctx.restore();
+      drawRest();
+    };
+    av.onerror = () => drawRest();
+    av.src = state.profile.avatar;
+  } else {
+    const g = ctx.createLinearGradient(ax, ay, ax + ar * 2, ay + ar * 2);
+    g.addColorStop(0, c1); g.addColorStop(1, c2);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(ax + ar, ay + ar, ar, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#FFFFFF"; ctx.font = "700 38px 'Noto Serif SC', serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(name[0], ax + ar, ay + ar + 2);
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    drawRest();
+  }
+}
+
+/** 保存名片：生成 PNG 下载 */
+function saveCardImage() {
+  buildCardCanvas(cv => {
+    cv.toBlob(blob => {
+      if (!blob) return toast("生成失败，请重试");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `曲境名片-${uidOf(state.profile.name)}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      toast("名片已保存，去下载/相册里看看吧");
+    }, "image/png");
+  });
+}
+
+/** 分享名片：生成预览图 + 平台选择 */
+function shareCard() {
+  buildCardCanvas(cv => {
+    const src = cv.toDataURL("image/png");
+    closeQR();
+    const plats = [["微", "微信好友"], ["圈", "朋友圈"], ["Q", "QQ"], ["博", "微博"], ["红", "小红书"]];
+    openSheet("分享名片", `
+      <img src="${src}" alt="名片预览" class="card-preview">
+      <div class="share-grid">
+        ${plats.map(([e, p]) => `<div class="share-it" onclick="closeSheet();toast('名片已分享到${p}（Demo）')"><span>${e}</span><b>${p}</b></div>`).join("")}
+        <div class="share-it" onclick="saveCardImage()"><span>存</span><b>保存图片</b></div>
+      </div>`);
+  });
+}
 
 /* --- 扫一扫（Demo 模拟识别） --- */
 
@@ -1246,6 +1353,54 @@ function renderMyReviews() {
   $("#myReviews").innerHTML = state.showMyReviews
     ? MY_REVIEWS.map(reviewItemHTML).join("")
     : `<div class="rev-hint">评价已对外隐藏 · 访客不可见，可在设置中重新公开</div>`;
+}
+
+/* ---------- 评价管理（查看 / 删除 / 公开开关） ---------- */
+
+function openReviewManage() {
+  const sw = `<div class="switch ${state.showMyReviews ? "" : "off"}" onclick="toggleMyReviews();openReviewManage()"></div>`;
+  openSheet(`评价管理 · ${MY_REVIEWS.length}`, `
+    <div class="set-item" style="margin-bottom:12px"><span>公开展示在我的主页</span>${sw}</div>
+    ${MY_REVIEWS.length
+      ? MY_REVIEWS.map((r, i) => `<div class="person-row" onclick="viewReview(${i})" style="cursor:pointer">
+          <div class="avatar" style="background:${avatarBg(r.from)}">${esc(r.from[0])}</div>
+          <div class="p-info"><b>${esc(r.from)} <small style="color:var(--gold)">${starsTxt(r.stars)}</small></b>
+            <span>${esc(r.txt)}</span></div>
+          <button class="fbtn off" onclick="event.stopPropagation();confirmDelReview(${i})">删除</button></div>`).join("")
+      : `<div class="rev-hint">还没有收到评价</div>`}`);
+}
+
+function viewReview(i) {
+  const r = MY_REVIEWS[i];
+  if (!r) return;
+  openSheet("评价详情", `
+    <div class="person-row">
+      <div class="avatar" style="background:${avatarBg(r.from)}">${esc(r.from[0])}</div>
+      <div class="p-info"><b>${esc(r.from)}</b><span>${r.date} · 来自已完成的合作订单</span></div>
+      <span style="color:var(--gold);font-size:13px">${starsTxt(r.stars)}</span></div>
+    <p style="font-size:13.5px;line-height:1.9;margin:6px 2px 4px">${esc(r.txt)}</p>
+    <div class="rate-acts" style="margin-top:14px">
+      <button class="btn ghost" onclick="openReviewManage()">‹ 返回列表</button>
+      <button class="btn primary danger-btn" onclick="confirmDelReview(${i})">删除这条</button>
+    </div>`);
+}
+
+function confirmDelReview(i) {
+  const r = MY_REVIEWS[i];
+  if (!r) return;
+  openSheet("删除评价", `
+    <p class="se-note">删除「${esc(r.from)}」的这条评价后不可恢复，主页好评率会重新计算。</p>
+    <div class="rate-acts" style="margin-top:14px">
+      <button class="btn ghost" onclick="openReviewManage()">取消</button>
+      <button class="btn primary danger-btn" onclick="doDelReview(${i})">确认删除</button>
+    </div>`);
+}
+
+function doDelReview(i) {
+  MY_REVIEWS.splice(i, 1);
+  renderMyReviews();
+  openReviewManage();
+  toast("评价已删除");
 }
 
 function openRate(id) {
