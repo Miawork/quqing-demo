@@ -810,6 +810,25 @@ function openArtistWork(name, i) {
   openViewer(i, WORKS.filter(w => w.author === name));
 }
 
+/** 我的作品 → 标准作品详情页（将 MY_WORKS 条目转成通用作品结构） */
+function myWorkAsWork(w, i) {
+  return {
+    id: 9000 + i, type: w.role, title: w.title,
+    author: state.profile.name || "我", role: state.myRoles.join(" / ") || w.role,
+    tags: [], biz: "商业", price: "私信询价",
+    audio: true, video: false, dur: "02:00", glyph: w.glyph,
+    cover: w.coverImg ? `url(${w.coverImg}) center/cover` : w.grad,
+    desc: `《${w.title}》 · ${w.role} · 累计播放 ${w.plays}。`,
+    detail: "本人原创作品，商用授权与约稿欢迎私信洽谈，稿酬经平台托管。",
+  };
+}
+
+function openMyWork(i) {
+  const list = MY_WORKS.filter(w => !w.hidden)
+    .sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0));
+  openViewer(i, list.map(myWorkAsWork));
+}
+
 function closeViewer() {
   $("#viewer").classList.remove("show");
 }
@@ -1900,6 +1919,10 @@ function openReportUser(name) {
 
 /** 打开任意用户主页：音乐人走完整主页，其余用户走简版名片页 */
 function openArtistByName(name) {
+  if (name === state.profile.name || name === "我") { // 自己 → 我的主页
+    switchTab(document.querySelector('.tab[data-scr="scr-me"]'));
+    return;
+  }
   const idx = ARTISTS.findIndex(a => a.name === name);
   if (idx >= 0) { openArtist(idx); return; }
   currentArtistName = name;
@@ -2485,9 +2508,9 @@ function renderMyProfile() {
 function openMyWorksList() {
   const list = MY_WORKS.filter(w => !w.hidden)
     .sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0));
-  openSheet(`我的作品清单 · ${list.length}`, list.map(w => `
-    <div class="search-row" onclick="toast('Demo：作品《${esc(w.title)}》')">
-      <div class="sr-glyph" style="background:${w.grad};color:#fff">${esc(w.glyph)}</div>
+  openSheet(`我的作品清单 · ${list.length}`, list.map((w, i) => `
+    <div class="search-row" onclick="closeSheet();openMyWork(${i})">
+      <div class="sr-glyph" style="background:${w.coverImg ? `url(${w.coverImg}) center/cover` : w.grad};color:#fff">${w.coverImg ? "" : esc(w.glyph)}</div>
       <div class="sr-info"><b>${esc(w.title)}${w.top ? " · 置顶" : ""}</b><span>${esc(w.role)} · 播放 ${esc(w.plays)}</span></div>
       <span class="art-arrow">›</span></div>`).join("")
     || `<div class="rev-hint">暂无公开作品 · 去发布页上传</div>`);
@@ -2526,8 +2549,8 @@ function renderMyPrices() {
 function renderMyWorks() {
   const list = MY_WORKS.filter(w => !w.hidden)
     .sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0));
-  $("#myWorks").innerHTML = list.map(w => `
-    <div class="mini-work" onclick="toast('Demo：作品《${esc(w.title)}》')">
+  $("#myWorks").innerHTML = list.map((w, i) => `
+    <div class="mini-work" onclick="openMyWork(${i})">
       <div class="cover" style="background:${w.coverImg ? `url(${w.coverImg}) center/cover` : w.grad}">${w.coverImg ? "" : esc(w.glyph)}${w.top ? `<i class="mw-top">置顶</i>` : ""}</div>
       <b>${esc(w.title)}</b><span>${esc(w.role)} · 播放 ${esc(w.plays)}</span>
     </div>`).join("") || `<div class="rev-hint" style="width:100%">暂无公开作品 · 去发布页上传</div>`;
