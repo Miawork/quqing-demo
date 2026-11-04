@@ -1438,6 +1438,13 @@ body {
 }
 @keyframes scanmove { from { top: 6px; } to { top: calc(100% - 8px); } }
 .scan-tip { font-size: 11px; color: rgba(255,255,255,.55); letter-spacing: 1px; text-align: center; }
+.scan-exit {
+  flex-shrink: 0; align-self: center; margin-bottom: 46px; cursor: pointer;
+  padding: 11px 34px; font-size: 13.5px; letter-spacing: 3px; color: #fff;
+  background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.55);
+  border-radius: 999px; backdrop-filter: blur(4px);
+}
+.scan-exit:active { background: rgba(255,255,255,.26); }
 .scan-result {
   display: flex; flex-direction: column; align-items: center; gap: 7px;
   width: 238px; padding: 22px 24px;
