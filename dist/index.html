@@ -889,9 +889,14 @@ body {
 }
 
 .toast {
-  position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%);
+  position: absolute; left: 24px; right: 24px; bottom: 120px;
+  margin: 0 auto; width: fit-content;
   background: rgba(18,19,23,.92); color: #fff;
-  font-size: 12.5px; letter-spacing: 1px; white-space: nowrap;
+  font-size: 12.5px; letter-spacing: 1px;
+  /* 页边距规范：左右各留 24px，超长自动换行不出界 */
+  box-sizing: border-box;
+  white-space: normal; word-break: break-word; overflow-wrap: anywhere;
+  text-align: center; line-height: 1.7;
   padding: 10px 20px; border-radius: 20px; z-index: 100; display: none;
 }
 
@@ -8127,9 +8132,67 @@ function renderArticle() {
       ${a.cta ? `<button class="btn primary art-cta" onclick="articleCta(${a.id})">${esc(a.cta.txt)}</button>` : ""}
       <div class="art-foot">
         <span class="${a.liked ? "on" : ""}" onclick="toggleArticleLike(${a.id})">${a.liked ? "♥" : "♡"} ${a.like}</span>
-        <span onclick="toast('已复制文章链接，可分享给好友')">↗ 分享</span>
+        <span onclick="openArticleComments(${a.id})">⁖ 评论 ${artCmtsOf(a.id).length}</span>
+        <span onclick="forwardArticle(${a.id})">↻ 转发</span>
+        <span onclick="openShareArticle(${a.id})">↗ 分享</span>
       </div>
     </div>`;
+}
+
+/* --- 资讯文章互动：评论 / 转发 / 分享（与作品互动同一套交互） --- */
+
+const artCmts = {};
+function artCmtsOf(id) {
+  if (!artCmts[id]) artCmts[id] = [
+    { name: "昕痕", txt: "跟进了，期待后续！", time: "1 天前" },
+  ];
+  return artCmts[id];
+}
+
+function openArticleComments(id) {
+  const list = artCmtsOf(id);
+  openSheet(`评论 ${list.length}`, `
+    <div class="wc-list">${list.map(c => `
+      <div class="wc-row">
+        <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
+        <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
+      </div>`).join("")}</div>
+    <div class="wc-input">
+      <input id="acInput" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendArtCmt(${id})">
+      <button class="btn primary" onclick="sendArtCmt(${id})">发送</button>
+    </div>`);
+  setTimeout(() => $("#acInput")?.focus(), 200);
+}
+
+function sendArtCmt(id) {
+  const v = $("#acInput").value.trim();
+  if (!v) return toast("先写点评论内容吧～");
+  artCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚" });
+  openArticleComments(id);
+  renderArticle(); // 同步脚注评论数
+  toast("评论已发布 ✓");
+}
+
+/** 转发文章 → 社区动态（带原文引用） */
+function forwardArticle(id) {
+  const a = findArticle(id);
+  if (!a) return;
+  POSTS.unshift({
+    name: state.profile.name || "我", topic: null, time: "刚刚",
+    title: "转发资讯：" + a.title,
+    txt: "转发了 @" + a.author + " 的资讯《" + a.title + "》，速来围观！",
+    like: 0, liked: false, reposts: 0, comments: [],
+    origin: { name: a.author, title: a.title, txt: a.sections[0]?.p || "" },
+  });
+  renderCommunity();
+  toast("已转发到社区动态 ✓");
+}
+
+/** 分享文章：复用多平台分享面板 */
+function openShareArticle(id) {
+  const a = findArticle(id);
+  shareWorkTitle = a ? a.title : "资讯";
+  $("#shareMask").classList.add("show");
 }
 
 function toggleArticleLike(id) {

@@ -807,9 +807,14 @@ body {
 }
 
 .toast {
-  position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%);
+  position: absolute; left: 24px; right: 24px; bottom: 120px;
+  margin: 0 auto; width: fit-content;
   background: rgba(18,19,23,.92); color: #fff;
-  font-size: 12.5px; letter-spacing: 1px; white-space: nowrap;
+  font-size: 12.5px; letter-spacing: 1px;
+  /* 页边距规范：左右各留 24px，超长自动换行不出界 */
+  box-sizing: border-box;
+  white-space: normal; word-break: break-word; overflow-wrap: anywhere;
+  text-align: center; line-height: 1.7;
   padding: 10px 20px; border-radius: 20px; z-index: 100; display: none;
 }
 
