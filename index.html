@@ -32,8 +32,23 @@
         <div class="mode-tab" onclick="setHomeMode('artist', this)">找音乐人</div>
         <div class="mode-tab" onclick="setHomeMode('demand', this)">企划招募</div>
       </div>
-      <div class="tag-rows" id="catRow"></div>
+      <div class="filter-bar" id="catRow"></div>
       <div id="homeFeed"></div>
+    </div>
+
+    <!-- 侧边筛选抽屉：风格 / 工种 / 用途 / 授权 -->
+    <div class="drawer-mask" id="drawerMask" onclick="if(event.target===this)closeCatDrawer()">
+      <div class="cat-drawer">
+        <div class="cd-head">
+          <h3>筛选浏览</h3>
+          <span class="cd-close" onclick="closeCatDrawer()">✕</span>
+        </div>
+        <div class="cd-body" id="catDrawerBody"></div>
+        <div class="cd-foot">
+          <button class="btn ghost" onclick="clearTags()">重置</button>
+          <button class="btn primary" onclick="closeCatDrawer()">查看结果</button>
+        </div>
+      </div>
     </div>
 
     <!-- ========== 社区 ========== -->

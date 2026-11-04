@@ -55,38 +55,34 @@ function injectIcons() {
 }
 
 function renderCategories() {
-  const anyOn = Object.values(state.tagSel).some(v => v && v.length);
-  $("#catRow").innerHTML = CONFIG.tagGroups.map(g => {
+  const selAll = CONFIG.tagGroups.flatMap(g => (state.tagSel[g.key] || []).map(t => ({ g: g.key, t })));
+  // 首页紧凑筛选栏：抽屉入口 + 已选标签（不再占半屏，让作品第一眼可见）
+  $("#catRow").innerHTML = `
+    <div class="fb-btn ${selAll.length ? "has" : ""}" onclick="openCatDrawer()">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      筛选${selAll.length ? ` · ${selAll.length}` : ""}
+    </div>
+    <div class="fb-chips">
+      ${selAll.length
+        ? selAll.map(s => `<div class="chip on" onclick="toggleTag('${s.g}','${s.t}')">${s.t} ✕</div>`).join("")
+        : `<span class="fb-hint">按风格 / 工种 / 用途 / 授权筛选</span>`}
+    </div>`;
+  // 侧边抽屉：分组纵向铺开，一屏浏览全部分类
+  const body = $("#catDrawerBody");
+  if (body) body.innerHTML = CONFIG.tagGroups.map(g => {
     const sel = state.tagSel[g.key] || [];
-    return `<div class="tag-row">
-      <span class="tg-label">${g.key}</span>
-      <div class="tg-scroll">
-        <div class="tg-chips" onscroll="tgUpdateMore(this)">
-          <div class="chip ${sel.length ? "" : "on"}" onclick="clearTagGroup('${g.key}')">全部</div>
-          ${g.tags.map(t => `
-          <div class="chip ${sel.includes(t) ? "on" : ""}" onclick="toggleTag('${g.key}','${t}')">${t}</div>`).join("")}
-        </div>
-        <div class="tg-more" onclick="tgScrollMore(this)">›</div>
+    return `<div class="cd-group">
+      <h5>${g.key}</h5>
+      <div class="cd-chips">
+        <div class="chip ${sel.length ? "" : "on"}" onclick="clearTagGroup('${g.key}')">全部</div>
+        ${g.tags.map(t => `
+        <div class="chip ${sel.includes(t) ? "on" : ""}" onclick="toggleTag('${g.key}','${t}')">${t}</div>`).join("")}
       </div></div>`;
-  }).join("") + (anyOn
-    ? `<div class="tg-clear" onclick="clearTags()">✕ 清空筛选</div>` : "");
-  // 初始化各行右滑示意箭头（无溢出/已到底则隐藏）
-  requestAnimationFrame(() => $$("#catRow .tg-chips").forEach(tgUpdateMore));
+  }).join("");
 }
 
-/** 标签行右缘渐隐箭头：有溢出且未划到底时显示 */
-function tgUpdateMore(chips) {
-  const more = chips.parentElement.querySelector(".tg-more");
-  const overflow = chips.scrollWidth - chips.clientWidth > 4;
-  const atEnd = chips.scrollLeft + chips.clientWidth >= chips.scrollWidth - 4;
-  more.classList.toggle("show", overflow && !atEnd);
-}
-
-/** 点箭头帮忙向右滑一段 */
-function tgScrollMore(el) {
-  const chips = el.parentElement.querySelector(".tg-chips");
-  chips.scrollBy({ left: chips.clientWidth * 0.7, behavior: "smooth" });
-}
+function openCatDrawer() { $("#drawerMask").classList.add("show"); }
+function closeCatDrawer() { $("#drawerMask").classList.remove("show"); }
 
 /** 多选：点击切换选中状态 */
 function toggleTag(group, tag) {

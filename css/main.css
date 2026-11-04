@@ -145,40 +145,65 @@ body {
 }
 .banner-dots i.on { width: 16px; border-radius: 999px; background: #FFFFFF; }
 
-/* ---------- 3b. 首页：标签检索 & 瀑布流 ---------- */
-.tag-rows { padding: 2px 0 10px; }
-.tag-row { display: flex; align-items: center; gap: 8px; padding: 3px 0 3px 16px; }
-.tg-label {
-  flex: none; font-size: 10.5px; font-weight: 700; color: var(--ink-3);
-  letter-spacing: 2px; width: 34px;
+/* ---------- 3b. 首页：紧凑筛选栏 + 侧边抽屉 & 瀑布流 ---------- */
+.filter-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px 12px; min-height: 30px;
 }
-.tg-scroll { position: relative; flex: 1; min-width: 0; }
-.tg-chips {
-  display: flex; gap: 6px; overflow-x: auto;
-  padding: 3px 16px 3px 0; scrollbar-width: none;
+.fb-btn {
+  flex: none; display: flex; align-items: center; gap: 5px; cursor: pointer;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 1px;
+  padding: 6px 13px; border-radius: 999px;
+  background: var(--ink); color: var(--paper-2);
 }
-.tg-chips::-webkit-scrollbar { display: none; }
-.tg-chips .chip { flex: none; font-size: 11px; padding: 4px 12px; }
-/* 右缘渐隐 + 右滑示意箭头：划到底自动隐藏 */
-.tg-more {
-  position: absolute; top: 0; right: 0; bottom: 0; width: 44px;
-  display: none; align-items: center; justify-content: flex-end;
-  padding-right: 12px; cursor: pointer;
-  background: linear-gradient(90deg, transparent, var(--paper) 70%);
-  color: var(--ink-3); font-size: 16px; font-weight: 700;
-  animation: tg-nudge 1.4s ease-in-out infinite;
+.fb-btn.has { background: var(--red); }
+.fb-btn:active { transform: scale(.95); }
+.fb-chips {
+  flex: 1; min-width: 0; display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none; padding: 2px 0;
 }
-.tg-more.show { display: flex; }
-@keyframes tg-nudge {
-  0%, 100% { padding-right: 12px; }
-  50% { padding-right: 8px; }
+.fb-chips::-webkit-scrollbar { display: none; }
+.fb-chips .chip { flex: none; font-size: 11px; padding: 4px 12px; }
+.fb-hint { font-size: 11px; color: var(--ink-3); align-self: center; white-space: nowrap; }
+
+/* 侧边抽屉：左滑入，纵向铺开全部分类 */
+.drawer-mask {
+  position: absolute; inset: 0; z-index: 35; display: none;
+  background: rgba(10,12,18,.45); backdrop-filter: blur(2px);
 }
-.tg-clear {
-  display: inline-block; margin: 6px 16px 0; cursor: pointer;
-  font: 700 10.5px var(--font-sans); color: var(--red); letter-spacing: 1px;
-  padding: 3px 12px; background: var(--red-light);
-  border: none; border-radius: 999px;
+.drawer-mask.show { display: block; }
+.cat-drawer {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 286px;
+  display: flex; flex-direction: column;
+  background: var(--paper); border-radius: 0 28px 28px 0;
+  box-shadow: 12px 0 40px rgba(10,12,18,.18);
+  animation: drawer-in .24s ease;
 }
+@keyframes drawer-in { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+.cd-head {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 20px 10px;
+}
+.cd-head h3 { font-size: 16px; font-weight: 700; letter-spacing: .5px; }
+.cd-close {
+  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card); color: var(--ink-2); font-size: 13px;
+}
+.cd-body { flex: 1; overflow-y: auto; padding: 4px 20px 10px; scrollbar-width: none; }
+.cd-body::-webkit-scrollbar { display: none; }
+.cd-group { margin-bottom: 16px; }
+.cd-group h5 {
+  font-size: 11px; color: var(--ink-3); font-weight: 700;
+  letter-spacing: 2px; margin-bottom: 8px;
+}
+.cd-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.cd-chips .chip { font-size: 11.5px; padding: 5px 13px; }
+.cd-foot {
+  flex-shrink: 0; display: flex; gap: 10px;
+  padding: 12px 20px 24px; border-top: 1px solid var(--line);
+}
+.cd-foot .btn { padding: 11px; font-size: 13px; }
 
 .cats { display: flex; gap: 15px; overflow-x: auto; padding: 4px 18px 14px; scrollbar-width: none; }
 .cats::-webkit-scrollbar { display: none; }
