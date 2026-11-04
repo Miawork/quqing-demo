@@ -73,6 +73,10 @@ html.dark .profile-hero { background: linear-gradient(145deg, #222327, #1B1C20);
 html.dark .profile-hero .ph-roles .tag { background: rgba(255,255,255,.08); color: var(--ink-2); }
 html.dark .profile-hero .ph-stats { border-top-color: rgba(255,255,255,.1); }
 html.dark .profile-hero .ph-top .avatar { border-color: rgba(255,255,255,.18); }
+/* 夜间：修正浅色专用的深色文字 */
+html.dark .sys-notice { color: #C9D36B; }
+html.dark .stag:nth-child(even) { color: #C9D36B; }
+html.dark .o-status.od-check { color: #9FB4CC; }
 
 </style>
 <style>
@@ -639,15 +643,15 @@ body {
   display: block; position: absolute; inset: 0; pointer-events: none;
   background: var(--hero-bg) center/cover no-repeat;
 }
-.profile-hero.has-bg .ph-bg-blur { filter: blur(14px) brightness(.6) saturate(1.05); transform: scale(1.12); }
+.profile-hero.has-bg .ph-bg-blur { filter: blur(12px) brightness(.82); transform: scale(1.1); }
 .profile-hero.has-bg .ph-bg-sharp {
-  filter: brightness(.68);
+  filter: brightness(.9);
   -webkit-mask-image: radial-gradient(ellipse 72% 64% at 50% 46%, #000 36%, transparent 80%);
   mask-image: radial-gradient(ellipse 72% 64% at 50% 46%, #000 36%, transparent 80%);
 }
 .profile-hero .ph-top, .profile-hero .ph-bio, .profile-hero .ph-stats { position: relative; z-index: 1; }
-/* 自定义背景图时：图被压暗，文字换回白色 */
-.profile-hero.has-bg { color: #fff; }
+/* 自定义背景图时：白字 + 文字投影保证可读，图不过度压暗 */
+.profile-hero.has-bg { color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
 .profile-hero.has-bg .ph-bio { color: rgba(255,255,255,.8); }
 .profile-hero.has-bg .ph-roles .tag { background: rgba(255,255,255,.16); color: #fff; }
 .profile-hero.has-bg .ph-stats { border-top-color: rgba(255,255,255,.15); }
@@ -6454,16 +6458,16 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
 });
 
 function openThemeSheet() {
-  const opt = (key, icon, desc) => `
+  const opt = (key, desc) => `
     <div class="set-item" onclick="setTheme('${key}')">
-      <span>${icon} ${THEME_LABELS[key]}</span>
+      <span>${THEME_LABELS[key]}</span>
       <b style="font-size:11px;opacity:.7">${desc}</b>
       <i>${state.settings.theme === key ? "✓" : ""}</i>
     </div>`;
   openSheet("夜间模式", `
-    ${opt("system", "随", "随系统自动切换")}
-    ${opt("light", "浅", "始终宣纸浅色")}
-    ${opt("dark", "深", "始终夜色水墨")}`);
+    ${opt("system", "随系统自动切换")}
+    ${opt("light", "始终宣纸浅色")}
+    ${opt("dark", "始终夜色水墨")}`);
 }
 
 function setTheme(t) {

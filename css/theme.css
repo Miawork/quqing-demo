@@ -64,3 +64,7 @@ html.dark .profile-hero { background: linear-gradient(145deg, #222327, #1B1C20);
 html.dark .profile-hero .ph-roles .tag { background: rgba(255,255,255,.08); color: var(--ink-2); }
 html.dark .profile-hero .ph-stats { border-top-color: rgba(255,255,255,.1); }
 html.dark .profile-hero .ph-top .avatar { border-color: rgba(255,255,255,.18); }
+/* 夜间：修正浅色专用的深色文字 */
+html.dark .sys-notice { color: #C9D36B; }
+html.dark .stag:nth-child(even) { color: #C9D36B; }
+html.dark .o-status.od-check { color: #9FB4CC; }

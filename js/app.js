@@ -2964,16 +2964,16 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
 });
 
 function openThemeSheet() {
-  const opt = (key, icon, desc) => `
+  const opt = (key, desc) => `
     <div class="set-item" onclick="setTheme('${key}')">
-      <span>${icon} ${THEME_LABELS[key]}</span>
+      <span>${THEME_LABELS[key]}</span>
       <b style="font-size:11px;opacity:.7">${desc}</b>
       <i>${state.settings.theme === key ? "✓" : ""}</i>
     </div>`;
   openSheet("夜间模式", `
-    ${opt("system", "随", "随系统自动切换")}
-    ${opt("light", "浅", "始终宣纸浅色")}
-    ${opt("dark", "深", "始终夜色水墨")}`);
+    ${opt("system", "随系统自动切换")}
+    ${opt("light", "始终宣纸浅色")}
+    ${opt("dark", "始终夜色水墨")}`);
 }
 
 function setTheme(t) {
