@@ -66,7 +66,7 @@ function renderCategories() {
     <div class="fb-chips">
       ${selAll.length
         ? selAll.map(s => `<div class="chip on" onclick="toggleTag('${s.g}','${s.t}')">${s.t} ✕</div>`).join("")
-        : `<span class="fb-hint">按风格 / 工种 / 用途 / 授权筛选</span>`}
+        : `<span class="fb-hint">按风格 / 工种 / 用途 / 授权</span>`}
     </div>`;
   // 侧边抽屉：分组纵向铺开，一屏浏览全部分类
   const body = $("#catDrawerBody");
@@ -1459,7 +1459,7 @@ function openDemandDetail(i) {
     <div class="dtags" style="margin-bottom:8px">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}</div>
     <p style="font-size:13px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">${esc(d.desc)}</p>
     <div class="pay-rows">
-      <div class="pay-row"><span>发布方</span><b>${esc(d.who)}</b></div>
+      <div class="pay-row"><span>发起方</span><b>${demandWhoHTML(d)}</b></div>
       <div class="pay-row total"><span>预算</span><b>${esc(d.budget)}</b></div>
     </div>
     ${d.applied
@@ -1890,7 +1890,7 @@ let pubState = null;
 /** @param mode "work" 作品 | "demand" 企划招募 */
 function openPubForm(mode) {
   closePublish();
-  pubState = { mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null, dur: null, attach: null };
+  pubState = { mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null, dur: null, attach: null, whoType: "个人企划" };
   $("#pubTitle").textContent = mode === "work" ? "发布作品" : "发布企划招募";
   $("#pubBody").innerHTML = mode === "work" ? pubWorkFormHTML() : pubDemandFormHTML();
   $("#ovPub").classList.add("show");
@@ -1913,6 +1913,12 @@ function pubToggleBiz(b, el) {
   const i = pubState.biz.indexOf(b);
   i >= 0 ? pubState.biz.splice(i, 1) : pubState.biz.push(b);
   el.classList.toggle("on", i < 0);
+}
+
+/** 企划发起方身份（单选） */
+function pubSetWhoType(t, el) {
+  pubState.whoType = t;
+  [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
 }
 
 function pubToggleRole(r, el) {
@@ -2106,7 +2112,8 @@ function submitPublish() {
         ...(pubState.roles.length ? pubState.roles.map(r => "招" + r) : ["招合作"]),
         ...(pubState.tags["风格"] || []), ...(pubState.tags["用途"] || []),
       ],
-      who: author + " 发起", budget: $("#pubPrice").value.trim() || "预算可议",
+      whoType: pubState.whoType || "个人企划", whoName: author,
+      budget: $("#pubPrice").value.trim() || "预算可议",
       cover: pubState.cover?.kind === "image" ? `url(${pubState.cover.url}) center/cover` : null,
       hasVideo: pubState.cover?.kind === "video" || pubState.media?.kind === "video",
       hasAudio: pubState.media?.kind === "audio",
@@ -2589,7 +2596,7 @@ let cmCtx = null; // { to, types: [], payMode, attach }
 /** 我发布的企划招募（未注册时作者记为「我」） */
 function myDemands() {
   const names = [`${state.profile.name} 发起`, "我 发起"];
-  return DEMANDS.filter(d => names.includes(d.who));
+  return DEMANDS.filter(d => names.includes(d.whoName));
 }
 
 function openCommission(to, refTitle) {
@@ -3740,7 +3747,7 @@ function doSearch(commit) {
     state.profile.name + "/" + uidOf(state.profile.name) + "/" + (state.profile.bio || ""), kws);
 
   const demands = DEMANDS.filter(d => searchHit(
-    [d.title, d.desc, d.who, d.biz, d.tags.join("/")].join("/"), kws));
+    [d.title, d.desc, d.whoType, d.whoName, d.biz, d.tags.join("/")].join("/"), kws));
 
   const posts = POSTS.filter(p => searchHit(
     [p.title, p.txt, p.name, p.topic || ""].join("/"), kws));
@@ -3778,7 +3785,7 @@ function doSearch(commit) {
     demands.length ? sec("企划招募", demands.length) + demands.map(d => `
       <div class="search-row" onclick="searchJump(()=>openDemandDetail(${DEMANDS.indexOf(d)}))">
         <div class="sr-glyph">募</div>
-        <div class="sr-info"><b>${esc(d.title)}</b><span>${esc(d.who)} · ${esc(d.budget)}</span></div>
+        <div class="sr-info"><b>${esc(d.title)}</b><span>${esc(d.whoType)} · ${esc(d.whoName)} · ${esc(d.budget)}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
     posts.length ? sec("社区帖子", posts.length) + posts.map(p => `
       <div class="search-row" onclick="searchJump(()=>openPost(${POSTS.indexOf(p)}))">

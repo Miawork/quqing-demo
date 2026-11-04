@@ -1025,6 +1025,10 @@ body { background: #D9DADE; }
   display: block; width: 62%; margin: 2px auto 12px;
   border-radius: 14px; box-shadow: 0 8px 24px rgba(20,22,30,.18);
 }
+
+/* 企划发起方：身份 tag + 可点用户名 */
+.who-link { color: var(--red); text-decoration: none; font-weight: 600; }
+.who-link:active { opacity: .7; }
 .sticker {
   text-align: center; padding: 10px 18px; background: var(--paper-2);
   border: none; border-radius: var(--squiggle-sm); box-shadow: var(--shadow-card);

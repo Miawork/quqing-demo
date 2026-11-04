@@ -263,6 +263,15 @@ function reviewItemHTML(r) {
     <p>${esc(r.txt)}</p></div>`;
 }
 
+/** 企划发起方：身份 tag + 可点击的用户名（「我」跳自己主页） */
+function demandWhoHTML(d) {
+  const me = d.whoName === "我" || d.whoName === state.profile.name;
+  const open = me
+    ? `switchTab(document.querySelector('.tab[data-scr=\\'scr-me\\']'))`
+    : `openArtistByName('${esc(d.whoName)}')`;
+  return `<span class="who"><span class="tag gray" style="margin-right:5px">${esc(d.whoType)}</span><a href="javascript:;" class="who-link" onclick="event.stopPropagation();closeSheet();${open}">${esc(d.whoName)}</a></span>`;
+}
+
 function demandCardHTML(d) {
   const cover = d.cover
     ? `<div class="dcover" style="background:${d.cover}">${d.hasVideo ? `<div class="vplay">▶</div>` : ""}</div>`
@@ -273,7 +282,7 @@ function demandCardHTML(d) {
     <div class="dtitle">${esc(d.title)}</div>
     <div class="ddesc">${esc(d.desc)}</div>
     <div class="dtags">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
-    <div class="demand-foot"><span class="who">${esc(d.who)}</span>
+    <div class="demand-foot">${demandWhoHTML(d)}
       <span class="price" style="font-size:13.5px">${d.budget}</span></div></div>`;
 }
 
@@ -698,6 +707,10 @@ function pubDemandFormHTML() {
     <div class="upload-row">
       <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
       <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
+    </div>
+    <label>发起方身份</label>
+    <div class="gender-row" style="flex-wrap:wrap">
+      ${CONFIG.demandWhoTypes.map(t => `<div class="chip${t === "个人企划" ? " on" : ""}" onclick="pubSetWhoType('${t}', this)">${t}</div>`).join("")}
     </div>
     <label>招募工种（可多选）</label>
     <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">

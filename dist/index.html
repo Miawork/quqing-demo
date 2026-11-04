@@ -1107,6 +1107,10 @@ body { background: #D9DADE; }
   display: block; width: 62%; margin: 2px auto 12px;
   border-radius: 14px; box-shadow: 0 8px 24px rgba(20,22,30,.18);
 }
+
+/* 企划发起方：身份 tag + 可点用户名 */
+.who-link { color: var(--red); text-decoration: none; font-weight: 600; }
+.who-link:active { opacity: .7; }
 .sticker {
   text-align: center; padding: 10px 18px; background: var(--paper-2);
   border: none; border-radius: var(--squiggle-sm); box-shadow: var(--shadow-card);
@@ -2405,6 +2409,7 @@ const CONFIG = {
 
   /** 注册可选工种（可多选，可跳过） */
   roles: ["作曲", "作词", "编曲", "歌手", "念白", "后期", "美工", "PV", "宣发"],
+  demandWhoTypes: ["个人企划", "企划方", "制作人", "工作室"],
 
   /** 工种图标 */
   roleIcons: {
@@ -2730,31 +2735,31 @@ const DEMANDS = [
   {
     title: "《山海谣》个人企划 · 招干音与 PV",
     desc: "自作词曲的山海经题材单曲，编曲已完成，现招一位清丽女声干音与一位水墨风 PV 师，非商用，署名+稿酬。",
-    who: "我 发起", budget: "¥1,500–2,500",
+    whoType: "个人企划", whoName: "我", budget: "¥1,500–2,500",
     biz: "非商业", tags: ["招干音", "招 PV", "水墨风"],
   },
   {
     title: "原创古风企划《九州录》招募作曲×2",
     desc: "系列企划共 9 首曲目，现招两位作曲，需擅长大气叙事向国风，词已完成。商用买断，预算充足，签平台协议。",
-    who: "企划方 · 沧海遗音社", budget: "¥3,000–5,000/首",
+    whoType: "企划方", whoName: "沧海遗音社", budget: "¥3,000–5,000/首",
     biz: "商业", tags: ["作曲", "档期 10 月前"],
   },
   {
     title: "同人歌企划急招后期混音一名",
     desc: "某武侠游戏同人歌，干音与伴奏齐全，需混音+简单母带，风格参考已备。非商用，署名+稿酬。",
-    who: "个人企划 · 二十四桥", budget: "¥500–800",
+    whoType: "个人企划", whoName: "二十四桥", budget: "¥500–800",
     biz: "非商业", tags: ["后期", "一周内交付"],
   },
   {
     title: "古风单曲 PV 招募（水墨风）",
     desc: "已完成歌曲《雾隐江南》寻 PV 师，倾向水墨动态风格，全曲 4 分 12 秒，商用发布于各视频平台。",
-    who: "制作人 · 半盏茶", budget: "¥4,000–6,000",
+    whoType: "制作人", whoName: "半盏茶", budget: "¥4,000–6,000",
     biz: "商业", tags: ["PV", "AE 动效"],
   },
   {
     title: "募集古风男声干音（戏腔佳）",
     desc: "抒情武侠向单曲，需低沉男声，副歌含少量戏腔。试音通过后签约，商用买断干音。",
-    who: "工作室 · 闻弦音乐", budget: "¥1,000–1,500",
+    whoType: "工作室", whoName: "闻弦音乐", budget: "¥1,000–1,500",
     biz: "商业", tags: ["干音", "男声"],
   },
 ];
@@ -2855,6 +2860,8 @@ const USERS_EXTRA = {
   白鹭洲: { bio: "词作者 · 战歌/叙事向" },
   沈昼: { bio: "混音师 · 人声后期" },
   二十四桥: { bio: "同人企划 · 武侠向" },
+  沧海遗音社: { bio: "企划方 · 《九州录》系列主催" },
+  闻弦音乐: { bio: "工作室 · 古风全流程制作" },
 };
 
 /* ---------- 新朋友（最近关注了我的人，回关即成为好友）----------
@@ -3232,6 +3239,15 @@ function reviewItemHTML(r) {
     <p>${esc(r.txt)}</p></div>`;
 }
 
+/** 企划发起方：身份 tag + 可点击的用户名（「我」跳自己主页） */
+function demandWhoHTML(d) {
+  const me = d.whoName === "我" || d.whoName === state.profile.name;
+  const open = me
+    ? `switchTab(document.querySelector('.tab[data-scr=\\'scr-me\\']'))`
+    : `openArtistByName('${esc(d.whoName)}')`;
+  return `<span class="who"><span class="tag gray" style="margin-right:5px">${esc(d.whoType)}</span><a href="javascript:;" class="who-link" onclick="event.stopPropagation();closeSheet();${open}">${esc(d.whoName)}</a></span>`;
+}
+
 function demandCardHTML(d) {
   const cover = d.cover
     ? `<div class="dcover" style="background:${d.cover}">${d.hasVideo ? `<div class="vplay">▶</div>` : ""}</div>`
@@ -3242,7 +3258,7 @@ function demandCardHTML(d) {
     <div class="dtitle">${esc(d.title)}</div>
     <div class="ddesc">${esc(d.desc)}</div>
     <div class="dtags">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
-    <div class="demand-foot"><span class="who">${esc(d.who)}</span>
+    <div class="demand-foot">${demandWhoHTML(d)}
       <span class="price" style="font-size:13.5px">${d.budget}</span></div></div>`;
 }
 
@@ -3668,6 +3684,10 @@ function pubDemandFormHTML() {
       <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
       <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
     </div>
+    <label>发起方身份</label>
+    <div class="gender-row" style="flex-wrap:wrap">
+      ${CONFIG.demandWhoTypes.map(t => `<div class="chip${t === "个人企划" ? " on" : ""}" onclick="pubSetWhoType('${t}', this)">${t}</div>`).join("")}
+    </div>
     <label>招募工种（可多选）</label>
     <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">
       ${CONFIG.roles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
@@ -3752,7 +3772,7 @@ function renderCategories() {
     <div class="fb-chips">
       ${selAll.length
         ? selAll.map(s => `<div class="chip on" onclick="toggleTag('${s.g}','${s.t}')">${s.t} ✕</div>`).join("")
-        : `<span class="fb-hint">按风格 / 工种 / 用途 / 授权筛选</span>`}
+        : `<span class="fb-hint">按风格 / 工种 / 用途 / 授权</span>`}
     </div>`;
   // 侧边抽屉：分组纵向铺开，一屏浏览全部分类
   const body = $("#catDrawerBody");
@@ -5145,7 +5165,7 @@ function openDemandDetail(i) {
     <div class="dtags" style="margin-bottom:8px">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}</div>
     <p style="font-size:13px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">${esc(d.desc)}</p>
     <div class="pay-rows">
-      <div class="pay-row"><span>发布方</span><b>${esc(d.who)}</b></div>
+      <div class="pay-row"><span>发起方</span><b>${demandWhoHTML(d)}</b></div>
       <div class="pay-row total"><span>预算</span><b>${esc(d.budget)}</b></div>
     </div>
     ${d.applied
@@ -5576,7 +5596,7 @@ let pubState = null;
 /** @param mode "work" 作品 | "demand" 企划招募 */
 function openPubForm(mode) {
   closePublish();
-  pubState = { mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null, dur: null, attach: null };
+  pubState = { mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null, dur: null, attach: null, whoType: "个人企划" };
   $("#pubTitle").textContent = mode === "work" ? "发布作品" : "发布企划招募";
   $("#pubBody").innerHTML = mode === "work" ? pubWorkFormHTML() : pubDemandFormHTML();
   $("#ovPub").classList.add("show");
@@ -5599,6 +5619,12 @@ function pubToggleBiz(b, el) {
   const i = pubState.biz.indexOf(b);
   i >= 0 ? pubState.biz.splice(i, 1) : pubState.biz.push(b);
   el.classList.toggle("on", i < 0);
+}
+
+/** 企划发起方身份（单选） */
+function pubSetWhoType(t, el) {
+  pubState.whoType = t;
+  [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
 }
 
 function pubToggleRole(r, el) {
@@ -5792,7 +5818,8 @@ function submitPublish() {
         ...(pubState.roles.length ? pubState.roles.map(r => "招" + r) : ["招合作"]),
         ...(pubState.tags["风格"] || []), ...(pubState.tags["用途"] || []),
       ],
-      who: author + " 发起", budget: $("#pubPrice").value.trim() || "预算可议",
+      whoType: pubState.whoType || "个人企划", whoName: author,
+      budget: $("#pubPrice").value.trim() || "预算可议",
       cover: pubState.cover?.kind === "image" ? `url(${pubState.cover.url}) center/cover` : null,
       hasVideo: pubState.cover?.kind === "video" || pubState.media?.kind === "video",
       hasAudio: pubState.media?.kind === "audio",
@@ -6275,7 +6302,7 @@ let cmCtx = null; // { to, types: [], payMode, attach }
 /** 我发布的企划招募（未注册时作者记为「我」） */
 function myDemands() {
   const names = [`${state.profile.name} 发起`, "我 发起"];
-  return DEMANDS.filter(d => names.includes(d.who));
+  return DEMANDS.filter(d => names.includes(d.whoName));
 }
 
 function openCommission(to, refTitle) {
@@ -7426,7 +7453,7 @@ function doSearch(commit) {
     state.profile.name + "/" + uidOf(state.profile.name) + "/" + (state.profile.bio || ""), kws);
 
   const demands = DEMANDS.filter(d => searchHit(
-    [d.title, d.desc, d.who, d.biz, d.tags.join("/")].join("/"), kws));
+    [d.title, d.desc, d.whoType, d.whoName, d.biz, d.tags.join("/")].join("/"), kws));
 
   const posts = POSTS.filter(p => searchHit(
     [p.title, p.txt, p.name, p.topic || ""].join("/"), kws));
@@ -7464,7 +7491,7 @@ function doSearch(commit) {
     demands.length ? sec("企划招募", demands.length) + demands.map(d => `
       <div class="search-row" onclick="searchJump(()=>openDemandDetail(${DEMANDS.indexOf(d)}))">
         <div class="sr-glyph">募</div>
-        <div class="sr-info"><b>${esc(d.title)}</b><span>${esc(d.who)} · ${esc(d.budget)}</span></div>
+        <div class="sr-info"><b>${esc(d.title)}</b><span>${esc(d.whoType)} · ${esc(d.whoName)} · ${esc(d.budget)}</span></div>
         <span class="art-arrow">›</span></div>`).join("") : "",
     posts.length ? sec("社区帖子", posts.length) + posts.map(p => `
       <div class="search-row" onclick="searchJump(()=>openPost(${POSTS.indexOf(p)}))">
