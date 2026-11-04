@@ -1470,6 +1470,7 @@ body {
 /* 二维码名片 */
 .qr-mask {
   position: absolute; inset: 0; z-index: 55; display: none;
+  flex-direction: column; gap: 18px;
   align-items: center; justify-content: center;
   background: rgba(43,38,32,.6); backdrop-filter: blur(3px);
 }
@@ -1489,10 +1490,17 @@ body {
   background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
 }
 .qr-box svg { width: 100%; height: 100%; display: block; }
-.qr-tip { text-align: center; font-size: 10.5px; color: var(--ink-3); margin: 10px 0 12px; }
-.qr-acts { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 12px; color: var(--red); }
-.qr-acts span { cursor: pointer; }
-.qr-acts i { width: 1px; height: 12px; background: var(--line); }
+.qr-tip { text-align: center; font-size: 10.5px; color: var(--ink-3); margin: 10px 0 2px; }
+/* 二维码操作：悬浮在卡片下方的独立上层按钮 */
+.qr-acts-float { display: flex; gap: 10px; position: relative; z-index: 1; }
+.qr-act {
+  padding: 10px 16px; font: inherit; font-size: 12.5px; letter-spacing: 1px; cursor: pointer;
+  color: #fff; background: rgba(255,255,255,.14);
+  border: 1.5px solid rgba(255,255,255,.65); border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.qr-act:active { background: rgba(255,255,255,.3); }
+.qr-act-close { background: rgba(255,255,255,.9); color: var(--ink); border-color: transparent; }
 
 /* 扫一扫 */
 .scan-ov { background: #16130F; z-index: 28; }
@@ -2128,6 +2136,7 @@ body {
     <!-- ========== 我的好友二维码 ========== -->
     <div class="qr-mask" id="qrMask" onclick="if(event.target===this)closeQR()">
       <div class="qr-card" id="qrCard"></div>
+      <div class="qr-acts-float" id="qrActs"></div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -3943,12 +3952,11 @@ function openMyQR() {
       <div><b>${esc(state.profile.name || "未注册")}</b><span>ID：${esc(uid)}</span></div>
     </div>
     <div class="qr-box">${qrSVG("quqi-friend:" + uid)}</div>
-    <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>
-    <div class="qr-acts">
-      <span onclick="toast('二维码已保存到相册（Demo）📥')">保存图片</span><i></i>
-      <span onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">分享名片</span><i></i>
-      <span onclick="closeQR()">关闭</span>
-    </div>`;
+    <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>`;
+  $("#qrActs").innerHTML = `
+    <button class="qr-act" onclick="toast('二维码已保存到相册（Demo）📥')">📥 保存图片</button>
+    <button class="qr-act" onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">↗ 分享名片</button>
+    <button class="qr-act qr-act-close" onclick="closeQR()">✕ 关闭</button>`;
   $("#qrMask").classList.add("show");
 }
 

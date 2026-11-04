@@ -532,12 +532,11 @@ function openMyQR() {
       <div><b>${esc(state.profile.name || "未注册")}</b><span>ID：${esc(uid)}</span></div>
     </div>
     <div class="qr-box">${qrSVG("quqi-friend:" + uid)}</div>
-    <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>
-    <div class="qr-acts">
-      <span onclick="toast('二维码已保存到相册（Demo）📥')">保存图片</span><i></i>
-      <span onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">分享名片</span><i></i>
-      <span onclick="closeQR()">关闭</span>
-    </div>`;
+    <p class="qr-tip">扫一扫上面的二维码图案，关注我 · 互关即好友</p>`;
+  $("#qrActs").innerHTML = `
+    <button class="qr-act" onclick="toast('二维码已保存到相册（Demo）📥')">📥 保存图片</button>
+    <button class="qr-act" onclick="toast('已生成名片卡片，可发给好友（Demo）↗')">↗ 分享名片</button>
+    <button class="qr-act qr-act-close" onclick="closeQR()">✕ 关闭</button>`;
   $("#qrMask").classList.add("show");
 }
 
