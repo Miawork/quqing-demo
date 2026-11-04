@@ -217,15 +217,48 @@ function repostOriginOf(p) {
   return p.origin || { name: p.name, title: p.title, txt: p.txt };
 }
 
+/* 转发编辑器（微博式：文字 + 表情包）：帖子与作品通用 */
+let repostCtx = null;   // {kind:"post", idx} | {kind:"work", id}
+let repostImg = null;   // 附带的图片表情包 dataURL
+
+/** 表情条：默认贴纸插入文字，相册表情包作图附带 */
+function renderRepostStickers() {
+  $("#repostStickers").innerHTML =
+    CONFIG.stickers.map(s => `<div class="rs-item" onclick="repostAddEmoji('${s.e}')"><span>${s.e}</span></div>`).join("")
+    + state.myStickers.map((src, i) => `<div class="rs-item" onclick="repostPickImg(${i})"><img src="${src}" alt="表情包"></div>`).join("")
+    + `<div class="rs-item rs-add" onclick="pickStickerImg()" title="从相册导入表情包"><span>＋</span></div>`;
+}
+
+function repostAddEmoji(e) {
+  const t = $("#repostTxt");
+  t.value += e;
+  t.focus();
+}
+
+function repostPickImg(i) {
+  repostImg = state.myStickers[i];
+  $("#repostImgEl").src = repostImg;
+  $("#repostImgPrev").style.display = "";
+}
+
+function clearRepostImg() {
+  repostImg = null;
+  $("#repostImgPrev").style.display = "none";
+}
+
 function openRepost(i) {
+  repostCtx = { kind: "post", idx: i };
   state.currentRepost = i;
   $("#repostTxt").value = "";
+  clearRepostImg();
+  renderRepostStickers();
   $("#repostOrig").innerHTML = originBoxHTML(repostOriginOf(POSTS[i]));
   $("#repostMask").classList.add("show");
 }
 function closeRepost() { $("#repostMask").classList.remove("show"); }
 
 function submitRepost() {
+  if (repostCtx?.kind === "work") return submitWorkRepost();
   const src = POSTS[state.currentRepost];
   const o = repostOriginOf(src);
   src.reposts = (src.reposts || 0) + 1;
@@ -233,6 +266,7 @@ function submitRepost() {
     name: state.profile.name || "洛云笙", topic: null, time: "刚刚",
     title: "转发：" + o.title,
     txt: $("#repostTxt").value.trim() || "转发",
+    img: repostImg,
     like: 0, liked: false, reposts: 0, comments: [], origin: o,
   });
   closeRepost();
@@ -902,17 +936,31 @@ function sendWorkCmt(id) {
   toast("评论已发布 ✓");
 }
 
-/** 转发作品：生成一条社区动态（带原作品引用） */
+/** 转发作品：打开微博式转发编辑器（可配文字 + 表情包） */
 function forwardWork(id) {
   const w = vWorkById(id);
+  if (!w) return;
+  repostCtx = { kind: "work", id };
+  $("#repostTxt").value = "";
+  clearRepostImg();
+  renderRepostStickers();
+  $("#repostOrig").innerHTML = originBoxHTML({ name: w.author, title: w.title, txt: w.desc || "" });
+  $("#repostMask").classList.add("show");
+}
+
+/** 作品转发发布 → 生成社区动态（带原作品引用） */
+function submitWorkRepost() {
+  const w = vWorkById(repostCtx.id);
   if (!w) return;
   POSTS.unshift({
     name: state.profile.name || "我", topic: null, time: "刚刚",
     title: "推荐作品：《" + w.title + "》",
-    txt: "转发了 @" + w.author + " 的作品《" + w.title + "》，速来围观！",
+    txt: $("#repostTxt").value.trim() || ("转发了 @" + w.author + " 的作品《" + w.title + "》，速来围观！"),
+    img: repostImg,
     like: 0, liked: false, reposts: 0, comments: [],
     origin: { name: w.author, title: w.title, txt: w.desc || "" },
   });
+  closeRepost();
   renderCommunity();
   toast("已转发到社区动态 ✓");
 }
@@ -1735,6 +1783,13 @@ function onStickerImg(input) {
   const reader = new FileReader();
   reader.onload = e => {
     state.myStickers.push(e.target.result);
+    // 转发编辑器里导入：刷新表情条并直接作为附图
+    if ($("#repostMask").classList.contains("show")) {
+      renderRepostStickers();
+      repostPickImg(state.myStickers.length - 1);
+      toast("表情包已导入并附在转发里");
+      return;
+    }
     CHATS[state.currentChat].push({ who: "me", type: "img", src: e.target.result });
     renderChat();
     toast("表情包已添加，下次可在表情面板直接发送");

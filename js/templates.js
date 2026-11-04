@@ -322,6 +322,7 @@ function postHTML(p) {
     </div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="ptxt">${hashtagHTML(p.txt)}</div>
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="表情包">` : ""}
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="event.stopPropagation();toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
@@ -360,6 +361,7 @@ function postDetailHTML(p, idx) {
     </div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="ptxt" style="-webkit-line-clamp:99">${hashtagHTML(p.txt)}</div>
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="表情包">` : ""}
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>

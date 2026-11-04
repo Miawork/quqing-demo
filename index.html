@@ -258,7 +258,11 @@
     <div class="pub-mask" id="repostMask" onclick="if(event.target===this)closeRepost()">
       <div class="pub-sheet rate-box">
         <h3>转 发</h3>
-        <textarea id="repostTxt" rows="3" placeholder="说点什么…（可留空，支持 #话题 标签）"></textarea>
+        <textarea id="repostTxt" rows="3" placeholder="说点什么…（可留空，支持 #话题 标签和表情）"></textarea>
+        <div class="repost-imgprev" id="repostImgPrev" style="display:none">
+          <img id="repostImgEl" alt="表情包"><span onclick="clearRepostImg()">✕</span>
+        </div>
+        <div class="repost-stickers" id="repostStickers"></div>
         <div id="repostOrig"></div>
         <div class="rate-acts">
           <button class="btn ghost" onclick="closeRepost()">取消</button>
