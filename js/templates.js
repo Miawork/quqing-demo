@@ -269,21 +269,164 @@ function demandWhoHTML(d) {
   const open = me
     ? `switchTab(document.querySelector('.tab[data-scr=\\'scr-me\\']'))`
     : `openArtistByName('${esc(d.whoName)}')`;
-  return `<span class="who"><span class="tag gray" style="margin-right:5px">${esc(d.whoType)}</span><a href="javascript:;" class="who-link" onclick="event.stopPropagation();closeSheet();${open}">${esc(d.whoName)}</a></span>`;
+  return `<span class="who"><span class="tag gray" style="margin-right:5px">${esc(d.whoType)}</span><a href="javascript:;" class="who-link" onclick="event.stopPropagation();closeSheet();closeOverlay('ovDemand');${open}">${esc(d.whoName)}</a></span>`;
 }
 
 function demandCardHTML(d) {
+  const sampleCount = (d.samples || []).length;
   const cover = d.cover
-    ? `<div class="dcover" style="background:${d.cover}">${d.hasVideo ? `<div class="vplay">▶</div>` : ""}</div>`
+    ? `<div class="dcover" style="background:${d.cover}">
+        <span class="dglyph">${esc(d.glyph || "企")}</span>
+        ${d.hasVideo ? `<div class="vplay">▶</div>` : ""}
+        ${sampleCount ? `<span class="d-sample-badge">♪ ${sampleCount} 首可试听</span>` : ""}</div>`
     : d.hasVideo || d.hasAudio
       ? `<div class="dmedia-hint">${d.hasVideo ? "含介绍视频" : "含参考音频"}</div>` : "";
-  return `<div class="demand-card" onclick="openDemandDetail(${DEMANDS.indexOf(d)})">
+  return `<div class="demand-card" role="button" tabindex="0"
+    onclick="openDemandDetail(${DEMANDS.indexOf(d)})"
+    onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();openDemandDetail(${DEMANDS.indexOf(d)})}">
     ${cover}
     <div class="dtitle">${esc(d.title)}</div>
     <div class="ddesc">${esc(d.desc)}</div>
-    <div class="dtags">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
+    <div class="d-preview-line"><span>${sampleCount ? "♪" : "详"}</span>
+      ${sampleCount ? `已有 ${sampleCount} 首成品 / Demo，点开试听` : "查看完整企划与招募要求"}<b>›</b></div>
+    <div class="dtags">${bizTagHTML(d.biz)}${(d.status || "招募中") !== "招募中" ? `<span class="tag cat">${esc(d.status)}</span>` : ""}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
     <div class="demand-foot">${demandWhoHTML(d)}
       <span class="price" style="font-size:13.5px">${d.budget}</span></div></div>`;
+}
+
+/** 企划详情：已有作品 / Demo 使用全站悬浮播放器 */
+function demandSampleHTML(sample, d) {
+  return `<div class="d-sample">
+    <div class="ds-cover" style="background:${sample.cover || d.cover || "linear-gradient(145deg,#2152FF,#6B8CFF)"}">${esc(sample.glyph || d.glyph || "♪")}</div>
+    <div class="ds-info"><b>${esc(sample.title)}</b><span>${esc(sample.type || "企划 Demo")} · ${esc(sample.dur || "--:--")}</span></div>
+    <button class="ds-play" data-play-work="${sample.id}" onclick="toggleWorkPlayback(${sample.id}, event)" aria-label="播放《${esc(sample.title)}》">▶</button>
+  </div>`;
+}
+
+function demandDetailHTML(d, i) {
+  const mine = d.whoName === "我" || d.whoName === state.profile.name
+    || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
+  const samples = d.samples || [];
+  return `
+    <div class="dd-hero" style="background:${d.cover || "linear-gradient(145deg,#26334C,#6B8CFF)"}">
+      <span class="dd-glyph">${esc(d.glyph || "企")}</span>
+      <div class="dd-status">${esc(d.status || "招募中")}</div>
+      <div class="dd-hero-copy"><span>${esc(d.whoType)}</span><h2>${esc(d.title)}</h2></div>
+    </div>
+    <div class="dd-main">
+      <div class="dd-tags">${bizTagHTML(d.biz)}${(d.status || "招募中") !== "招募中" ? `<span class="tag cat">${esc(d.status)}</span>` : ""}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
+      <div class="dd-owner">${demandWhoHTML(d)}<span>发起的企划</span></div>
+      <p class="dd-desc">${esc(d.desc)}</p>
+
+      <div class="dd-facts">
+        <div><span>预算</span><b>${esc(d.budget)}</b></div>
+        <div><span>招募截止</span><b>${esc(d.deadline || "招满即止")}</b></div>
+        <div class="wide"><span>当前进度</span><b>${esc(d.progress || "企划筹备中")}</b></div>
+        <div class="wide"><span>交付内容</span><b>${esc(d.deliverable || "具体交付内容请与发起方沟通")}</b></div>
+      </div>
+
+      <section class="dd-section">
+        <div class="dd-section-title"><h3>已有作品 / Demo</h3><span>${samples.length ? `${samples.length} 首可试听` : "暂无公开试听"}</span></div>
+        ${samples.length
+          ? `<div class="d-samples">${samples.map(s => demandSampleHTML(s, d)).join("")}</div>`
+          : `<div class="dd-empty">发起方暂未上传公开试听，可私信索取参考资料</div>`}
+      </section>
+
+      <section class="dd-section">
+        <div class="dd-section-title"><h3>招募要求</h3><span>投递前请确认</span></div>
+        <div class="dd-requirements">${(d.requirements || ["请附代表作与近期档期"]).map((r, n) => `<p><i>${n + 1}</i>${esc(r)}</p>`).join("")}</div>
+      </section>
+
+      ${mine
+        ? `<div class="dd-owner-tools"><button class="btn ghost" onclick="editCover('demand',${i})">${d.cover ? "更换企划封面" : "添加企划封面"}</button><button class="btn ghost" onclick="openDemandEditor(${i})">编辑企划资料</button></div>`
+        : (d.status || "招募中") !== "招募中"
+          ? `<div class="dd-empty">该企划当前为“${esc(d.status)}”，暂不接收新的报名。</div>`
+          : d.applied
+          ? `<div class="dd-applied">✓ 已投递报名${d.appliedNote ? `<span>自荐留言：${esc(d.appliedNote)}</span>` : ""}<small>对方通过后会通过私信联系，并在平台签订协议。</small></div>`
+          : `<div class="dd-apply-note"><label for="applyNote">自荐留言 <span>选填</span></label><textarea id="applyNote" rows="4" maxlength="300" placeholder="介绍擅长风格、代表作和近期档期…"></textarea></div>`}
+    </div>`;
+}
+
+/** 我的企划资料编辑器 */
+function demandEditFormHTML(d, i) {
+  const whoType = d.whoType || "个人企划";
+  const biz = Array.isArray(d.biz) ? (d.biz[0] || "待定") : (d.biz || "待定");
+  const status = d.status || "招募中";
+  const requirements = d.requirements?.length ? d.requirements : [""];
+  const samples = d.samples || [];
+  return `
+    <section class="de-section">
+      <div class="de-section-head"><h4>基本资料</h4><span>列表与详情同步更新</span></div>
+      <label for="deTitle">企划标题 <b>*</b></label>
+      <input id="deTitle" maxlength="40" value="${esc(d.title)}">
+      <label for="deDesc">需求描述 <b>*</b></label>
+      <textarea id="deDesc" rows="5" maxlength="500">${esc(d.desc)}</textarea>
+      <div class="de-cover-row">
+        <div class="de-cover-copy"><b>企划封面</b><span>${d.cover ? "已设置，可重新裁剪上传" : "尚未设置封面"}</span></div>
+        <button class="mini-btn" type="button" onclick="editCover('demand',${i})">${d.cover ? "更换封面" : "添加封面"}</button>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募设置</h4><span>可随时暂停或结束</span></div>
+      <label>招募状态</label>
+      <div class="gender-row" id="deStatusRow" style="flex-wrap:wrap">
+        ${["招募中", "暂停招募", "已结束"].map(v => `<div class="chip${v === status ? " on" : ""}" onclick="demandEditPick('status','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label>发起方身份</label>
+      <div class="gender-row" id="deWhoTypeRow" style="flex-wrap:wrap">
+        ${CONFIG.demandWhoTypes.map(v => `<div class="chip${v === whoType ? " on" : ""}" onclick="demandEditPick('whoType','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label>授权方式</label>
+      <div class="gender-row" id="deBizRow" style="flex-wrap:wrap">
+        ${["商业", "非商业", "待定"].map(v => `<div class="chip${v === biz ? " on" : ""}" onclick="demandEditPick('biz','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label for="deTags">招募工种与标签</label>
+      <input id="deTags" maxlength="120" value="${esc((d.tags || []).join("、"))}" placeholder="如：招作曲、古风、原创企划">
+      <p class="se-note">使用顿号、逗号或换行分隔，保存后会显示为独立标签。</p>
+      <div class="de-two">
+        <div><label for="deBudget">预算</label><input id="deBudget" maxlength="30" value="${esc(d.budget || "")}" placeholder="如：¥2,000–3,000"></div>
+        <div><label for="deDeadline">招募截止</label><input id="deDeadline" maxlength="30" value="${esc(d.deadline || "")}" placeholder="如：招满即止"></div>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>制作信息</h4><span>让报名者快速判断档期</span></div>
+      <label for="deProgress">当前进度</label>
+      <input id="deProgress" maxlength="100" value="${esc(d.progress || "")}" placeholder="如：词曲完成 · 编曲制作中">
+      <label for="deDeliverable">交付内容</label>
+      <textarea id="deDeliverable" rows="3" maxlength="300" placeholder="文件格式、工程文件、修改次数等">${esc(d.deliverable || "")}</textarea>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募要求</h4><span>逐条增删，按当前顺序展示</span></div>
+      <div class="de-list" id="deRequirements">
+        ${requirements.map(r => `<div class="de-list-row"><input class="de-req" maxlength="120" value="${esc(r)}" placeholder="填写一条招募要求"><button class="de-remove" type="button" onclick="removeDemandEditRow(this)" aria-label="删除要求">×</button></div>`).join("")}
+      </div>
+      <button class="de-add" type="button" onclick="addDemandRequirement()">＋ 添加一条要求</button>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>成品 / Demo</h4><span>${samples.length} 首试听资料</span></div>
+      <div class="de-list" id="deSamples">
+        ${samples.map(s => demandEditSampleRowHTML(s)).join("")}
+      </div>
+      <button class="de-add" type="button" onclick="addDemandSample()">＋ 添加 Demo 信息</button>
+      <p class="se-note">此原型可编辑试听条目的名称、类型和时长；新增条目会使用站内模拟播放器。</p>
+    </section>`;
+}
+
+function demandEditSampleRowHTML(sample) {
+  return `<div class="de-list-row de-sample-edit" data-sample-id="${Number(sample.id) || Date.now()}">
+    <div class="de-sample-top">
+      <input class="de-sample-title" maxlength="60" value="${esc(sample.title || "")}" placeholder="Demo 名称">
+      <button class="de-remove" type="button" onclick="removeDemandEditRow(this)" aria-label="删除 Demo">×</button>
+    </div>
+    <div class="de-sample-meta">
+      <input class="de-sample-type" maxlength="30" value="${esc(sample.type || "企划 Demo")}" placeholder="类型">
+      <input class="de-sample-dur" maxlength="8" value="${esc(sample.dur || "")}" placeholder="00:00">
+    </div>
+  </div>`;
 }
 
 /* ---------- 平台资讯（社区入口卡片） ---------- */
@@ -312,6 +455,18 @@ function originBoxHTML(o) {
     <p>${hashtagHTML(o.txt)}</p></div>`;
 }
 
+/** 社区帖子关联音乐：可试听，也可进入对应作品详情。 */
+function postMusicHTML(musicId) {
+  const w = WORKS.find(work => Number(work.id) === Number(musicId));
+  if (!w) return "";
+  const idx = WORKS.indexOf(w);
+  return `<div class="post-music" onclick="event.stopPropagation();openViewer(${idx},WORKS)" role="button" tabindex="0">
+    <div class="pm-cover" style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || "♪")}</div>
+    <div class="pm-info"><b>${esc(w.title)}</b><span>${esc(w.author)} · ${esc(w.dur || "--:--")} · 查看作品</span></div>
+    <button class="pm-play" data-play-work="${w.id}" onclick="event.stopPropagation();toggleWorkPlayback(${w.id},event)" aria-label="播放《${esc(w.title)}》">▶</button>
+  </div>`;
+}
+
 function postHTML(p) {
   const idx = POSTS.indexOf(p);
   return `<div class="post" onclick="openPost(${idx})">
@@ -322,7 +477,8 @@ function postHTML(p) {
     </div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="ptxt">${hashtagHTML(p.txt)}</div>
-    ${p.img ? `<img class="post-img" src="${p.img}" alt="表情包">` : ""}
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="帖子图片">` : ""}
+    ${p.musicId ? postMusicHTML(p.musicId) : ""}
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="event.stopPropagation();toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
@@ -361,7 +517,8 @@ function postDetailHTML(p, idx) {
     </div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="ptxt" style="-webkit-line-clamp:99">${hashtagHTML(p.txt)}</div>
-    ${p.img ? `<img class="post-img" src="${p.img}" alt="表情包">` : ""}
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="帖子图片">` : ""}
+    ${p.musicId ? postMusicHTML(p.musicId) : ""}
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
@@ -458,15 +615,18 @@ const muteBellSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 
 function messageHTML(m) {
   const muted = state.muted.has(m.name);
-  return `<div class="msg-item" onclick="openChat('${esc(m.name)}')">
+  return `<div class="msg-item${m.pinned ? " pinned" : ""}" onclick="openChat('${esc(m.name)}')">
     ${GROUPS[m.name]
       ? groupAvatarHTML(m.name)
       : `<div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>`}
     <div class="msg-body">
-      <div class="r1"><span class="mname">${esc(m.name)}${muted ? `<i class="mute-ic" title="免打扰">${muteBellSVG}</i>` : ""}</span><span class="time">${m.time}</span></div>
+      <div class="r1"><span class="mname">${esc(m.name)}${m.pinned ? `<i class="pin-mark">置顶</i>` : ""}${muted ? `<i class="mute-ic" title="免打扰">${muteBellSVG}</i>` : ""}</span><span class="time">${m.time}</span></div>
       <div class="txt">${esc(m.txt)}</div>
     </div>
-    ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}</div>`;
+    <div class="msg-tail">
+      ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}
+      <button class="msg-pin${m.pinned ? " on" : ""}" onclick="event.stopPropagation();togglePinMessage('${esc(m.name)}')" aria-label="${m.pinned ? "取消置顶" : "置顶消息"}">${m.pinned ? "取消" : "置顶"}</button>
+    </div></div>`;
 }
 
 /** 聊天气泡：文字 / 默认贴纸 / 相册导入表情包 */
@@ -504,21 +664,36 @@ function stickerTrayHTML() {
 
 /* ---------- 沉浸式浏览（单张 slide） ---------- */
 
+/** 作品详情内播放器：与悬浮播放栏共用同一播放状态。 */
+function workAudioPlayerHTML(w) {
+  return `<div class="work-player" data-work-player="${w.id}">
+    <button class="bigplay" data-play-work="${w.id}" onclick="toggleWorkPlayback(${w.id}, event)" aria-label="播放《${esc(w.title)}》">▶</button>
+    <div class="wp-timeline">
+      <span class="wp-current">00:00</span>
+      <input class="player-seek wp-seek" type="range" min="0" max="100" step="0.1" value="0" aria-label="《${esc(w.title)}》播放进度"
+        oninput="seekWorkPlayback(${w.id},this.value,event)" onpointerdown="event.stopPropagation()">
+      <span class="wp-duration">${esc(w.dur || "--:--")}</span>
+      <button class="wp-stop" data-stop-work="${w.id}" onclick="stopWorkPlayback(${w.id},event)" aria-label="停止播放">■</button>
+    </div>
+  </div>`;
+}
+
 /** 媒体区，与瀑布流封面同样的适配优先级 */
 function slideMediaHTML(w) {
   if (w.video) {
     return `<div class="smedia" style="background:${w.cover}">
       <span class="cover-glyph">${esc(w.glyph || "♪")}</span>
-      <div class="bigplay" onclick="toast('Demo：播放视频 ▶')">▶</div>
-      <span class="tpl-label">视频 · ${w.dur}</span></div>`;
+      ${w.audio
+        ? workAudioPlayerHTML(w)
+        : `<button class="bigplay" onclick="event.stopPropagation();toast('Demo：播放视频 ▶')" aria-label="播放视频">▶</button>`}
+      <span class="tpl-label">${w.audio ? "视频配乐" : "视频"} · ${w.dur}</span></div>`;
   }
   if (w.cover) {
     return `<div class="smedia" style="background:${w.cover}">
       <span class="cover-glyph">${esc(w.glyph || "♪")}</span>
       ${w.audio
-        ? `<div class="bigplay" onclick="toast('Demo：播放音频 ▶')">▶</div>
-           <span class="tpl-label">封面 + 音频 · ${w.dur}</span>`
-        : `<span class="tpl-label">封面图</span>`}</div>`;
+        ? `${workAudioPlayerHTML(w)}<span class="tpl-label">封面 + 音频 · ${w.dur}</span>`
+        : ""}</div>`;
   }
   if (w.lyric) {
     return `<div class="smedia tpl-lyric">
@@ -529,9 +704,11 @@ function slideMediaHTML(w) {
   return `<div class="smedia">
     <div class="disc-big"></div>
     ${barsHTML(CONFIG.ui.waveBarsViewer, "vwave")}
-    <div class="bigplay" onclick="toast('Demo：播放小样 ▶')">▶</div>
+    ${workAudioPlayerHTML(w)}
     <span class="tpl-label">默认音频模板 · 无封面 · ${w.dur}</span></div>`;
 }
+
+const commentBubbleSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 9.4 9.4 0 0 1-3.2-.55L4 20l1.45-4.2A7.8 7.8 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/></svg>`;
 
 function slideInfoHTML(w) {
   return `<div class="sinfo">
@@ -548,7 +725,7 @@ function slideInfoHTML(w) {
       <b style="color:var(--ink)">约稿须知：</b>${esc(w.detail)}</div>
     <div class="s-acts">
       <div class="s-act ${state.workLiked.has(w.id) ? "on" : ""}" id="wlike-${w.id}" onclick="toggleWorkLike(${w.id})"><i>${state.workLiked.has(w.id) ? "♥" : "♡"}</i><b>${workLikeCount(w.id)}</b></div>
-      <div class="s-act" id="wcmt-${w.id}" onclick="scrollToCmts(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
+      <div class="s-act" id="wcmt-${w.id}" onclick="scrollToCmts(${w.id})"><i>${commentBubbleSVG}</i><b>${workCmtsOf(w.id).length}</b></div>
       <div class="s-act" onclick="forwardWork(${w.id})"><i>↻</i><b>转发</b></div>
       <div class="s-act" onclick="openShareWork(${w.id})"><i>↗</i><b>分享</b></div>
     </div>
@@ -557,16 +734,23 @@ function slideInfoHTML(w) {
       <button class="btn primary" onclick="closeViewer();openCommission('${esc(w.author)}', '${esc(w.title)}')">发起约稿</button>
     </div>
     <div class="s-cmts" id="scmts-${w.id}">
-      <div class="s-cmts-head">评论 <b id="scmtn-${w.id}">${workCmtsOf(w.id).length}</b><span>评论区内滑动不翻页 · 在封面区用力下滑切换作品</span></div>
-      <div class="wc-list" id="wcl-${w.id}">${workCmtsListHTML(w.id)}</div>
-      <div class="wc-input">
-        <input id="wcin-${w.id}" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${w.id})">
-        <button class="btn primary" onclick="sendWorkCmt(${w.id})">发送</button>
+      <div class="work-cmts-head">
+        <div><i>${commentBubbleSVG}</i><h4>评论</h4><b id="scmtn-${w.id}">${workCmtsOf(w.id).length}</b></div>
+        <span>和大家聊聊这首作品</span>
       </div>
+      <div class="work-cmt-composer">
+        <div class="avatar" style="background:${avatarBg(state.profile.name || "我")}">${esc((state.profile.name || "我")[0])}</div>
+        <input id="wcin-${w.id}" maxlength="100" placeholder="写下你的感受…" onkeydown="if(event.key==='Enter')sendWorkCmt(${w.id})">
+        <button onclick="sendWorkCmt(${w.id})" aria-label="发送评论">↑</button>
+      </div>
+      <div class="work-cmt-list" id="wcl-${w.id}">${workCmtsListHTML(w.id)}</div>
     </div></div>`;
 }
 
-const slideHTML = w => `<div class="slide">${slideMediaHTML(w)}${slideInfoHTML(w)}</div>`;
+const slideHTML = w => `<div class="slide" data-work-id="${w.id}"
+  onpointerdown="workSlidePointerDown(${w.id}, event)"
+  onpointerup="workSlidePointerUp(${w.id}, event)"
+  onpointercancel="workSlidePointerCancel()">${slideMediaHTML(w)}${slideInfoHTML(w)}</div>`;
 
 /* ---------- 个人风格 / 主页橱窗（米画师式） ---------- */
 
@@ -716,31 +900,84 @@ function pubWorkFormHTML() {
 /** 企划招募发布表单 */
 function pubDemandFormHTML() {
   return `
-    <label>企划标题 <b>*</b></label>
-    <input id="pubName" maxlength="30">
-    <label>封面</label>
-    <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickCover()">上传封面（图片/视频）</div>
-      <div class="upload-prev" id="pubCoverPrev" onclick="previewCover()" title="点击查看"></div>
-    </div>
-    <label>介绍视频 / 参考音频</label>
-    <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
-      <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
-    </div>
-    <label>发起方身份</label>
-    <div class="gender-row" style="flex-wrap:wrap">
-      ${CONFIG.demandWhoTypes.map(t => `<div class="chip${t === "个人企划" ? " on" : ""}" onclick="pubSetWhoType('${t}', this)">${t}</div>`).join("")}
-    </div>
-    <label>招募工种（可多选）</label>
-    <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">
-      ${CONFIG.roles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
-      <div class="chip" onclick="pubAddCustomRole(this)">＋ 其他</div>
-    </div>
-    ${pubTagChipsHTML()}
-    ${pubBizChipsHTML()}
-    <label>预算（选填）</label>
-    <input id="pubPrice" maxlength="20" placeholder="如：¥2,000 / 可议">
-    <label>需求描述</label>
-    <textarea id="pubDesc" rows="4" placeholder="企划背景、风格参考、交付要求、周期…"></textarea>`;
+    <section class="de-section">
+      <div class="de-section-head"><h4>基本资料</h4><span>发布后仍可编辑</span></div>
+      <label for="pubName">企划标题 <b>*</b></label>
+      <input id="pubName" maxlength="40" placeholder="填写企划名称">
+      <label for="pubDesc">需求描述 <b>*</b></label>
+      <textarea id="pubDesc" rows="5" maxlength="500" placeholder="企划背景、风格参考、合作周期等"></textarea>
+      <label>企划封面</label>
+      <div class="upload-row">
+        <div class="upload-btn" onclick="pubPickCover()">上传封面（图片/视频）</div>
+        <div class="upload-prev" id="pubCoverPrev" onclick="previewCover()" title="点击查看"></div>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募设置</h4><span>与编辑企划资料一致</span></div>
+      <label>招募状态</label>
+      <div class="gender-row" style="flex-wrap:wrap">
+        ${["招募中", "暂停招募", "已结束"].map(v => `<div class="chip${v === "招募中" ? " on" : ""}" onclick="pubSetDemandOption('status','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label>发起方身份</label>
+      <div class="gender-row" style="flex-wrap:wrap">
+        ${CONFIG.demandWhoTypes.map(t => `<div class="chip${t === "个人企划" ? " on" : ""}" onclick="pubSetWhoType('${t}', this)">${t}</div>`).join("")}
+      </div>
+      <label>授权方式</label>
+      <div class="gender-row" style="flex-wrap:wrap">
+        ${["商业", "非商业", "待定"].map(v => `<div class="chip${v === "待定" ? " on" : ""}" onclick="pubSetDemandOption('demandBiz','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label for="pubDemandTags">招募工种与标签</label>
+      <input id="pubDemandTags" maxlength="120" placeholder="如：招作曲、古风、原创企划">
+      <p class="se-note">可直接填写，也可用下方选项快速添加；发布后会显示为独立标签。</p>
+      <label>招募工种（可多选）</label>
+      <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">
+        ${CONFIG.roles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
+        <div class="chip" onclick="pubAddCustomRole(this)">＋ 其他</div>
+      </div>
+      ${pubTagChipsHTML()}
+      <div class="de-two">
+        <div><label for="pubPrice">预算</label><input id="pubPrice" maxlength="30" placeholder="如：¥2,000–3,000"></div>
+        <div><label for="pubDeadline">招募截止</label><input id="pubDeadline" maxlength="30" placeholder="如：招满即止"></div>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>制作信息</h4><span>让报名者快速判断档期</span></div>
+      <label for="pubProgress">当前进度</label>
+      <input id="pubProgress" maxlength="100" placeholder="如：词曲完成 · 编曲制作中">
+      <label for="pubDeliverable">交付内容</label>
+      <textarea id="pubDeliverable" rows="3" maxlength="300" placeholder="文件格式、工程文件、修改次数等"></textarea>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募要求</h4><span>逐条填写，发布后可增删</span></div>
+      <div class="de-list" id="pubRequirements">
+        <div class="de-list-row"><input class="pub-demand-req" maxlength="120" placeholder="如：报名请附代表作与近期档期"><button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除要求">×</button></div>
+      </div>
+      <button class="de-add" type="button" onclick="addPubDemandRequirement()">＋ 添加一条要求</button>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>成品 / Demo</h4><span>选填，可发布后继续添加</span></div>
+      <label>介绍视频 / 参考音频</label>
+      <div class="upload-row">
+        <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
+        <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
+      </div>
+      <div class="de-list" id="pubSamples">
+        <div class="de-list-row de-sample-edit pub-demo-edit" data-sample-id="${Date.now()}">
+          <div class="de-sample-top">
+            <input class="pub-demo-title" maxlength="60" placeholder="Demo 名称（选填）">
+            <button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除 Demo">×</button>
+          </div>
+          <div class="de-sample-meta">
+            <input class="pub-demo-type" maxlength="30" value="企划 Demo" placeholder="类型">
+            <input class="pub-demo-dur" maxlength="8" placeholder="00:00">
+          </div>
+        </div>
+      </div>
+      <button class="de-add" type="button" onclick="addPubDemandSample()">＋ 添加 Demo 信息</button>
+      <p class="se-note">上传音频会自动读取时长；仅填写 Demo 名称时会创建站内模拟试听条目。</p>
+    </section>`;
 }

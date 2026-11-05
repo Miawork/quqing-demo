@@ -13,6 +13,8 @@ const state = {
   homeMode: "works",      // "works" | "artist" | "demand"
   tagSel: {},             // 首页标签检索：{ 组名: [已选标签…] }，空 = 全部
   topic: "全部",           // 社区话题筛选
+  communitySort: "latest", // 社区帖子排序：latest | hot | date
+  communityDate: "",      // 社区指定日期筛选：YYYY-MM-DD
   filteredWorks: [...WORKS], // 当前筛选后的作品（沉浸式浏览顺序依据）
   accepting: true,        // 「我的」接稿状态
   myRoles: [],            // 已选工种（注册时可多选，可跳过后补）
@@ -27,7 +29,6 @@ const state = {
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
   muted: new Set(),        // 消息免打扰（用户 / 讨论组通用）
   workLiked: new Set(),    // 我点赞过的作品 id
-  viewerSwipes: 0,         // 沉浸式浏览累计切换次数（≥3 后隐藏新手提示）
   accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
@@ -162,16 +163,88 @@ function setHomeMode(mode, el) {
 
 /* ---------- 社区 ---------- */
 
+function localDateKey(timestamp) {
+  const d = new Date(timestamp);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const postHeat = p => (p.like || 0) * 3 + (p.comments || []).length * 5 + (p.reposts || 0) * 4;
+
+function renderCommunityFilters() {
+  $$("#commFilterBar [data-comm-sort]").forEach(btn =>
+    btn.classList.toggle("on", btn.dataset.commSort === state.communitySort));
+  const dateButton = $("#commDateButton");
+  dateButton.classList.toggle("on", state.communitySort === "date");
+  dateButton.textContent = state.communityDate
+    ? `日期 · ${formatCommunityDate(state.communityDate)}`
+    : "按日期筛选";
+}
+
+function formatCommunityDate(value) {
+  const parts = String(value || "").split("-").map(Number);
+  return parts.length === 3 && parts.every(Number.isFinite) ? `${parts[1]}月${parts[2]}日` : "按日期筛选";
+}
+
+function openCommunityDateFilter() {
+  const today = localDateKey(Date.now());
+  const yesterday = localDateKey(Date.now() - 24 * 60 * 60 * 1000);
+  openSheet("按日期筛选", `
+    <div class="comm-date-sheet">
+      <p>选择帖子发布的日期</p>
+      <div class="comm-date-quick">
+        <button class="${state.communityDate === today ? "on" : ""}" onclick="applyCommunityDateFilter('${today}')">今天</button>
+        <button class="${state.communityDate === yesterday ? "on" : ""}" onclick="applyCommunityDateFilter('${yesterday}')">昨天</button>
+      </div>
+      <label for="communityDateInput">选择具体日期</label>
+      <input id="communityDateInput" type="date" max="${today}" value="${esc(state.communityDate)}">
+      <div class="comm-date-actions">
+        <button class="btn ghost" onclick="clearCommunityDateFilter()">全部日期</button>
+        <button class="btn primary" onclick="applyCommunityDateFilter()">应用筛选</button>
+      </div>
+    </div>`);
+}
+
+function applyCommunityDateFilter(value) {
+  const selected = value || $("#communityDateInput")?.value;
+  if (!selected) return toast("请先选择日期");
+  setCommunityDate(selected);
+  closeSheet();
+}
+
+function clearCommunityDateFilter() {
+  setCommunityDate("");
+  closeSheet();
+}
+
 function renderCommunity() {
   $("#topicRow").innerHTML = CONFIG.topics.map(t => `
     <div class="chip ${t === state.topic ? "on" : ""}" onclick="setTopic('${t}')">
       ${t === "全部" ? t : "# " + t}</div>`).join("");
-  const articles = state.topic === "全部"
+  renderCommunityFilters();
+  let posts = POSTS.filter(p => state.topic === "全部" || p.topic === state.topic);
+  if (state.communityDate) {
+    posts = posts.filter(p => localDateKey(p.createdAt || Date.now()) === state.communityDate);
+  }
+  posts = [...posts].sort((a, b) => state.communitySort === "hot"
+    ? postHeat(b) - postHeat(a)
+    : (b.createdAt || 0) - (a.createdAt || 0));
+  const articles = state.topic === "全部" && state.communitySort === "latest" && !state.communityDate
     ? `<div class="art-sec">平台资讯</div>` + ARTICLES.map(articleCardHTML).join("")
     : "";
   $("#commFeed").innerHTML = articles +
-    (POSTS.filter(p => state.topic === "全部" || p.topic === state.topic)
-      .map(postHTML).join("") || emptyHTML("该话题下暂无帖子"));
+    (posts.map(postHTML).join("") || emptyHTML(state.communityDate ? "该日期暂无帖子" : "该话题下暂无帖子"));
+}
+
+function setCommunitySort(mode) {
+  state.communitySort = mode === "hot" ? "hot" : "latest";
+  state.communityDate = "";
+  renderCommunity();
+}
+
+function setCommunityDate(value) {
+  state.communityDate = value || "";
+  state.communitySort = state.communityDate ? "date" : "latest";
+  renderCommunity();
 }
 
 function setTopic(t) {
@@ -181,6 +254,8 @@ function setTopic(t) {
 
 /** 热议卡片：跳到对应话题 */
 function goHotTopic() {
+  state.communitySort = "latest";
+  state.communityDate = "";
   setTopic("编曲交流");
   toast("已切到热议话题 # 编曲交流");
 }
@@ -427,7 +502,7 @@ function submitRepost() {
   const o = repostOriginOf(src);
   src.reposts = (src.reposts || 0) + 1;
   POSTS.unshift({
-    name: state.profile.name || "洛云笙", topic: null, time: "刚刚",
+    name: state.profile.name || "洛云笙", topic: null, time: "刚刚", createdAt: Date.now(),
     title: "转发：" + o.title,
     txt: $("#repostTxt").value.trim() || "转发",
     img: repostImg,
@@ -436,6 +511,8 @@ function submitRepost() {
   closeRepost();
   closeOverlay("ovPost");
   state.topic = "全部";
+  state.communitySort = "latest";
+  state.communityDate = "";
   renderCommunity();
   toast("转发成功");
 }
@@ -506,15 +583,21 @@ function onCmtImg(input) {
 
 /* ---------- 发帖（正文 #话题+空格 自动识别标签） ---------- */
 
+let postDraft = { img: null, musicId: null };
+
 function openPostForm() {
+  postDraft = { img: null, musicId: null };
   $("#postTitle").value = "";
   $("#postTxt").value = "";
+  $("#postMusicPicker").classList.remove("show");
+  renderPostAttachments();
   postTxtInput();
   $("#postMask").classList.add("show");
 }
 
 function closePostForm() {
   $("#postMask").classList.remove("show");
+  $("#postMusicPicker").classList.remove("show");
 }
 
 /** 发布面板入口：跳到社区页并打开发帖弹层 */
@@ -531,6 +614,64 @@ function postTxtInput() {
     : "✎ 正文输入「#话题 + 空格」自动识别为标签";
 }
 
+function pickPostImage() {
+  const input = $("#postImageFile");
+  input.value = "";
+  input.click();
+}
+
+function onPostImage(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) return toast("请选择图片文件");
+  const reader = new FileReader();
+  reader.onload = e => {
+    postDraft.img = e.target.result;
+    renderPostAttachments();
+    toast("图片已添加");
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPostImage() {
+  postDraft.img = null;
+  renderPostAttachments();
+}
+
+function togglePostMusicPicker() {
+  const picker = $("#postMusicPicker");
+  picker.innerHTML = WORKS.filter(w => w.audio).map(w => `
+    <button class="post-music-option${Number(postDraft.musicId) === Number(w.id) ? " on" : ""}" onclick="selectPostMusic(${w.id})">
+      <span style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || "♪")}</span>
+      <div><b>${esc(w.title)}</b><i>${esc(w.author)} · ${esc(w.dur || "--:--")}</i></div>
+      <em>${Number(postDraft.musicId) === Number(w.id) ? "✓" : "＋"}</em>
+    </button>`).join("");
+  picker.classList.toggle("show");
+}
+
+function selectPostMusic(id) {
+  postDraft.musicId = Number(id);
+  $("#postMusicPicker").classList.remove("show");
+  renderPostAttachments();
+  toast("已关联音乐作品");
+}
+
+function clearPostMusic() {
+  postDraft.musicId = null;
+  renderPostAttachments();
+}
+
+function renderPostAttachments() {
+  const w = WORKS.find(work => Number(work.id) === Number(postDraft.musicId));
+  $("#postAttachPreview").innerHTML = `
+    ${postDraft.img ? `<div class="post-draft-image"><img src="${postDraft.img}" alt="待发布图片"><button onclick="clearPostImage()" aria-label="删除图片">×</button></div>` : ""}
+    ${w ? `<div class="post-draft-music">
+      <span style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || "♪")}</span>
+      <div><b>${esc(w.title)}</b><i>${esc(w.author)} · ${esc(w.dur || "--:--")}</i></div>
+      <button onclick="clearPostMusic()" aria-label="取消关联音乐">×</button>
+    </div>` : ""}`;
+}
+
 function submitPost() {
   const title = $("#postTitle").value.trim();
   if (!title) return toast("先给帖子起个标题吧");
@@ -538,10 +679,13 @@ function submitPost() {
   const m = txt.match(/#([^#\s]+)(?=\s|$)/);
   const topic = m && CONFIG.topics.includes(m[1]) ? m[1] : null;
   POSTS.unshift({
-    name: state.profile.name || "洛云笙", topic, time: "刚刚",
-    title, txt, like: 0, liked: false, reposts: 0, comments: [],
+    name: state.profile.name || "洛云笙", topic, time: "刚刚", createdAt: Date.now(),
+    title, txt, img: postDraft.img || undefined, musicId: postDraft.musicId || undefined,
+    like: 0, liked: false, reposts: 0, comments: [],
   });
   state.topic = topic || "全部";
+  state.communitySort = "latest";
+  state.communityDate = "";
   closePostForm();
   renderCommunity();
   toast(m ? `发布成功，已带标签 #${m[1]}` : "发布成功");
@@ -680,8 +824,21 @@ function ndReply() {
 /* ---------- 消息 ---------- */
 
 function renderMessages() {
-  $("#msgList").innerHTML = MESSAGES.filter(m => !state.blocked.has(m.name)).map(messageHTML).join("");
+  const messages = MESSAGES
+    .map((message, order) => ({ message, order }))
+    .filter(({ message }) => !state.blocked.has(message.name))
+    .sort((a, b) => Number(!!b.message.pinned) - Number(!!a.message.pinned) || a.order - b.order)
+    .map(({ message }) => message);
+  $("#msgList").innerHTML = messages.map(messageHTML).join("");
   renderMsgEntries();
+}
+
+function togglePinMessage(name) {
+  const message = MESSAGES.find(m => m.name === name);
+  if (!message) return;
+  message.pinned = !message.pinned;
+  renderMessages();
+  toast(message.pinned ? `已置顶「${name}」` : `已取消置顶「${name}」`);
 }
 
 /** 消息列表一键全部已读 */
@@ -1018,36 +1175,54 @@ let vLastIdx = 0;
 
 function openViewer(idx, list) {
   const works = list || state.filteredWorks;
+  window.getSelection?.()?.removeAllRanges();
   viewerWorks = works;
   const scroller = $("#vscroll");
   scroller.innerHTML = works.map(slideHTML).join("");
   $("#viewer").classList.add("show");
-  // 新手提示：累计切换 3 次后不再展示
-  $(".viewer-hint").style.display = state.viewerSwipes >= 3 ? "none" : "";
+  $(".phone").classList.add("viewer-open");
+  renderMiniPlayer();
   vLastIdx = idx;
   scroller.onscroll = viewerOnScroll;
-  requestAnimationFrame(() => { scroller.scrollTop = scroller.clientHeight * idx; });
+  requestAnimationFrame(() => {
+    const target = scroller.children[idx];
+    scroller.scrollTop = target ? target.offsetTop : 0;
+    renderMiniPlayer();
+  });
 }
 
-/** 统计上下滑切换次数，满 3 次淡出新手提示 */
+/** 跟踪当前作品页，避免滚动时重复处理同一项 */
 function viewerOnScroll() {
   const sc = $("#vscroll");
-  const i = Math.round(sc.scrollTop / sc.clientHeight);
+  const marker = sc.scrollTop + Math.min(160, sc.clientHeight * .25);
+  const slides = [...sc.children];
+  let i = 0;
+  for (let n = 0; n < slides.length; n++) {
+    if (slides[n].offsetTop <= marker) i = n;
+    else break;
+  }
   if (i === vLastIdx) return;
   vLastIdx = i;
-  if (state.viewerSwipes >= 3) return;
-  state.viewerSwipes++;
-  if (state.viewerSwipes >= 3) {
-    const hint = $(".viewer-hint");
-    hint.style.transition = "opacity .6s";
-    hint.style.opacity = "0";
-    setTimeout(() => { hint.style.display = "none"; hint.style.opacity = ""; }, 650);
-  }
 }
 
 /* --- 作品互动：点赞 / 评论 / 转发 / 分享 --- */
 
-const vWorkById = id => viewerWorks.find(w => w.id === id) || WORKS.find(w => w.id === id);
+function demandSampleById(id) {
+  for (let demandIndex = 0; demandIndex < DEMANDS.length; demandIndex++) {
+    const d = DEMANDS[demandIndex];
+    const sample = (d.samples || []).find(s => Number(s.id) === Number(id));
+    if (sample) return {
+      ...sample, audio: true, video: false, demandIndex,
+      author: d.whoName, role: `${d.whoType} · 企划试听`,
+      cover: sample.cover || d.cover, glyph: sample.glyph || d.glyph,
+    };
+  }
+  return null;
+}
+
+const vWorkById = id => viewerWorks.find(w => w.id === id)
+  || WORKS.find(w => w.id === id)
+  || demandSampleById(id);
 
 /** 基础点赞数：由 id 确定性生成（Demo 无后端） */
 const workLikeBase = id => 46 + (id * 83) % 460;
@@ -1056,45 +1231,364 @@ const workLikeCount = id => workLikeBase(id) + (state.workLiked.has(id) ? 1 : 0)
 function toggleWorkLike(id) {
   const on = !state.workLiked.has(id);
   on ? state.workLiked.add(id) : state.workLiked.delete(id);
-  const el = $(`#wlike-${id}`);
-  if (el) {
+  updateWorkLikeUI(id, on);
+}
+
+function updateWorkLikeUI(id, on) {
+  $$(`#wlike-${id}`).forEach(el => {
     el.classList.toggle("on", on);
     el.innerHTML = `<i>${on ? "♥" : "♡"}</i><b>${workLikeCount(id)}</b>`;
+  });
+}
+
+/* 双击 / 双击触摸点赞：排除按钮和输入框，拖动页面不会误触 */
+let workTapDown = null;
+let workLastTap = { id: null, time: 0, x: 0, y: 0 };
+
+function workSlidePointerDown(id, event) {
+  workTapDown = {
+    id, x: event.clientX, y: event.clientY, time: Date.now(),
+    scrollTop: $("#vscroll")?.scrollTop || 0,
+  };
+}
+
+function workSlidePointerCancel() { workTapDown = null; }
+
+function workSlidePointerUp(id, event) {
+  const down = workTapDown;
+  workTapDown = null;
+  if (!down || down.id !== id) return;
+  if (event.target.closest("button,input,a,.s-act,.sauthor,.s-cmts")) return;
+  const sc = $("#vscroll");
+  const moved = Math.hypot(event.clientX - down.x, event.clientY - down.y);
+  const scrolled = Math.abs((sc?.scrollTop || 0) - down.scrollTop);
+  if (moved > 14 || scrolled > 8 || Date.now() - down.time > 420) return;
+
+  const now = Date.now();
+  const isDouble = workLastTap.id === id
+    && now - workLastTap.time < 340
+    && Math.hypot(event.clientX - workLastTap.x, event.clientY - workLastTap.y) < 54;
+  if (!isDouble) {
+    workLastTap = { id, time: now, x: event.clientX, y: event.clientY };
+    return;
   }
+  workLastTap = { id: null, time: 0, x: 0, y: 0 };
+  likeWorkFromDoubleTap(id, event.currentTarget, event.clientX, event.clientY);
+}
+
+function likeWorkFromDoubleTap(id, slide, clientX, clientY) {
+  window.getSelection?.()?.removeAllRanges();
+  const on = !state.workLiked.has(id);
+  on ? state.workLiked.add(id) : state.workLiked.delete(id);
+  updateWorkLikeUI(id, on);
+  const rect = slide.getBoundingClientRect();
+  const heart = document.createElement("span");
+  heart.className = `work-like-burst${on ? "" : " off"}`;
+  heart.textContent = on ? "♥" : "♡";
+  heart.style.left = `${clientX - rect.left}px`;
+  heart.style.top = `${clientY - rect.top}px`;
+  slide.appendChild(heart);
+  setTimeout(() => heart.remove(), 720);
+  navigator.vibrate?.(on ? 18 : 10);
+}
+
+/* --- 悬浮播放条：试听状态跨作品页、主页和资料页持续存在 --- */
+const playerState = {
+  work: null, playing: false, elapsed: 0, duration: 0,
+};
+let playerClock = null;
+let demoAudioCtx = null;
+let demoMaster = null;
+let demoNoteTimer = null;
+let demoNoteStep = 0;
+
+function durationSeconds(text) {
+  const parts = String(text || "02:00").split(":").map(Number);
+  return parts.length === 2 && parts.every(Number.isFinite) ? parts[0] * 60 + parts[1] : 120;
+}
+
+function playerTime(sec) {
+  const safe = Math.max(0, Math.floor(sec || 0));
+  return `${String(Math.floor(safe / 60)).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
+}
+
+function toggleWorkPlayback(id, event) {
+  event?.stopPropagation();
+  const work = vWorkById(id);
+  if (!work || !work.audio) return toast("这个作品暂时没有可试听音频");
+  if (playerState.work?.id === id) {
+    togglePlayerPlayback(event);
+    return;
+  }
+  playerState.work = work;
+  playerState.elapsed = 0;
+  playerState.duration = durationSeconds(work.dur);
+  playerState.playing = true;
+  startPlayerClock();
+  startDemoAudio(work.id);
+  renderMiniPlayer();
+}
+
+function togglePlayerPlayback(event) {
+  event?.stopPropagation();
+  if (!playerState.work) return;
+  playerState.playing = !playerState.playing;
+  if (playerState.elapsed >= playerState.duration) playerState.elapsed = 0;
+  if (playerState.playing) {
+    startPlayerClock();
+    startDemoAudio(playerState.work.id);
+  } else {
+    clearInterval(playerClock);
+    playerClock = null;
+    stopDemoAudio();
+  }
+  renderMiniPlayer();
+}
+
+function setPlaybackProgress(percent, event, workId) {
+  event?.stopPropagation();
+  const requestedId = workId == null ? playerState.work?.id : Number(workId);
+  if (requestedId == null) return;
+  if (Number(playerState.work?.id) !== Number(requestedId)) {
+    const work = vWorkById(requestedId);
+    if (!work || !work.audio) return;
+    clearInterval(playerClock);
+    playerClock = null;
+    stopDemoAudio();
+    playerState.work = work;
+    playerState.duration = durationSeconds(work.dur);
+    playerState.playing = false;
+  }
+  const safePercent = Math.min(100, Math.max(0, Number(percent) || 0));
+  playerState.elapsed = playerState.duration * safePercent / 100;
+  if (safePercent >= 100 && playerState.playing) {
+    playerState.playing = false;
+    clearInterval(playerClock);
+    playerClock = null;
+    stopDemoAudio();
+  }
+  renderMiniPlayer();
+}
+
+function seekPlayerPlayback(percent, event) {
+  setPlaybackProgress(percent, event);
+}
+
+function seekWorkPlayback(id, percent, event) {
+  setPlaybackProgress(percent, event, id);
+}
+
+function stopWorkPlayback(id, event) {
+  event?.stopPropagation();
+  if (Number(playerState.work?.id) !== Number(id)) return;
+  stopPlayerPlayback(event);
+}
+
+function startPlayerClock() {
+  clearInterval(playerClock);
+  playerClock = setInterval(() => {
+    if (!playerState.playing) return;
+    playerState.elapsed = Math.min(playerState.duration, playerState.elapsed + .25);
+    if (playerState.elapsed >= playerState.duration) {
+      playerState.playing = false;
+      clearInterval(playerClock);
+      playerClock = null;
+      stopDemoAudio();
+    }
+    renderMiniPlayer();
+  }, 250);
+}
+
+/* Demo 没有外部音频文件，用很轻的合成试听声让播放/暂停是真实可感知的。 */
+function startDemoAudio(seed) {
+  const AudioCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtor) return;
+  if (!demoAudioCtx) {
+    demoAudioCtx = new AudioCtor();
+    demoMaster = demoAudioCtx.createGain();
+    demoMaster.gain.value = 0;
+    demoMaster.connect(demoAudioCtx.destination);
+  }
+  demoAudioCtx.resume?.();
+  demoMaster.gain.cancelScheduledValues(demoAudioCtx.currentTime);
+  demoMaster.gain.setTargetAtTime(.035, demoAudioCtx.currentTime, .05);
+  clearTimeout(demoNoteTimer);
+  demoNoteStep = 0;
+  const scale = [0, 3, 5, 7, 10, 7, 5, 3];
+  const root = 196 * Math.pow(2, ((Number(seed) || 1) % 5) / 12);
+  const tick = () => {
+    if (!playerState.playing || !demoAudioCtx) return;
+    const now = demoAudioCtx.currentTime;
+    const osc = demoAudioCtx.createOscillator();
+    const gain = demoAudioCtx.createGain();
+    osc.type = demoNoteStep % 4 === 0 ? "triangle" : "sine";
+    osc.frequency.value = root * Math.pow(2, scale[demoNoteStep % scale.length] / 12);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(.55, now + .035);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .7);
+    osc.connect(gain).connect(demoMaster);
+    osc.start(now);
+    osc.stop(now + .72);
+    demoNoteStep++;
+    demoNoteTimer = setTimeout(tick, 620);
+  };
+  tick();
+}
+
+function stopDemoAudio() {
+  clearTimeout(demoNoteTimer);
+  demoNoteTimer = null;
+  if (demoAudioCtx && demoMaster) {
+    demoMaster.gain.cancelScheduledValues(demoAudioCtx.currentTime);
+    demoMaster.gain.setTargetAtTime(0, demoAudioCtx.currentTime, .035);
+  }
+}
+
+function stopPlayerPlayback(event) {
+  event?.stopPropagation();
+  if (!playerState.work) return;
+  clearInterval(playerClock);
+  playerClock = null;
+  stopDemoAudio();
+  playerState.playing = false;
+  playerState.elapsed = 0;
+  renderMiniPlayer();
+}
+
+function clearPlayerPlayback(event) {
+  event?.stopPropagation();
+  clearInterval(playerClock);
+  playerClock = null;
+  stopDemoAudio();
+  playerState.work = null;
+  playerState.playing = false;
+  playerState.elapsed = 0;
+  playerState.duration = 0;
+  renderMiniPlayer();
+}
+
+function renderMiniPlayer() {
+  const bar = $("#miniPlayer");
+  if (!bar) return;
+  const work = playerState.work;
+  const viewerOpen = $("#viewer")?.classList.contains("show");
+  const showMini = !!work && !viewerOpen;
+  const percent = work && playerState.duration
+    ? Math.min(100, Math.max(0, playerState.elapsed / playerState.duration * 100)) : 0;
+  bar.classList.toggle("show", showMini);
+  bar.classList.toggle("playing", !!work && playerState.playing);
+  $(".phone").classList.toggle("player-active", showMini);
+  if (work) {
+    $("#mpTitle").textContent = work.title;
+    $("#mpMeta").textContent = `${work.author} · ${playerTime(playerState.elapsed)} / ${playerTime(playerState.duration)}`;
+    $("#mpSeek").value = percent;
+    $("#mpSeek").style.setProperty("--seek-pct", `${percent}%`);
+    $("#mpSeek").disabled = false;
+    $("#mpPlay").textContent = playerState.playing ? "❚❚" : "▶";
+    $("#mpPlay").setAttribute("aria-label", playerState.playing ? "暂停" : "继续播放");
+    $("#mpStop").disabled = !playerState.playing && playerState.elapsed <= 0;
+    $("#mpCover").textContent = work.glyph || "♪";
+    $("#mpCover").style.background = work.cover || "linear-gradient(145deg,#2152FF,#6B8CFF)";
+  } else {
+    $("#mpSeek").value = 0;
+    $("#mpSeek").style.setProperty("--seek-pct", "0%");
+    $("#mpSeek").disabled = true;
+    $("#mpStop").disabled = true;
+  }
+  $$('[data-play-work]').forEach(btn => {
+    const active = !!work && Number(btn.dataset.playWork) === Number(work.id) && playerState.playing;
+    btn.classList.toggle("is-playing", active);
+    btn.textContent = active ? "❚❚" : "▶";
+    btn.setAttribute("aria-label", active ? "暂停" : "播放试听");
+  });
+  $$('[data-work-player]').forEach(panel => {
+    const id = Number(panel.dataset.workPlayer);
+    const active = !!work && id === Number(work.id);
+    const panelPercent = active ? percent : 0;
+    const seek = panel.querySelector(".wp-seek");
+    const stop = panel.querySelector(".wp-stop");
+    const current = panel.querySelector(".wp-current");
+    if (seek) {
+      seek.value = panelPercent;
+      seek.style.setProperty("--seek-pct", `${panelPercent}%`);
+    }
+    if (current) current.textContent = active ? playerTime(playerState.elapsed) : "00:00";
+    if (stop) stop.disabled = !active || (!playerState.playing && playerState.elapsed <= 0);
+  });
+}
+
+function openPlayingWork() {
+  if (!playerState.work) return;
+  if (Number.isInteger(playerState.work.demandIndex)) {
+    const demandIdx = DEMANDS.findIndex(d => (d.samples || []).some(s => Number(s.id) === Number(playerState.work.id)));
+    closeViewer();
+    if (demandIdx >= 0) openDemandDetail(demandIdx);
+    return;
+  }
+  const idx = WORKS.findIndex(w => w.id === playerState.work.id);
+  if (idx >= 0) {
+    openViewer(idx, WORKS);
+    return;
+  }
+  const localIdx = viewerWorks.findIndex(w => w.id === playerState.work.id);
+  if (localIdx >= 0) openViewer(localIdx, viewerWorks);
 }
 
 /** 作品评论存储（按 id，首次访问种子两条 Demo 评论） */
 const workCmts = {};
 function workCmtsOf(id) {
   if (!workCmts[id]) workCmts[id] = [
-    { name: "晚风拾梦", txt: "旋律太戳了，循环了一下午！", time: "2 天前" },
-    { name: "衔枝客", txt: "编曲层次好丰富，期待合作～", time: "1 周前" },
+    { name: "晚风拾梦", txt: "旋律太戳了，循环了一下午！", time: "2 天前", likes: 18, liked: false },
+    { name: "衔枝客", txt: "编曲层次好丰富，期待合作～", time: "1 周前", likes: 7, liked: false },
   ];
   return workCmts[id];
 }
 
 /** 作品评论列表（内嵌在信息面板，下拉即见） */
 function workCmtsListHTML(id) {
-  return workCmtsOf(id).map(c => `
-    <div class="wc-row">
-      <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
-      <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
+  return workCmtsOf(id).map((c, i) => `
+    <div class="work-cmt">
+      <div class="avatar" style="background:${avatarBg(c.name)}">${esc(c.name[0])}</div>
+      <div class="work-cmt-main">
+        <div class="work-cmt-meta"><b>${esc(c.name)}</b><span>${esc(c.time)}</span></div>
+        <p>${esc(c.txt)}</p>
+        <div class="work-cmt-actions">
+          <button onclick="replyWorkCmt(${id},${i})">回复</button>
+          <button class="${c.liked ? "on" : ""}" onclick="toggleWorkCmtLike(${id},${i})">${c.liked ? "♥" : "♡"} ${c.likes || 0}</button>
+        </div>
+      </div>
     </div>`).join("");
 }
 
-/** 点「评论」按钮：只滚动当前 slide 的信息面板到评论区（不触碰外层翻页容器，避免误切作品） */
+/** 点「评论」按钮：在整页滚动容器中定位到评论区 */
 function scrollToCmts(id) {
   const cmts = $(`#scmts-${id}`);
   if (!cmts) return;
-  const sinfo = cmts.closest(".sinfo");
-  sinfo.scrollTo({ top: cmts.offsetTop, behavior: "smooth" }); // offsetTop 相对 sinfo（relative 定位）
+  cmts.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function replyWorkCmt(id, i) {
+  const c = workCmtsOf(id)[i];
+  const input = $(`#wcin-${id}`);
+  if (!c || !input) return;
+  input.value = `@${c.name} `;
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function toggleWorkCmtLike(id, i) {
+  const c = workCmtsOf(id)[i];
+  if (!c) return;
+  c.liked = !c.liked;
+  c.likes = Math.max(0, (c.likes || 0) + (c.liked ? 1 : -1));
+  $(`#wcl-${id}`).innerHTML = workCmtsListHTML(id);
 }
 
 function sendWorkCmt(id) {
   const input = $(`#wcin-${id}`);
   const v = input.value.trim();
   if (!v) return toast("先写点评论内容吧～");
-  workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚" });
+  workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚", likes: 0, liked: false });
   input.value = "";
   $(`#wcl-${id}`).innerHTML = workCmtsListHTML(id);
   const n = $(`#wcmt-${id} b`), h = $(`#scmtn-${id}`);
@@ -1120,7 +1614,7 @@ function submitWorkRepost() {
   const w = vWorkById(repostCtx.id);
   if (!w) return;
   POSTS.unshift({
-    name: state.profile.name || "我", topic: null, time: "刚刚",
+    name: state.profile.name || "我", topic: null, time: "刚刚", createdAt: Date.now(),
     title: "推荐作品：《" + w.title + "》",
     txt: $("#repostTxt").value.trim() || ("转发了 @" + w.author + " 的作品《" + w.title + "》，速来围观！"),
     img: repostImg,
@@ -1128,6 +1622,8 @@ function submitWorkRepost() {
     origin: { name: w.author, title: w.title, txt: w.desc || "" },
   });
   closeRepost();
+  state.communitySort = "latest";
+  state.communityDate = "";
   renderCommunity();
   toast("已转发到社区动态 ✓");
 }
@@ -1164,6 +1660,8 @@ function openMyWork(i) {
 
 function closeViewer() {
   $("#viewer").classList.remove("show");
+  $(".phone").classList.remove("viewer-open");
+  renderMiniPlayer();
 }
 
 /* ---------- 音乐人主页浮层 ---------- */
@@ -1810,38 +2308,149 @@ function closeSheet() {
   $("#sheetMask").classList.remove("show");
 }
 
-/** 招募需求详情 + 投递报名 */
+let currentDemandIdx = null;
+let demandEditDraft = null;
+
+/** 招募需求全屏详情 + 已有作品试听 + 投递报名 */
 function openDemandDetail(i) {
+  const d = DEMANDS[i];
+  if (!d) return;
+  currentDemandIdx = i;
+  renderDemandDetail();
+  $("#ovDemand").classList.add("show");
+  $("#demandBody").scrollTop = 0;
+  renderMiniPlayer();
+}
+
+function renderDemandDetail() {
+  const i = currentDemandIdx;
   const d = DEMANDS[i];
   if (!d) return;
   const mine = d.whoName === "我" || d.whoName === state.profile.name
     || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
-  openSheet("招募详情", `
-    <div class="dtitle" style="margin:2px 0 6px">${esc(d.title)}</div>
-    <div class="dtags" style="margin-bottom:8px">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}</div>
-    <p style="font-size:13px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">${esc(d.desc)}</p>
-    <div class="pay-rows">
-      <div class="pay-row"><span>发起方</span><b>${demandWhoHTML(d)}</b></div>
-      <div class="pay-row total"><span>预算</span><b>${esc(d.budget)}</b></div>
-    </div>
-    ${mine
-      ? `<button class="btn ghost" style="width:100%;margin-top:10px" onclick="editCover('demand',${i})">${d.cover ? "更换企划封面" : "添加企划封面"}</button>`
-      : d.applied
-      ? `<p class="escrow-note">已投递 · 对方通过后将私信与你签约，稿酬经平台托管</p>`
-      : `<textarea id="applyNote" rows="3" placeholder="自荐留言：擅长风格、代表作、档期…（选填）"></textarea>
-         <div class="rate-acts">
-           <button class="btn ghost" onclick="closeSheet()">再看看</button>
-           <button class="btn primary" onclick="applyDemand(${i})">投递报名</button>
-         </div>`}`);
+  const accepting = (d.status || "招募中") === "招募中";
+  $("#demandBody").innerHTML = demandDetailHTML(d, i);
+  $("#demandActions").innerHTML = mine
+    ? `<button class="btn ghost" onclick="toast('已打开投递名单（Demo）')">查看投递</button>
+       <button class="btn primary" onclick="openDemandEditor(${i})">编辑资料</button>`
+    : `<button class="btn ghost" onclick="closeOverlay('ovDemand');openChat('${esc(d.whoName)}')">私信发起方</button>
+       <button class="btn ${d.applied || !accepting ? "ghost" : "primary"}" ${d.applied || !accepting ? "disabled" : `onclick="applyDemand(${i})"`}>${d.applied ? "已投递" : accepting ? "投递报名" : d.status}</button>`;
+  renderMiniPlayer();
 }
 
 function applyDemand(i) {
   const d = DEMANDS[i];
+  if (!d || (d.status || "招募中") !== "招募中") {
+    toast("该企划当前不接收新的报名");
+    return;
+  }
   d.applied = true;
   d.appliedNote = ($("#applyNote")?.value || "").trim();
-  closeSheet();
   renderHome();
+  renderDemandDetail();
   toast("投递成功，对方通过后会私信你");
+}
+
+/** 打开我的企划编辑器；修改先存草稿，点击保存后统一写回。 */
+function openDemandEditor(i) {
+  const d = DEMANDS[i];
+  if (!d) return;
+  const mine = d.whoName === "我" || d.whoName === state.profile.name
+    || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
+  if (!mine) { toast("只有企划发起方可以编辑资料"); return; }
+  demandEditDraft = {
+    i,
+    status: d.status || "招募中",
+    whoType: d.whoType || "个人企划",
+    biz: Array.isArray(d.biz) ? (d.biz[0] || "待定") : (d.biz || "待定"),
+  };
+  $("#demandEditBody").innerHTML = demandEditFormHTML(d, i);
+  $("#ovDemandEdit").classList.add("show");
+  $("#demandEditBody").scrollTop = 0;
+}
+
+function closeDemandEditor() {
+  closeOverlay("ovDemandEdit");
+  demandEditDraft = null;
+}
+
+/** 单选编辑项：招募状态 / 发起方身份 / 授权方式。 */
+function demandEditPick(field, value, el) {
+  if (!demandEditDraft) return;
+  demandEditDraft[field] = value;
+  [...el.parentElement.children].forEach(chip => chip.classList.toggle("on", chip === el));
+}
+
+function removeDemandEditRow(btn) {
+  btn.closest(".de-list-row")?.remove();
+}
+
+function addDemandRequirement() {
+  $("#deRequirements")?.insertAdjacentHTML("beforeend", `
+    <div class="de-list-row"><input class="de-req" maxlength="120" placeholder="填写一条招募要求"><button class="de-remove" type="button" onclick="removeDemandEditRow(this)" aria-label="删除要求">×</button></div>`);
+  const inputs = $$("#deRequirements .de-req");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function addDemandSample() {
+  const id = Date.now() + $$("#deSamples .de-sample-edit").length;
+  $("#deSamples")?.insertAdjacentHTML("beforeend", demandEditSampleRowHTML({ id, title: "", type: "企划 Demo", dur: "" }));
+  const inputs = $$("#deSamples .de-sample-title");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function saveDemandEdit() {
+  if (!demandEditDraft) return;
+  const d = DEMANDS[demandEditDraft.i];
+  if (!d) return;
+  const title = $("#deTitle").value.trim();
+  const desc = $("#deDesc").value.trim();
+  if (!title) { toast("请填写企划标题"); $("#deTitle").focus(); return; }
+  if (!desc) { toast("请填写需求描述"); $("#deDesc").focus(); return; }
+
+  const tags = $("#deTags").value.split(/[、,，\n]+/).map(v => v.trim()).filter(Boolean);
+  const requirements = $$("#deRequirements .de-req").map(input => input.value.trim()).filter(Boolean);
+  const oldSamples = new Map((d.samples || []).map(sample => [Number(sample.id), sample]));
+  const samples = $$("#deSamples .de-sample-edit").map(row => {
+    const id = Number(row.dataset.sampleId) || Date.now();
+    const sampleTitle = row.querySelector(".de-sample-title").value.trim();
+    if (!sampleTitle) return null;
+    const old = oldSamples.get(id) || {};
+    return {
+      ...old,
+      id,
+      title: sampleTitle,
+      type: row.querySelector(".de-sample-type").value.trim() || "企划 Demo",
+      dur: row.querySelector(".de-sample-dur").value.trim() || "--:--",
+      glyph: old.glyph || sampleTitle[sampleTitle.startsWith("《") ? 1 : 0] || "♪",
+    };
+  }).filter(Boolean);
+
+  Object.assign(d, {
+    title,
+    desc,
+    status: demandEditDraft.status,
+    whoType: demandEditDraft.whoType,
+    biz: demandEditDraft.biz,
+    tags: tags.length ? [...new Set(tags)] : ["招合作"],
+    budget: $("#deBudget").value.trim() || "预算可议",
+    deadline: $("#deDeadline").value.trim() || "招满即止",
+    progress: $("#deProgress").value.trim() || "企划筹备中",
+    deliverable: $("#deDeliverable").value.trim() || "具体交付内容请与发起方沟通",
+    requirements: requirements.length ? requirements : ["报名请附代表作与近期档期"],
+    samples,
+  });
+
+  if (Number.isInteger(playerState.work?.demandIndex)) {
+    const refreshedSample = demandSampleById(playerState.work.id);
+    if (refreshedSample) playerState.work = { ...playerState.work, ...refreshedSample };
+    else clearPlayerPlayback();
+  }
+
+  renderHome();
+  renderDemandDetail();
+  closeDemandEditor();
+  toast("企划资料已保存");
 }
 
 /** 接稿方：接受约稿邀约 → 进入待付款（等对方托管） */
@@ -2306,7 +2915,10 @@ let pubState = null;
 /** @param mode "work" 作品 | "demand" 企划招募 */
 function openPubForm(mode) {
   closePublish();
-  pubState = { mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null, dur: null, attach: null, whoType: "个人企划" };
+  pubState = {
+    mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null,
+    dur: null, attach: null, whoType: "个人企划", status: "招募中", demandBiz: "待定",
+  };
   $("#pubTitle").textContent = mode === "work" ? "发布作品" : "发布企划招募";
   $("#pubBody").innerHTML = mode === "work" ? pubWorkFormHTML() : pubDemandFormHTML();
   $("#ovPub").classList.add("show");
@@ -2337,6 +2949,13 @@ function pubSetWhoType(t, el) {
   [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
 }
 
+/** 发布企划中的单选项：招募状态 / 授权方式。 */
+function pubSetDemandOption(field, value, el) {
+  if (!pubState || pubState.mode !== "demand") return;
+  pubState[field] = value;
+  [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
+}
+
 function pubToggleRole(r, el) {
   const i = pubState.roles.indexOf(r);
   i >= 0 ? pubState.roles.splice(i, 1) : pubState.roles.push(r);
@@ -2349,6 +2968,34 @@ function pubAddCustomRole(btn) {
     if (!pubState.roles.includes(r)) pubState.roles.push(r);
     btn.parentElement.insertBefore(makeCustomChip(r, el => pubToggleRole(r, el)), btn);
   });
+}
+
+function removePubDemandRow(btn) {
+  btn.closest(".de-list-row")?.remove();
+}
+
+function addPubDemandRequirement() {
+  $("#pubRequirements")?.insertAdjacentHTML("beforeend", `
+    <div class="de-list-row"><input class="pub-demand-req" maxlength="120" placeholder="填写一条招募要求"><button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除要求">×</button></div>`);
+  const inputs = $$("#pubRequirements .pub-demand-req");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function addPubDemandSample() {
+  const id = Date.now() + $$("#pubSamples .pub-demo-edit").length;
+  $("#pubSamples")?.insertAdjacentHTML("beforeend", `
+    <div class="de-list-row de-sample-edit pub-demo-edit" data-sample-id="${id}">
+      <div class="de-sample-top">
+        <input class="pub-demo-title" maxlength="60" placeholder="Demo 名称">
+        <button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除 Demo">×</button>
+      </div>
+      <div class="de-sample-meta">
+        <input class="pub-demo-type" maxlength="30" value="企划 Demo" placeholder="类型">
+        <input class="pub-demo-dur" maxlength="8" placeholder="00:00">
+      </div>
+    </div>`);
+  const inputs = $$("#pubSamples .pub-demo-title");
+  inputs[inputs.length - 1]?.focus();
 }
 
 /** 发布表单「其他」：自定义作品品类（无强制小样规则） */
@@ -2451,6 +3098,8 @@ function onPubMedia(input) {
   probe.onloadedmetadata = () => {
     const s = Math.round(probe.duration);
     pubState.dur = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    const durInput = $("#pubSamples .pub-demo-dur");
+    if (durInput && !durInput.value.trim()) durInput.value = pubState.dur;
   };
   probe.src = url;
   input.value = "";
@@ -2533,18 +3182,54 @@ function submitPublish() {
     backHomeAs("works");
     toast("作品已发布");
   } else {
+    const desc = $("#pubDesc").value.trim();
+    if (!desc) { toast("请填写需求描述"); $("#pubDesc").focus(); return; }
+    const manualTags = ($("#pubDemandTags")?.value || "")
+      .split(/[、,，\n]+/).map(v => v.trim()).filter(Boolean);
+    const tags = [...new Set([
+      ...manualTags,
+      ...pubState.roles.map(r => r.startsWith("招") ? r : "招" + r),
+      ...(pubState.tags["风格"] || []),
+      ...(pubState.tags["用途"] || []),
+    ])];
+    const requirements = $$("#pubRequirements .pub-demand-req")
+      .map(input => input.value.trim()).filter(Boolean);
+    const samples = $$("#pubSamples .pub-demo-edit").map((row, index) => {
+      const sampleTitle = row.querySelector(".pub-demo-title").value.trim();
+      if (!sampleTitle) return null;
+      return {
+        id: Number(row.dataset.sampleId) || Date.now() + index,
+        title: sampleTitle,
+        type: row.querySelector(".pub-demo-type").value.trim() || "企划 Demo",
+        dur: row.querySelector(".pub-demo-dur").value.trim() || "--:--",
+        glyph: sampleTitle[sampleTitle.startsWith("《") ? 1 : 0] || "♪",
+      };
+    }).filter(Boolean);
+    if (pubState.media?.kind === "audio" && !samples.length) {
+      samples.push({
+        id: Date.now() + 1,
+        title: `${title} · 参考 Demo`,
+        type: $("#pubSamples .pub-demo-type")?.value.trim() || "企划 Demo",
+        dur: $("#pubSamples .pub-demo-dur")?.value.trim() || pubState.dur || "--:--",
+        glyph: title[title.startsWith("《") ? 1 : 0] || "♪",
+      });
+    }
     DEMANDS.unshift({
-      title, desc: $("#pubDesc").value.trim() || "（暂无描述）",
-      biz: pubState.biz,
-      tags: [
-        ...(pubState.roles.length ? pubState.roles.map(r => "招" + r) : ["招合作"]),
-        ...(pubState.tags["风格"] || []), ...(pubState.tags["用途"] || []),
-      ],
+      title, desc,
+      status: pubState.status || "招募中",
+      biz: pubState.demandBiz || "待定",
+      tags: tags.length ? tags : ["招合作"],
       whoType: pubState.whoType || "个人企划", whoName: author,
       budget: $("#pubPrice").value.trim() || "预算可议",
       cover: pubState.cover?.kind === "image" ? `url(${pubState.cover.url}) center/cover` : null,
+      glyph: title[title.startsWith("《") ? 1 : 0] || "企",
       hasVideo: pubState.cover?.kind === "video" || pubState.media?.kind === "video",
       hasAudio: pubState.media?.kind === "audio",
+      progress: $("#pubProgress").value.trim() || "企划筹备中",
+      deadline: $("#pubDeadline").value.trim() || "招满即止",
+      deliverable: $("#pubDeliverable").value.trim() || "具体交付内容请与发起方沟通",
+      requirements: requirements.length ? requirements : ["报名请附代表作与近期档期"],
+      samples,
     });
     closeOverlay("ovPub");
     backHomeAs("demand");
@@ -3552,6 +4237,7 @@ function onCoverEdit(input) {
       } else if (kind === "demand") {
         DEMANDS[idx].cover = `url(${url}) center/cover`;
         closeSheet(); renderHome();
+        if (currentDemandIdx === idx && $("#ovDemand").classList.contains("show")) renderDemandDetail();
         toast("企划封面已更新，招募卡片将展示新封面");
       } else if (kind === "fav") {
         state.favFolders[idx].coverImg = url;
@@ -4540,12 +5226,14 @@ function forwardArticle(id) {
   const a = findArticle(id);
   if (!a) return;
   POSTS.unshift({
-    name: state.profile.name || "我", topic: null, time: "刚刚",
+    name: state.profile.name || "我", topic: null, time: "刚刚", createdAt: Date.now(),
     title: "转发资讯：" + a.title,
     txt: "转发了 @" + a.author + " 的资讯《" + a.title + "》，速来围观！",
     like: 0, liked: false, reposts: 0, comments: [],
     origin: { name: a.author, title: a.title, txt: a.sections[0]?.p || "" },
   });
+  state.communitySort = "latest";
+  state.communityDate = "";
   renderCommunity();
   toast("已转发到社区动态 ✓");
 }

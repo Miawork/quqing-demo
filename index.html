@@ -62,6 +62,12 @@
         1,024 人正在讨论 · 参与讨论领「社区茶券」
       </div>
       <div class="filter-row" id="topicRow"></div>
+      <div class="comm-filter-bar" id="commFilterBar">
+        <span>筛选</span>
+        <button data-comm-sort="latest" onclick="setCommunitySort('latest')">最新</button>
+        <button data-comm-sort="hot" onclick="setCommunitySort('hot')">热度</button>
+        <button class="comm-date-button" id="commDateButton" onclick="openCommunityDateFilter()">按日期筛选</button>
+      </div>
       <div class="feed" id="commFeed"></div>
     </div>
 
@@ -143,10 +149,9 @@
       <div class="mini-works" id="myWorks"></div>
     </div>
 
-    <!-- ========== 沉浸式作品浏览（上下滑动切换） ========== -->
+    <!-- ========== 沉浸式作品浏览（封面 / 资料 / 评论整页下滑） ========== -->
     <div class="viewer" id="viewer">
       <div class="viewer-close" onclick="closeViewer()">✕</div>
-      <div class="viewer-hint">↕ 上下滑动切换作品</div>
       <div class="vscroll" id="vscroll"></div>
     </div>
 
@@ -161,6 +166,30 @@
       <div class="ov-foot">
         <button class="btn ghost" onclick="openChat(currentArtistName)">私信</button>
         <button class="btn primary" onclick="openCommission(currentArtistName)">约稿</button>
+      </div>
+    </div>
+
+    <!-- ========== 企划招募详情（已有成品 / Demo 可试听） ========== -->
+    <div class="overlay" id="ovDemand">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovDemand')">‹</div>
+        <h3>企划详情</h3>
+        <div class="hdr-more" onclick="toast('已打开企划更多操作')" title="更多操作">⋯</div>
+      </div>
+      <div class="ov-body demand-detail-scroll" id="demandBody"></div>
+      <div class="ov-foot" id="demandActions"></div>
+    </div>
+
+    <!-- ========== 编辑企划资料 ========== -->
+    <div class="overlay" id="ovDemandEdit">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeDemandEditor()">‹</div>
+        <h3>编辑企划资料</h3>
+      </div>
+      <div class="ov-body reg-form demand-edit-body" id="demandEditBody"></div>
+      <div class="ov-foot">
+        <button class="btn ghost" onclick="closeDemandEditor()">取消</button>
+        <button class="btn primary" onclick="saveDemandEdit()">保存修改</button>
       </div>
     </div>
 
@@ -246,6 +275,12 @@
         <input id="postTitle" class="post-input" maxlength="40" placeholder="标题（必填）">
         <textarea id="postTxt" rows="5" placeholder="聊聊你的问题或经验…&#10;输入「#话题 + 空格」即可添加标签，如：#编曲交流 " oninput="postTxtInput()"></textarea>
         <div class="tag-preview" id="postTagPrev"></div>
+        <div class="post-attach-tools">
+          <button type="button" onclick="pickPostImage()"><b>▧</b> 添加图片</button>
+          <button type="button" onclick="togglePostMusicPicker()"><b>♪</b> 关联音乐</button>
+        </div>
+        <div class="post-attach-preview" id="postAttachPreview"></div>
+        <div class="post-music-picker" id="postMusicPicker"></div>
         <div class="rate-acts">
           <button class="btn ghost" onclick="closePostForm()">取消</button>
           <button class="btn primary" onclick="submitPost()">发布</button>
@@ -253,6 +288,7 @@
         <div class="pub-close" onclick="closePostForm()">✕</div>
       </div>
     </div>
+    <input type="file" id="postImageFile" accept="image/*" hidden onchange="onPostImage(this)">
 
     <!-- ========== 转发弹层（微博式） ========== -->
     <div class="pub-mask" id="repostMask" onclick="if(event.target===this)closeRepost()">
@@ -691,6 +727,22 @@
     <div class="qr-mask" id="qrMask" onclick="if(event.target===this)closeQR()">
       <div class="qr-card" id="qrCard"></div>
       <div class="qr-acts-float" id="qrActs"></div>
+    </div>
+
+    <!-- 跨页面悬浮播放条：作品详情内自动收起，退出后恢复 -->
+    <div class="mini-player" id="miniPlayer" role="region" aria-label="正在播放" aria-live="polite">
+      <button class="mp-cover" id="mpCover" onclick="openPlayingWork()" aria-label="返回当前作品">♪</button>
+      <div class="mp-info">
+        <button class="mp-open" onclick="openPlayingWork()" aria-label="查看当前播放作品">
+          <b id="mpTitle">未播放</b>
+          <span id="mpMeta">选择一首作品开始试听</span>
+        </button>
+        <input class="player-seek mp-seek" id="mpSeek" type="range" min="0" max="100" step="0.1" value="0"
+          aria-label="播放进度" oninput="seekPlayerPlayback(this.value,event)" onpointerdown="event.stopPropagation()">
+      </div>
+      <button class="mp-control" id="mpPlay" onclick="togglePlayerPlayback(event)" aria-label="暂停">❚❚</button>
+      <button class="mp-stop" id="mpStop" onclick="stopPlayerPlayback(event)" aria-label="停止播放">■</button>
+      <button class="mp-close" onclick="clearPlayerPlayback(event)" aria-label="关闭播放器">×</button>
     </div>
 
     <div class="toast" id="toast"></div>

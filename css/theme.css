@@ -58,7 +58,10 @@ html.dark {
 }
 html.dark body { background: #09090B; }
 html.dark img { filter: brightness(.88); }
-html.dark .sinfo { background: rgba(24, 24, 28, .92); border-top-color: rgba(255, 255, 255, .06); }
+html.dark .sinfo {
+  background: var(--paper); border-top-color: rgba(255, 255, 255, .06);
+  -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
+}
 /* 夜间：名片比页面底稍亮一度的质感色 */
 html.dark .profile-hero { background: linear-gradient(145deg, #222327, #1B1C20); }
 html.dark .profile-hero .ph-roles .tag { background: rgba(255,255,255,.08); color: var(--ink-2); }

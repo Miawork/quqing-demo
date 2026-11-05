@@ -277,36 +277,77 @@ const DEMANDS = [
     desc: "自作词曲的山海经题材单曲，编曲已完成，现招一位清丽女声干音与一位水墨风 PV 师，非商用，署名+稿酬。",
     whoType: "个人企划", whoName: "我", budget: "¥1,500–2,500",
     biz: "非商业", tags: ["招干音", "招 PV", "水墨风"],
+    cover: "linear-gradient(145deg,#143B4A 0%,#2F7B6F 58%,#A7CFA4 100%)", glyph: "海",
+    progress: "词曲完成 · 编曲完成 · 视觉设定完成", deadline: "招满即止",
+    deliverable: "干音 WAV 48k/24bit；PV 1080P 成片与工程文件",
+    requirements: ["女声音色清丽，音域 G3–D5", "PV 偏水墨动态风格，有完整作品优先", "入选后通过平台协议托管稿酬"],
+    samples: [
+      { id: 50001, title: "《山海谣》编曲 Demo", type: "编曲小样", dur: "01:18", glyph: "海" },
+      { id: 50002, title: "副歌旋律与和声参考", type: "旋律 Demo", dur: "00:46", glyph: "谣" },
+    ],
   },
   {
     title: "原创古风企划《九州录》招募作曲×2",
     desc: "系列企划共 9 首曲目，现招两位作曲，需擅长大气叙事向国风，词已完成。商用买断，预算充足，签平台协议。",
     whoType: "企划方", whoName: "沧海遗音社", budget: "¥3,000–5,000/首",
-    biz: "商业", tags: ["作曲", "档期 10 月前"],
+    biz: "商业", tags: ["作曲", "系列企划"],
+    cover: "linear-gradient(145deg,#26334C 0%,#5D6E91 55%,#C6D92E 120%)", glyph: "州",
+    progress: "世界观完成 · 9 首词稿完成 · 2 首先行曲制作中", deadline: "本轮招满即止",
+    deliverable: "完整曲谱、MIDI 与分轨工程；每首含两轮旋律调整",
+    requirements: ["擅长五声调式与大气叙事旋律", "可配合系列企划统一音乐动机", "预计 30 天内提交首版小样"],
+    samples: [
+      { id: 50101, title: "先行曲《岚州》成品片段", type: "成品试听", dur: "01:36", glyph: "岚" },
+      { id: 50102, title: "《云梦泽》主歌 Demo", type: "作曲小样", dur: "00:58", glyph: "云" },
+      { id: 50103, title: "九州主题动机参考", type: "旋律 Demo", dur: "00:32", glyph: "九" },
+    ],
   },
   {
     title: "同人歌企划急招后期混音一名",
     desc: "某武侠游戏同人歌，干音与伴奏齐全，需混音+简单母带，风格参考已备。非商用，署名+稿酬。",
     whoType: "个人企划", whoName: "二十四桥", budget: "¥500–800",
     biz: "非商业", tags: ["后期", "一周内交付"],
+    cover: "linear-gradient(145deg,#352D43 0%,#7A597D 60%,#D7A9B5 115%)", glyph: "侠",
+    progress: "词曲、编曲、干音均已完成", deadline: "确认合作后 7 天交付",
+    deliverable: "混音母带 WAV 48k/24bit；含两次细节返修",
+    requirements: ["有人声修音与国风混音经验", "能处理男女人声对唱空间感", "报名请附混音前后对比作品"],
+    samples: [
+      { id: 50201, title: "副歌干音 + 伴奏参考", type: "待混素材", dur: "01:05", glyph: "混" },
+    ],
   },
   {
     title: "古风单曲 PV 招募（水墨风）",
     desc: "已完成歌曲《雾隐江南》寻 PV 师，倾向水墨动态风格，全曲 4 分 12 秒，商用发布于各视频平台。",
     whoType: "制作人", whoName: "半盏茶", budget: "¥4,000–6,000",
     biz: "商业", tags: ["PV", "AE 动效"],
+    cover: "linear-gradient(145deg,#182C2A 0%,#527C6E 55%,#DCE5D4 120%)", glyph: "雾",
+    progress: "歌曲成品完成 · 歌词字幕稿完成", deadline: "档期可协商",
+    deliverable: "4K/1080P 成片、无字幕版与 AE 工程归档",
+    requirements: ["水墨晕染、粒子或二维半动态均可", "需先提供 15 秒分镜动态测试", "商用发布，素材授权须清晰"],
+    samples: [
+      { id: 50301, title: "《雾隐江南》歌曲成品", type: "完整成品", dur: "04:12", glyph: "雾" },
+      { id: 50302, title: "PV 情绪版音乐剪辑", type: "分镜参考", dur: "00:44", glyph: "影" },
+    ],
   },
   {
     title: "募集古风男声干音（戏腔佳）",
     desc: "抒情武侠向单曲，需低沉男声，副歌含少量戏腔。试音通过后签约，商用买断干音。",
     whoType: "工作室", whoName: "闻弦音乐", budget: "¥1,000–1,500",
     biz: "商业", tags: ["干音", "男声"],
+    cover: "linear-gradient(145deg,#272B3A 0%,#536078 58%,#A6B5C4 120%)", glyph: "弦",
+    progress: "词曲与编曲完成 · 等待主唱试音", deadline: "招满即止",
+    deliverable: "主唱干音与和声 WAV 48k/24bit；含一次补录",
+    requirements: ["低沉男声，音域 A2–D4", "副歌可完成短句戏腔", "需在安静环境使用专业设备录制"],
+    samples: [
+      { id: 50401, title: "主歌旋律与演唱示范", type: "试唱参考", dur: "00:52", glyph: "弦" },
+      { id: 50402, title: "副歌戏腔段落 Demo", type: "试音片段", dur: "00:38", glyph: "戏" },
+    ],
   },
 ];
 
 const POSTS = [
   {
     name: "沈昼", topic: "避雷曝光", time: "1 小时前",
+    createdAt: Date.now() - 1 * 60 * 60 * 1000,
     title: "转发提醒，商单务必托管！",
     txt: "转发给刚入坦的朋友们，#避雷 这事真不是危言耸听。",
     like: 18, liked: false, reposts: 2,
@@ -315,6 +356,7 @@ const POSTS = [
   },
   {
     name: "江篱", topic: "编曲交流", time: "2 小时前",
+    createdAt: Date.now() - 2 * 60 * 60 * 1000, musicId: 4,
     title: "国风电子里琵琶采样总是发闷，怎么破？",
     txt: "混进 Future Bass 底鼓后琵琶中频全糊了，EQ 挖了 300Hz 还是不透。各位有什么侧链思路或者好用的琵琶音源推荐吗？#编曲交流 #求助 ",
     like: 46, liked: false, reposts: 5,
@@ -326,6 +368,7 @@ const POSTS = [
   },
   {
     name: "青梧", topic: "填词切磋", time: "5 小时前",
+    createdAt: Date.now() - 5 * 60 * 60 * 1000,
     title: "「平仄」在古风歌词里到底要不要死磕？",
     txt: "最近接的单子甲方要求严格律诗平仄，但配上旋律以后倒字严重。想听听大家实际约稿中是怎么和作曲协调的，有没有先曲后词的经验帖…",
     like: 132, liked: true, reposts: 12,
@@ -335,6 +378,7 @@ const POSTS = [
   },
   {
     name: "半盏茶", topic: "企划茶话", time: "昨天",
+    createdAt: Date.now() - 28 * 60 * 60 * 1000,
     title: "第一次当企划主催，流程求带！",
     txt: "想做一个七首歌的节气企划，词曲唱美 PV 全要约。预算怎么分配比较合理？协议是每个人单独签还是拉群统一签？求过来人指路。",
     like: 98, liked: false, reposts: 7,
@@ -346,6 +390,7 @@ const POSTS = [
   },
   {
     name: "绾绾", topic: "设备党", time: "昨天",
+    createdAt: Date.now() - 32 * 60 * 60 * 1000,
     title: "两千预算的录音麦，古风女声怎么选？",
     txt: "目前用 XX 电容麦录戏腔总觉得高频刺。预算 2k 以内，主要录干音交后期，有没有姐妹分享一下实际对比？",
     like: 71, liked: false, reposts: 0,
@@ -353,6 +398,7 @@ const POSTS = [
   },
   {
     name: "孤鹤", topic: "避雷曝光", time: "3 天前",
+    createdAt: Date.now() - 72 * 60 * 60 * 1000,
     title: "提醒：接 PV 单一定走平台协议托管",
     txt: "上个月一个站外单，成片交付后甲方失联。大家商单务必平台托管稿酬，分镜确认后再开工，留好沟通记录。",
     like: 210, liked: false, reposts: 43,

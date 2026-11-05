@@ -67,7 +67,10 @@ html.dark {
 }
 html.dark body { background: #09090B; }
 html.dark img { filter: brightness(.88); }
-html.dark .sinfo { background: rgba(24, 24, 28, .92); border-top-color: rgba(255, 255, 255, .06); }
+html.dark .sinfo {
+  background: var(--paper); border-top-color: rgba(255, 255, 255, .06);
+  -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
+}
 /* 夜间：名片比页面底稍亮一度的质感色 */
 html.dark .profile-hero { background: linear-gradient(145deg, #222327, #1B1C20); }
 html.dark .profile-hero .ph-roles .tag { background: rgba(255,255,255,.08); color: var(--ink-2); }
@@ -389,10 +392,20 @@ body {
   height: 110px; border-radius: 10px; margin-bottom: 12px;
   display: flex; align-items: center; justify-content: center; position: relative;
 }
+.demand-card .dglyph {
+  font-size: 48px; font-weight: 700; color: rgba(255,255,255,.92);
+  text-shadow: 0 6px 20px rgba(0,0,0,.28);
+}
 .demand-card .dcover .vplay {
   width: 38px; height: 38px; border-radius: 50%;
   background: rgba(0,0,0,.45); color: #fff; font-size: 15px;
   display: flex; align-items: center; justify-content: center;
+}
+.d-sample-badge {
+  position: absolute; right: 9px; bottom: 9px;
+  padding: 4px 8px; border-radius: 999px;
+  background: rgba(0,0,0,.42); color: #fff;
+  font-size: 9.5px; letter-spacing: .5px;
 }
 .demand-card .dmedia-hint { font-size: 11px; color: var(--ink-3); margin-bottom: 8px; }
 .demand-card .dtitle { font-size: 14.5px; font-weight: 700; margin-bottom: 8px; }
@@ -401,9 +414,150 @@ body {
   font-size: 9px; padding: 2px 8px; border-radius: 999px; margin-right: 6px; vertical-align: 2px;
 }
 .demand-card .ddesc { font-size: 12px; color: var(--ink-2); line-height: 1.7; margin-bottom: 10px; }
-.demand-card .dtags { display: flex; gap: 6px; margin-bottom: 10px; }
+.d-preview-line {
+  display: flex; align-items: center; gap: 6px; margin: -1px 0 10px;
+  padding: 7px 9px; border-radius: 10px;
+  background: var(--card); color: var(--ink-2); font-size: 10.5px;
+}
+.d-preview-line span { color: var(--red); font-size: 14px; }
+.d-preview-line b { margin-left: auto; color: var(--red); font-size: 16px; }
+.demand-card .dtags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .demand-foot { display: flex; justify-content: space-between; align-items: center; }
 .demand-foot .who { font-size: 11px; color: var(--ink-3); }
+
+/* 企划招募全屏详情 */
+#ovDemand { z-index: 24; }
+#ovDemandEdit { z-index: 27; }
+#ovDemand .demand-detail-scroll { padding: 0; }
+.phone.player-active #ovDemand .demand-detail-scroll { padding-bottom: 92px; }
+.dd-hero {
+  position: relative; min-height: 228px; padding: 24px 20px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden; color: #fff;
+}
+.dd-hero::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg,rgba(0,0,0,0) 28%,rgba(0,0,0,.66) 100%);
+}
+.dd-glyph {
+  position: absolute; right: 24px; top: 24px; z-index: 1;
+  font-size: 88px; font-weight: 700; color: rgba(255,255,255,.78);
+  text-shadow: 0 10px 28px rgba(0,0,0,.25);
+}
+.dd-status {
+  position: absolute; left: 18px; top: 18px; z-index: 2;
+  padding: 5px 10px; border-radius: 999px;
+  background: rgba(255,255,255,.9); color: #2152FF;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+}
+.dd-hero-copy { position: relative; z-index: 2; }
+.dd-hero-copy span { font-size: 10.5px; opacity: .78; letter-spacing: 2px; }
+.dd-hero-copy h2 { max-width: 92%; margin-top: 5px; font-size: 20px; line-height: 1.45; }
+.dd-main { padding: 18px 18px 34px; }
+.dd-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.dd-owner { display: flex; align-items: center; gap: 7px; margin-bottom: 13px; }
+.dd-owner .who { font-size: 11px; }
+.dd-owner > span { font-size: 10.5px; color: var(--ink-3); }
+.dd-desc { font-size: 13px; line-height: 1.85; color: var(--ink-2); margin-bottom: 16px; }
+.dd-facts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding: 10px; border-radius: 18px; background: var(--paper-2);
+  box-shadow: var(--shadow-card);
+}
+.dd-facts > div { min-width: 0; padding: 9px 10px; border-radius: 12px; background: var(--card); }
+.dd-facts .wide { grid-column: 1 / -1; }
+.dd-facts span { display: block; margin-bottom: 4px; font-size: 9.5px; color: var(--ink-3); }
+.dd-facts b { display: block; font-size: 11.5px; line-height: 1.5; color: var(--ink); }
+.dd-facts > div:first-child b { color: var(--red); font-size: 13px; }
+.dd-section { margin-top: 22px; }
+.dd-section-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.dd-section-title h3 { font-size: 15px; }
+.dd-section-title span { font-size: 10px; color: var(--ink-3); }
+.d-samples { display: flex; flex-direction: column; gap: 8px; }
+.d-sample {
+  display: flex; align-items: center; gap: 10px; padding: 9px;
+  border-radius: 16px; background: var(--paper-2); box-shadow: var(--shadow-card);
+}
+.ds-cover {
+  flex: none; width: 48px; height: 48px; border-radius: 12px;
+  display: grid; place-items: center; color: #fff; font-size: 18px; font-weight: 700;
+  text-shadow: 0 3px 10px rgba(0,0,0,.28);
+}
+.ds-info { flex: 1; min-width: 0; }
+.ds-info b { display: block; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-info span { display: block; margin-top: 4px; font-size: 10px; color: var(--ink-3); }
+.ds-play {
+  flex: none; width: 36px; height: 36px; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--ink); color: var(--paper-2); font-family: inherit; font-size: 13px;
+}
+.ds-play.is-playing { background: var(--red); }
+.dd-empty { padding: 18px; border-radius: 14px; background: var(--card); color: var(--ink-3); font-size: 11px; text-align: center; }
+.dd-requirements { padding: 4px 12px; border-radius: 16px; background: var(--paper-2); box-shadow: var(--shadow-card); }
+.dd-requirements p { display: flex; gap: 9px; padding: 10px 2px; border-bottom: 1px solid var(--line); font-size: 11.5px; line-height: 1.55; color: var(--ink-2); }
+.dd-requirements p:last-child { border-bottom: 0; }
+.dd-requirements i {
+  flex: none; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--red-light); color: var(--red);
+  font-style: normal; font-size: 9px; font-weight: 700;
+}
+.dd-apply-note { margin-top: 20px; }
+.dd-apply-note label { display: block; margin-bottom: 7px; font-size: 12px; font-weight: 700; }
+.dd-apply-note label span { color: var(--ink-3); font-size: 10px; font-weight: 400; }
+.dd-apply-note textarea {
+  width: 100%; resize: none; outline: none; padding: 12px 13px;
+  border: 1.5px solid transparent; border-radius: 14px;
+  background: var(--card); color: var(--ink); font-family: inherit; font-size: 12px; line-height: 1.6;
+}
+.dd-apply-note textarea:focus { border-color: var(--red); background: var(--paper-2); }
+.dd-applied { margin-top: 20px; padding: 13px; border-radius: 14px; background: var(--green-light); color: var(--green); font-size: 12px; font-weight: 700; }
+.dd-applied span, .dd-applied small { display: block; margin-top: 6px; color: var(--ink-2); font-size: 10.5px; font-weight: 400; line-height: 1.6; }
+.dd-owner-tools { display: flex; gap: 8px; margin-top: 20px; }
+.dd-owner-tools .btn { padding: 10px; font-size: 12px; }
+#demandActions .btn[disabled] { opacity: .55; cursor: default; }
+
+/* 企划资料编辑器 */
+.demand-edit-body { padding-top: 10px; }
+.de-section {
+  margin: 8px 0 16px; padding: 4px 14px 16px;
+  border-radius: 18px; background: var(--paper-2); box-shadow: var(--shadow-card);
+}
+.de-section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin: 12px 0 4px;
+}
+.de-section-head h4 { font-size: 14px; letter-spacing: 1px; }
+.de-section-head span { font-size: 10px; color: var(--ink-3); }
+.de-section .gender-row .chip { padding: 6px 11px; }
+.de-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.de-list { display: flex; flex-direction: column; gap: 9px; margin-top: 8px; }
+.de-list-row {
+  display: flex; align-items: center; gap: 8px; padding: 9px;
+  border-radius: 13px; background: var(--card); border: 1px solid var(--line);
+}
+.de-list-row input { min-width: 0; padding: 8px 10px; background: var(--paper-2); }
+.de-list-row .de-req { flex: 1; }
+.de-remove {
+  flex: none; width: 30px; height: 30px; border: 0; border-radius: 50%;
+  background: var(--red-light); color: var(--red); cursor: pointer; font-size: 15px;
+}
+.de-add {
+  width: 100%; margin-top: 9px; padding: 9px; border: 1.5px dashed var(--line);
+  border-radius: 12px; background: transparent; color: var(--ink-2);
+  font-family: inherit; font-size: 11.5px; cursor: pointer;
+}
+.de-sample-edit { align-items: stretch; flex-direction: column; }
+.de-sample-top { display: flex; align-items: center; gap: 8px; }
+.de-sample-top input { flex: 1; }
+.de-sample-meta { display: grid; grid-template-columns: 1fr 82px; gap: 8px; }
+.de-cover-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 12px; padding: 10px; border-radius: 13px; background: var(--card);
+}
+.de-cover-copy b { display: block; font-size: 12px; }
+.de-cover-copy span { display: block; margin-top: 3px; font-size: 10px; color: var(--ink-3); }
+.de-cover-row .mini-btn { flex: none; }
+.pub-demo-edit .de-sample-top input { width: 100%; }
 
 /* ---------- 5. 社区 ---------- */
 .hot-card {
@@ -412,6 +566,31 @@ body {
   color: #fff; font-size: 12px; line-height: 1.9; cursor: pointer;
 }
 .hot-card b { color: #D9F65A; }
+.comm-filter-bar {
+  display: flex; align-items: center; gap: 6px; margin: -2px 18px 12px;
+  padding: 7px 9px; border-radius: 14px; background: var(--paper-2); box-shadow: var(--shadow-card);
+}
+.comm-filter-bar > span { margin-right: 2px; font-size: 10px; color: var(--ink-3); }
+.comm-filter-bar button {
+  border: 0; border-radius: 999px; padding: 5px 9px; cursor: pointer;
+  background: var(--card); color: var(--ink-2); font-family: inherit; font-size: 10.5px;
+}
+.comm-filter-bar button.on { background: var(--red); color: #fff; }
+.comm-date-button { flex: 1; white-space: nowrap; }
+.comm-date-sheet p { margin-bottom: 12px; color: var(--ink-3); font-size: 11.5px; }
+.comm-date-quick { display: flex; gap: 8px; margin-bottom: 15px; }
+.comm-date-quick button {
+  flex: 1; padding: 9px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--paper-2); color: var(--ink-2); font-family: inherit; cursor: pointer;
+}
+.comm-date-quick button.on { border-color: var(--red); background: var(--red-light); color: var(--red); }
+.comm-date-sheet label { display: block; margin-bottom: 6px; color: var(--ink-2); font-size: 11.5px; }
+.comm-date-sheet input {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px;
+  outline: 0; background: var(--paper-2); color: var(--ink); font: 12px var(--font-sans);
+}
+.comm-date-sheet input:focus { border-color: var(--red); }
+.comm-date-actions { display: flex; gap: 10px; margin-top: 16px; }
 
 /* 全局搜索 */
 .search-box {
@@ -499,7 +678,7 @@ body {
 }
 .post .pacts { display: flex; gap: 18px; font-size: 11px; color: var(--ink-3); }
 
-/* ---------- 6. 沉浸式作品浏览（上下滑动 + scroll-snap） ---------- */
+/* ---------- 6. 沉浸式作品浏览（整页连续下滑） ---------- */
 .viewer { position: absolute; inset: 0; background: var(--viewer-bg); z-index: 25; display: none; flex-direction: column; }
 .viewer.show { display: flex; }
 .viewer-close {
@@ -509,17 +688,26 @@ body {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; border: 1px solid rgba(255,255,255,.25);
 }
-.viewer-hint { position: absolute; top: 20px; right: 16px; z-index: 30; font-size: 10px; color: rgba(255,255,255,.6); letter-spacing: 1px; }
-
-.vscroll { flex: 1; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; }
+.vscroll {
+  flex: 1; overflow-y: auto; scroll-snap-type: y proximity;
+  overscroll-behavior-y: contain; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
 .vscroll::-webkit-scrollbar { display: none; }
-.slide { height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; }
+.slide {
+  min-height: 100%; height: auto; scroll-snap-align: start;
+  display: flex; flex-direction: column; position: relative;
+  background: var(--viewer-bg); touch-action: pan-y;
+  -webkit-user-select: none; user-select: none;
+}
+.slide input, .slide textarea { -webkit-user-select: text; user-select: text; }
 
 /* 媒体区：按 视频 > 封面 > 词作模板 > 音频模板 自动适配 */
 .smedia {
-  flex: 1; min-height: 0; position: relative;
+  flex: none; height: 430px; min-height: 430px; position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 14px; padding: 44px 24px 20px;
+  user-select: none;
 }
 .smedia .cover-glyph { font-size: 66px; color: rgba(255,255,255,.92); font-weight: 700; text-shadow: 0 6px 24px rgba(0,0,0,.35); }
 .smedia .tpl-label { position: absolute; bottom: 30px; right: 14px; font-size: 9.5px; color: rgba(255,255,255,.45); letter-spacing: 1px; }
@@ -528,6 +716,52 @@ body {
   background: rgba(0,0,0,.35); color: #fff; font-size: 22px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; border: 2px solid rgba(255,255,255,.85);
+  font-family: inherit; padding: 0;
+}
+.smedia .bigplay.is-playing { background: rgba(33,82,255,.86); border-color: #fff; }
+.work-player {
+  width: min(310px, 92%); display: flex; flex-direction: column;
+  align-items: center; gap: 14px; position: relative; z-index: 2;
+}
+.wp-timeline {
+  width: 100%; min-height: 38px; padding: 7px 9px 7px 11px;
+  display: grid; grid-template-columns: 36px 1fr 36px 28px; align-items: center; gap: 7px;
+  border-radius: 19px; background: rgba(12,14,20,.62); color: rgba(255,255,255,.86);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.wp-current, .wp-duration { font: 9.5px var(--font-sans); text-align: center; }
+.wp-stop {
+  width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; background: rgba(255,255,255,.15); color: #fff; font-size: 9px;
+}
+.wp-stop:disabled { opacity: .38; cursor: default; }
+.player-seek {
+  --seek-pct: 0%; width: 100%; height: 18px; margin: 0; padding: 0;
+  appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer; touch-action: none;
+}
+.player-seek::-webkit-slider-runnable-track {
+  height: 3px; border-radius: 999px;
+  background: linear-gradient(90deg,var(--red) 0 var(--seek-pct),rgba(255,255,255,.32) var(--seek-pct) 100%);
+}
+.player-seek::-webkit-slider-thumb {
+  width: 12px; height: 12px; margin-top: -4.5px; border: 2px solid #fff; border-radius: 50%;
+  -webkit-appearance: none; appearance: none; background: var(--red); box-shadow: 0 1px 5px rgba(0,0,0,.28);
+}
+.player-seek::-moz-range-track { height: 3px; border-radius: 999px; background: rgba(255,255,255,.32); }
+.player-seek::-moz-range-progress { height: 3px; border-radius: 999px; background: var(--red); }
+.player-seek::-moz-range-thumb { width: 10px; height: 10px; border: 2px solid #fff; border-radius: 50%; background: var(--red); }
+.player-seek:disabled { opacity: .42; cursor: default; }
+.work-like-burst {
+  position: absolute; z-index: 8; transform: translate(-50%, -50%);
+  color: #ff4d6d; font-size: 76px; line-height: 1;
+  text-shadow: 0 8px 28px rgba(0,0,0,.34); pointer-events: none;
+  animation: work-like-pop .7s ease both;
+}
+.work-like-burst.off { color: rgba(255,255,255,.95); font-size: 68px; }
+@keyframes work-like-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.35) rotate(-12deg); }
+  48% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(5deg); }
+  100% { opacity: 0; transform: translate(-50%, -62%) scale(.92) rotate(0); }
 }
 .smedia.tpl-lyric { background: var(--paper); }
 .smedia.tpl-lyric .lyric-lines { font-size: 16px; color: var(--ink); letter-spacing: 3px; line-height: 2.5; text-align: center; }
@@ -546,20 +780,17 @@ body {
 .vwave { display: flex; align-items: flex-end; gap: 3px; height: 34px; }
 .vwave i { width: 3.5px; border-radius: 2px; background: rgba(255,255,255,.6); }
 
-/* 信息面板：磨砂半透 + 上叠媒体区，浅色模板下边角过渡更柔和 */
+/* 信息面板：实色衔接媒体区，避免半透明模糊层产生边缘发光 */
 .sinfo {
-  flex-shrink: 0; max-height: 48%; overflow-y: auto; scrollbar-width: none;
-  /* 评论区内滑动不向外链接：防止看评论时误翻下一个作品，切换需在封面区用力下滑 */
-  overscroll-behavior: contain;
+  flex-shrink: 0; max-height: none; overflow: visible;
   margin-top: -20px; position: relative; z-index: 1;
-  background: rgba(255,255,255,.9);
-  -webkit-backdrop-filter: blur(14px) saturate(1.05);
-  backdrop-filter: blur(14px) saturate(1.05);
-  border-top: 1px solid rgba(20,22,30,.05);
-  box-shadow: 0 -10px 26px rgba(20,22,30,.08);
+  background: var(--paper);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-top: 1px solid var(--line);
+  box-shadow: none;
   border-radius: 20px 20px 0 0; padding: 16px 18px;
 }
-.sinfo::-webkit-scrollbar { display: none; }
 .sinfo .stitle { font-size: 16.5px; font-weight: 700; letter-spacing: .5px; margin-bottom: 8px; }
 .sinfo .srow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
 .sinfo .sdesc { font-size: 12px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
@@ -580,6 +811,7 @@ body {
   background: var(--card); color: var(--ink-2); cursor: pointer; user-select: none;
 }
 .s-act i { font-style: normal; font-size: 13px; }
+.s-act i svg { width: 15px; height: 15px; display: block; }
 .s-act b { font-size: 11.5px; font-weight: 600; }
 .s-act.on { color: #ff4d6d; border-color: rgba(255,77,109,.5); background: rgba(255,77,109,.07); }
 
@@ -598,12 +830,55 @@ body {
 }
 .wc-input .btn { padding: 0 18px; font-size: 13px; }
 
-/* 作品页内嵌评论区（信息面板内下拉查看） */
-.s-cmts { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 2px; }
-.s-cmts-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
-.s-cmts-head b { font-size: 13px; color: var(--ink); }
-.s-cmts-head span { font-size: 10px; color: var(--ink-3); margin-left: auto; }
-.s-cmts .wc-list { max-height: none; }
+/* 作品页评论：输入在前，评论使用独立气泡卡片 */
+.s-cmts { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.work-cmts-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.work-cmts-head > div { display: flex; align-items: center; gap: 6px; }
+.work-cmts-head i {
+  width: 27px; height: 27px; border-radius: 9px;
+  display: grid; place-items: center; background: var(--red-light); color: var(--red);
+  font-style: normal; font-size: 15px; font-weight: 700;
+}
+.work-cmts-head i svg { width: 15px; height: 15px; display: block; }
+.work-cmts-head h4 { font-size: 14px; }
+.work-cmts-head b {
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+  display: grid; place-items: center; background: var(--card); color: var(--ink-2);
+  font-size: 10px;
+}
+.work-cmts-head > span { font-size: 9.5px; color: var(--ink-3); }
+.work-cmt-composer {
+  display: flex; align-items: center; gap: 8px; padding: 8px;
+  border-radius: 18px; background: var(--paper-2); box-shadow: var(--shadow-card);
+}
+.work-cmt-composer .avatar { flex: none; width: 34px; height: 34px; font-size: 12px; }
+.work-cmt-composer input {
+  flex: 1; min-width: 0; padding: 9px 11px; border: 0; border-radius: 12px;
+  outline: none; background: var(--card); color: var(--ink); font: inherit; font-size: 11.5px;
+}
+.work-cmt-composer input:focus { box-shadow: inset 0 0 0 1.5px var(--red); background: var(--paper); }
+.work-cmt-composer > button {
+  flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--red); color: #fff; font-size: 18px; line-height: 1;
+}
+.work-cmt-list { display: flex; flex-direction: column; gap: 11px; padding-top: 14px; }
+.work-cmt { display: flex; align-items: flex-start; gap: 9px; }
+.work-cmt > .avatar { flex: none; width: 34px; height: 34px; font-size: 12px; }
+.work-cmt-main {
+  flex: 1; min-width: 0; padding: 10px 12px 8px;
+  border-radius: 4px 16px 16px; background: var(--paper-2); box-shadow: var(--shadow-card);
+}
+.work-cmt-meta { display: flex; align-items: center; gap: 8px; }
+.work-cmt-meta b { font-size: 11.5px; color: var(--ink-2); }
+.work-cmt-meta span { margin-left: auto; font-size: 9px; color: var(--ink-3); }
+.work-cmt-main > p { margin: 5px 0 7px; color: var(--ink); font-size: 12.5px; line-height: 1.65; word-break: break-word; }
+.work-cmt-actions { display: flex; gap: 13px; }
+.work-cmt-actions button {
+  border: 0; padding: 0; background: transparent; color: var(--ink-3);
+  font-family: inherit; font-size: 9.5px; cursor: pointer;
+}
+.work-cmt-actions button.on { color: #ff4d6d; }
 
 /* 转发编辑器：表情按钮 + 图片表情包预览（微信朋友圈式） */
 .repost-tools { display: flex; gap: 10px; padding: 2px 0 8px; }
@@ -623,7 +898,23 @@ body {
 }
 
 /* 帖子里的表情包图 */
-.post-img { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); margin: 2px 0 8px; display: block; }
+.post-img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); margin: 2px 0 9px; display: block; }
+.post-music {
+  display: flex; align-items: center; gap: 10px; margin: 3px 0 9px; padding: 9px;
+  border-radius: 15px; background: var(--card); cursor: pointer;
+}
+.pm-cover {
+  flex: none; width: 44px; height: 44px; border-radius: 11px;
+  display: grid; place-items: center; color: #fff; font-size: 18px; font-weight: 700;
+}
+.pm-info { flex: 1; min-width: 0; }
+.pm-info b { display: block; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-info span { display: block; margin-top: 3px; color: var(--ink-3); font-size: 9.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-play {
+  flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; background: var(--ink); color: var(--paper-2); font-size: 11px;
+}
+.pm-play.is-playing { background: var(--red); color: #fff; }
 
 /* ---------- 7. 消息 ---------- */
 /* 通知分类入口（小红书式三磁贴：赞和收藏 / 评论和@ / 约稿通知） */
@@ -654,12 +945,20 @@ body {
 }
 
 .msg-item { display: flex; gap: 12px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.msg-item.pinned { background: var(--red-light); }
 .msg-item .avatar { width: 46px; height: 46px; font-size: 17px; }
 .msg-body { flex: 1; min-width: 0; }
 .msg-body .r1 { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.msg-body .mname { font-size: 14px; font-weight: 700; }
+.msg-body .mname { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 14px; font-weight: 700; }
+.pin-mark { padding: 1px 5px; border-radius: 999px; background: var(--red-light); color: var(--red); font: 700 8px var(--font-sans); font-style: normal; }
 .msg-body .time { font: 10px var(--font-sans); color: var(--ink-3); }
 .msg-body .txt { font-size: 12px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-tail { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.msg-pin {
+  min-width: 34px; padding: 3px 6px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--card); color: var(--ink-3); font-family: inherit; font-size: 9px;
+}
+.msg-pin.on { background: var(--red); color: #fff; }
 .badge {
   min-width: 17px; height: 17px; border-radius: 9px; padding: 0 5px;
   background: var(--red); color: #fff; font: 10px var(--font-sans);
@@ -928,6 +1227,67 @@ body {
   text-align: center; line-height: 1.7;
   padding: 10px 20px; border-radius: 20px; z-index: 100; display: none;
 }
+
+/* 跨页面悬浮播放条：普通页面显示，进入作品详情后自动收起 */
+.mini-player {
+  position: absolute; left: 12px; right: 12px; bottom: 82px; z-index: 27;
+  min-height: 60px; display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px; border-radius: 18px;
+  background: rgba(255,255,255,.92); color: var(--ink);
+  border: 1px solid rgba(20,22,30,.08);
+  box-shadow: 0 14px 34px rgba(15,18,28,.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateY(14px) scale(.97);
+  transition: opacity .2s ease, transform .22s ease, visibility .2s;
+}
+.mini-player.show {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.phone.viewer-open .mini-player {
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateY(14px) scale(.97);
+}
+.phone.player-active .ov-body { padding-bottom: 92px; }
+.mp-cover, .mp-open, .mp-control, .mp-stop, .mp-close {
+  border: 0; padding: 0; color: inherit; font-family: inherit; cursor: pointer;
+}
+.mp-cover {
+  flex: none; width: 44px; height: 44px; border-radius: 13px;
+  display: grid; place-items: center; overflow: hidden;
+  color: #fff; font-size: 18px; font-weight: 700;
+  background: linear-gradient(145deg,#2152FF,#6B8CFF);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.mini-player.playing .mp-cover { animation: mp-pulse 2.2s ease-in-out infinite; }
+@keyframes mp-pulse { 50% { transform: scale(.94); filter: saturate(1.25); } }
+.mp-info {
+  flex: 1; min-width: 0; align-self: stretch;
+  display: flex; flex-direction: column; justify-content: center; text-align: left;
+}
+.mp-open {
+  min-width: 0; display: block; text-align: left;
+  background: transparent;
+}
+.mp-open b { display: block; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mp-open span { display: block; margin-top: 2px; font-size: 9.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mp-seek { height: 12px; margin-top: 2px; }
+.mp-seek::-webkit-slider-runnable-track { background: linear-gradient(90deg,var(--red) 0 var(--seek-pct),var(--card) var(--seek-pct) 100%); }
+.mp-seek::-moz-range-track { background: var(--card); }
+.mp-control {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--ink); color: var(--paper-2);
+  font-size: 12px; letter-spacing: -2px;
+}
+.mp-stop {
+  flex: none; width: 26px; height: 34px; background: transparent;
+  color: var(--ink-2); font-size: 10px;
+}
+.mp-stop:disabled { opacity: .35; cursor: default; }
+.mp-close { flex: none; width: 24px; height: 34px; background: transparent; color: var(--ink-3); font-size: 20px; }
+html.dark .mini-player { background: rgba(30,31,35,.94); border-color: rgba(255,255,255,.08); }
 
 /* ============================================================
  * 11. 现代极简皮肤（覆盖层）
@@ -1356,6 +1716,47 @@ body { background: #D9DADE; }
   background: var(--card); border: 1.5px solid transparent; border-radius: 14px;
 }
 .post-input:focus { border-color: var(--red); }
+#postMask .rate-box { max-height: 92%; overflow-y: auto; scrollbar-width: none; }
+#postMask .rate-box::-webkit-scrollbar { display: none; }
+.post-attach-tools { display: flex; gap: 8px; margin-top: 9px; }
+.post-attach-tools button {
+  flex: 1; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 12px;
+  background: var(--paper-2); color: var(--ink-2); font-family: inherit; font-size: 11.5px; cursor: pointer;
+}
+.post-attach-tools button b { margin-right: 4px; color: var(--red); font-size: 14px; }
+.post-attach-preview { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.post-draft-image { position: relative; width: 86px; }
+.post-draft-image img { width: 86px; height: 86px; object-fit: cover; border-radius: 13px; display: block; }
+.post-draft-image button, .post-draft-music button {
+  border: 0; cursor: pointer; background: rgba(18,19,23,.82); color: #fff;
+}
+.post-draft-image button {
+  position: absolute; top: -6px; right: -6px; width: 21px; height: 21px; border-radius: 50%;
+}
+.post-draft-music {
+  display: flex; align-items: center; gap: 9px; padding: 8px;
+  border-radius: 13px; background: var(--card);
+}
+.post-draft-music > span, .post-music-option > span {
+  flex: none; width: 38px; height: 38px; border-radius: 10px;
+  display: grid; place-items: center; color: #fff; font-size: 15px; font-weight: 700;
+}
+.post-draft-music > div, .post-music-option > div { flex: 1; min-width: 0; text-align: left; }
+.post-draft-music b, .post-music-option b { display: block; font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-draft-music i, .post-music-option i { display: block; margin-top: 2px; color: var(--ink-3); font-size: 9px; font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-draft-music button { flex: none; width: 24px; height: 24px; border-radius: 50%; }
+.post-music-picker {
+  display: none; flex-direction: column; gap: 6px; max-height: 164px; overflow-y: auto;
+  margin-top: 8px; padding: 7px; border-radius: 14px; background: var(--paper-2);
+}
+.post-music-picker.show { display: flex; }
+.post-music-option {
+  width: 100%; display: flex; align-items: center; gap: 9px; padding: 7px;
+  border: 1px solid transparent; border-radius: 11px; background: var(--card);
+  color: var(--ink); font-family: inherit; cursor: pointer;
+}
+.post-music-option.on { border-color: var(--red); background: var(--red-light); }
+.post-music-option em { flex: none; color: var(--red); font-style: normal; font-size: 15px; }
 
 /* 订单卡内按单交易方式选择器 */
 .pm-row { display: inline-flex; gap: 4px; }
@@ -1857,6 +2258,12 @@ body { background: #D9DADE; }
         1,024 人正在讨论 · 参与讨论领「社区茶券」
       </div>
       <div class="filter-row" id="topicRow"></div>
+      <div class="comm-filter-bar" id="commFilterBar">
+        <span>筛选</span>
+        <button data-comm-sort="latest" onclick="setCommunitySort('latest')">最新</button>
+        <button data-comm-sort="hot" onclick="setCommunitySort('hot')">热度</button>
+        <button class="comm-date-button" id="commDateButton" onclick="openCommunityDateFilter()">按日期筛选</button>
+      </div>
       <div class="feed" id="commFeed"></div>
     </div>
 
@@ -1938,10 +2345,9 @@ body { background: #D9DADE; }
       <div class="mini-works" id="myWorks"></div>
     </div>
 
-    <!-- ========== 沉浸式作品浏览（上下滑动切换） ========== -->
+    <!-- ========== 沉浸式作品浏览（封面 / 资料 / 评论整页下滑） ========== -->
     <div class="viewer" id="viewer">
       <div class="viewer-close" onclick="closeViewer()">✕</div>
-      <div class="viewer-hint">↕ 上下滑动切换作品</div>
       <div class="vscroll" id="vscroll"></div>
     </div>
 
@@ -1956,6 +2362,30 @@ body { background: #D9DADE; }
       <div class="ov-foot">
         <button class="btn ghost" onclick="openChat(currentArtistName)">私信</button>
         <button class="btn primary" onclick="openCommission(currentArtistName)">约稿</button>
+      </div>
+    </div>
+
+    <!-- ========== 企划招募详情（已有成品 / Demo 可试听） ========== -->
+    <div class="overlay" id="ovDemand">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeOverlay('ovDemand')">‹</div>
+        <h3>企划详情</h3>
+        <div class="hdr-more" onclick="toast('已打开企划更多操作')" title="更多操作">⋯</div>
+      </div>
+      <div class="ov-body demand-detail-scroll" id="demandBody"></div>
+      <div class="ov-foot" id="demandActions"></div>
+    </div>
+
+    <!-- ========== 编辑企划资料 ========== -->
+    <div class="overlay" id="ovDemandEdit">
+      <div class="ov-head">
+        <div class="back-btn" onclick="closeDemandEditor()">‹</div>
+        <h3>编辑企划资料</h3>
+      </div>
+      <div class="ov-body reg-form demand-edit-body" id="demandEditBody"></div>
+      <div class="ov-foot">
+        <button class="btn ghost" onclick="closeDemandEditor()">取消</button>
+        <button class="btn primary" onclick="saveDemandEdit()">保存修改</button>
       </div>
     </div>
 
@@ -2041,6 +2471,12 @@ body { background: #D9DADE; }
         <input id="postTitle" class="post-input" maxlength="40" placeholder="标题（必填）">
         <textarea id="postTxt" rows="5" placeholder="聊聊你的问题或经验…&#10;输入「#话题 + 空格」即可添加标签，如：#编曲交流 " oninput="postTxtInput()"></textarea>
         <div class="tag-preview" id="postTagPrev"></div>
+        <div class="post-attach-tools">
+          <button type="button" onclick="pickPostImage()"><b>▧</b> 添加图片</button>
+          <button type="button" onclick="togglePostMusicPicker()"><b>♪</b> 关联音乐</button>
+        </div>
+        <div class="post-attach-preview" id="postAttachPreview"></div>
+        <div class="post-music-picker" id="postMusicPicker"></div>
         <div class="rate-acts">
           <button class="btn ghost" onclick="closePostForm()">取消</button>
           <button class="btn primary" onclick="submitPost()">发布</button>
@@ -2048,6 +2484,7 @@ body { background: #D9DADE; }
         <div class="pub-close" onclick="closePostForm()">✕</div>
       </div>
     </div>
+    <input type="file" id="postImageFile" accept="image/*" hidden onchange="onPostImage(this)">
 
     <!-- ========== 转发弹层（微博式） ========== -->
     <div class="pub-mask" id="repostMask" onclick="if(event.target===this)closeRepost()">
@@ -2488,6 +2925,22 @@ body { background: #D9DADE; }
       <div class="qr-acts-float" id="qrActs"></div>
     </div>
 
+    <!-- 跨页面悬浮播放条：作品详情内自动收起，退出后恢复 -->
+    <div class="mini-player" id="miniPlayer" role="region" aria-label="正在播放" aria-live="polite">
+      <button class="mp-cover" id="mpCover" onclick="openPlayingWork()" aria-label="返回当前作品">♪</button>
+      <div class="mp-info">
+        <button class="mp-open" onclick="openPlayingWork()" aria-label="查看当前播放作品">
+          <b id="mpTitle">未播放</b>
+          <span id="mpMeta">选择一首作品开始试听</span>
+        </button>
+        <input class="player-seek mp-seek" id="mpSeek" type="range" min="0" max="100" step="0.1" value="0"
+          aria-label="播放进度" oninput="seekPlayerPlayback(this.value,event)" onpointerdown="event.stopPropagation()">
+      </div>
+      <button class="mp-control" id="mpPlay" onclick="togglePlayerPlayback(event)" aria-label="暂停">❚❚</button>
+      <button class="mp-stop" id="mpStop" onclick="stopPlayerPlayback(event)" aria-label="停止播放">■</button>
+      <button class="mp-close" onclick="clearPlayerPlayback(event)" aria-label="关闭播放器">×</button>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <!-- ========== 底部导航 ========== -->
@@ -2918,36 +3371,77 @@ const DEMANDS = [
     desc: "自作词曲的山海经题材单曲，编曲已完成，现招一位清丽女声干音与一位水墨风 PV 师，非商用，署名+稿酬。",
     whoType: "个人企划", whoName: "我", budget: "¥1,500–2,500",
     biz: "非商业", tags: ["招干音", "招 PV", "水墨风"],
+    cover: "linear-gradient(145deg,#143B4A 0%,#2F7B6F 58%,#A7CFA4 100%)", glyph: "海",
+    progress: "词曲完成 · 编曲完成 · 视觉设定完成", deadline: "招满即止",
+    deliverable: "干音 WAV 48k/24bit；PV 1080P 成片与工程文件",
+    requirements: ["女声音色清丽，音域 G3–D5", "PV 偏水墨动态风格，有完整作品优先", "入选后通过平台协议托管稿酬"],
+    samples: [
+      { id: 50001, title: "《山海谣》编曲 Demo", type: "编曲小样", dur: "01:18", glyph: "海" },
+      { id: 50002, title: "副歌旋律与和声参考", type: "旋律 Demo", dur: "00:46", glyph: "谣" },
+    ],
   },
   {
     title: "原创古风企划《九州录》招募作曲×2",
     desc: "系列企划共 9 首曲目，现招两位作曲，需擅长大气叙事向国风，词已完成。商用买断，预算充足，签平台协议。",
     whoType: "企划方", whoName: "沧海遗音社", budget: "¥3,000–5,000/首",
-    biz: "商业", tags: ["作曲", "档期 10 月前"],
+    biz: "商业", tags: ["作曲", "系列企划"],
+    cover: "linear-gradient(145deg,#26334C 0%,#5D6E91 55%,#C6D92E 120%)", glyph: "州",
+    progress: "世界观完成 · 9 首词稿完成 · 2 首先行曲制作中", deadline: "本轮招满即止",
+    deliverable: "完整曲谱、MIDI 与分轨工程；每首含两轮旋律调整",
+    requirements: ["擅长五声调式与大气叙事旋律", "可配合系列企划统一音乐动机", "预计 30 天内提交首版小样"],
+    samples: [
+      { id: 50101, title: "先行曲《岚州》成品片段", type: "成品试听", dur: "01:36", glyph: "岚" },
+      { id: 50102, title: "《云梦泽》主歌 Demo", type: "作曲小样", dur: "00:58", glyph: "云" },
+      { id: 50103, title: "九州主题动机参考", type: "旋律 Demo", dur: "00:32", glyph: "九" },
+    ],
   },
   {
     title: "同人歌企划急招后期混音一名",
     desc: "某武侠游戏同人歌，干音与伴奏齐全，需混音+简单母带，风格参考已备。非商用，署名+稿酬。",
     whoType: "个人企划", whoName: "二十四桥", budget: "¥500–800",
     biz: "非商业", tags: ["后期", "一周内交付"],
+    cover: "linear-gradient(145deg,#352D43 0%,#7A597D 60%,#D7A9B5 115%)", glyph: "侠",
+    progress: "词曲、编曲、干音均已完成", deadline: "确认合作后 7 天交付",
+    deliverable: "混音母带 WAV 48k/24bit；含两次细节返修",
+    requirements: ["有人声修音与国风混音经验", "能处理男女人声对唱空间感", "报名请附混音前后对比作品"],
+    samples: [
+      { id: 50201, title: "副歌干音 + 伴奏参考", type: "待混素材", dur: "01:05", glyph: "混" },
+    ],
   },
   {
     title: "古风单曲 PV 招募（水墨风）",
     desc: "已完成歌曲《雾隐江南》寻 PV 师，倾向水墨动态风格，全曲 4 分 12 秒，商用发布于各视频平台。",
     whoType: "制作人", whoName: "半盏茶", budget: "¥4,000–6,000",
     biz: "商业", tags: ["PV", "AE 动效"],
+    cover: "linear-gradient(145deg,#182C2A 0%,#527C6E 55%,#DCE5D4 120%)", glyph: "雾",
+    progress: "歌曲成品完成 · 歌词字幕稿完成", deadline: "档期可协商",
+    deliverable: "4K/1080P 成片、无字幕版与 AE 工程归档",
+    requirements: ["水墨晕染、粒子或二维半动态均可", "需先提供 15 秒分镜动态测试", "商用发布，素材授权须清晰"],
+    samples: [
+      { id: 50301, title: "《雾隐江南》歌曲成品", type: "完整成品", dur: "04:12", glyph: "雾" },
+      { id: 50302, title: "PV 情绪版音乐剪辑", type: "分镜参考", dur: "00:44", glyph: "影" },
+    ],
   },
   {
     title: "募集古风男声干音（戏腔佳）",
     desc: "抒情武侠向单曲，需低沉男声，副歌含少量戏腔。试音通过后签约，商用买断干音。",
     whoType: "工作室", whoName: "闻弦音乐", budget: "¥1,000–1,500",
     biz: "商业", tags: ["干音", "男声"],
+    cover: "linear-gradient(145deg,#272B3A 0%,#536078 58%,#A6B5C4 120%)", glyph: "弦",
+    progress: "词曲与编曲完成 · 等待主唱试音", deadline: "招满即止",
+    deliverable: "主唱干音与和声 WAV 48k/24bit；含一次补录",
+    requirements: ["低沉男声，音域 A2–D4", "副歌可完成短句戏腔", "需在安静环境使用专业设备录制"],
+    samples: [
+      { id: 50401, title: "主歌旋律与演唱示范", type: "试唱参考", dur: "00:52", glyph: "弦" },
+      { id: 50402, title: "副歌戏腔段落 Demo", type: "试音片段", dur: "00:38", glyph: "戏" },
+    ],
   },
 ];
 
 const POSTS = [
   {
     name: "沈昼", topic: "避雷曝光", time: "1 小时前",
+    createdAt: Date.now() - 1 * 60 * 60 * 1000,
     title: "转发提醒，商单务必托管！",
     txt: "转发给刚入坦的朋友们，#避雷 这事真不是危言耸听。",
     like: 18, liked: false, reposts: 2,
@@ -2956,6 +3450,7 @@ const POSTS = [
   },
   {
     name: "江篱", topic: "编曲交流", time: "2 小时前",
+    createdAt: Date.now() - 2 * 60 * 60 * 1000, musicId: 4,
     title: "国风电子里琵琶采样总是发闷，怎么破？",
     txt: "混进 Future Bass 底鼓后琵琶中频全糊了，EQ 挖了 300Hz 还是不透。各位有什么侧链思路或者好用的琵琶音源推荐吗？#编曲交流 #求助 ",
     like: 46, liked: false, reposts: 5,
@@ -2967,6 +3462,7 @@ const POSTS = [
   },
   {
     name: "青梧", topic: "填词切磋", time: "5 小时前",
+    createdAt: Date.now() - 5 * 60 * 60 * 1000,
     title: "「平仄」在古风歌词里到底要不要死磕？",
     txt: "最近接的单子甲方要求严格律诗平仄，但配上旋律以后倒字严重。想听听大家实际约稿中是怎么和作曲协调的，有没有先曲后词的经验帖…",
     like: 132, liked: true, reposts: 12,
@@ -2976,6 +3472,7 @@ const POSTS = [
   },
   {
     name: "半盏茶", topic: "企划茶话", time: "昨天",
+    createdAt: Date.now() - 28 * 60 * 60 * 1000,
     title: "第一次当企划主催，流程求带！",
     txt: "想做一个七首歌的节气企划，词曲唱美 PV 全要约。预算怎么分配比较合理？协议是每个人单独签还是拉群统一签？求过来人指路。",
     like: 98, liked: false, reposts: 7,
@@ -2987,6 +3484,7 @@ const POSTS = [
   },
   {
     name: "绾绾", topic: "设备党", time: "昨天",
+    createdAt: Date.now() - 32 * 60 * 60 * 1000,
     title: "两千预算的录音麦，古风女声怎么选？",
     txt: "目前用 XX 电容麦录戏腔总觉得高频刺。预算 2k 以内，主要录干音交后期，有没有姐妹分享一下实际对比？",
     like: 71, liked: false, reposts: 0,
@@ -2994,6 +3492,7 @@ const POSTS = [
   },
   {
     name: "孤鹤", topic: "避雷曝光", time: "3 天前",
+    createdAt: Date.now() - 72 * 60 * 60 * 1000,
     title: "提醒：接 PV 单一定走平台协议托管",
     txt: "上个月一个站外单，成片交付后甲方失联。大家商单务必平台托管稿酬，分镜确认后再开工，留好沟通记录。",
     like: 210, liked: false, reposts: 43,
@@ -3153,6 +3652,7 @@ const CHATS = {
     { who: "me", type: "sticker", key: "nice" },
   ],
 };
+
 </script>
 <script>
 /* ============================================================
@@ -3426,21 +3926,164 @@ function demandWhoHTML(d) {
   const open = me
     ? `switchTab(document.querySelector('.tab[data-scr=\\'scr-me\\']'))`
     : `openArtistByName('${esc(d.whoName)}')`;
-  return `<span class="who"><span class="tag gray" style="margin-right:5px">${esc(d.whoType)}</span><a href="javascript:;" class="who-link" onclick="event.stopPropagation();closeSheet();${open}">${esc(d.whoName)}</a></span>`;
+  return `<span class="who"><span class="tag gray" style="margin-right:5px">${esc(d.whoType)}</span><a href="javascript:;" class="who-link" onclick="event.stopPropagation();closeSheet();closeOverlay('ovDemand');${open}">${esc(d.whoName)}</a></span>`;
 }
 
 function demandCardHTML(d) {
+  const sampleCount = (d.samples || []).length;
   const cover = d.cover
-    ? `<div class="dcover" style="background:${d.cover}">${d.hasVideo ? `<div class="vplay">▶</div>` : ""}</div>`
+    ? `<div class="dcover" style="background:${d.cover}">
+        <span class="dglyph">${esc(d.glyph || "企")}</span>
+        ${d.hasVideo ? `<div class="vplay">▶</div>` : ""}
+        ${sampleCount ? `<span class="d-sample-badge">♪ ${sampleCount} 首可试听</span>` : ""}</div>`
     : d.hasVideo || d.hasAudio
       ? `<div class="dmedia-hint">${d.hasVideo ? "含介绍视频" : "含参考音频"}</div>` : "";
-  return `<div class="demand-card" onclick="openDemandDetail(${DEMANDS.indexOf(d)})">
+  return `<div class="demand-card" role="button" tabindex="0"
+    onclick="openDemandDetail(${DEMANDS.indexOf(d)})"
+    onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();openDemandDetail(${DEMANDS.indexOf(d)})}">
     ${cover}
     <div class="dtitle">${esc(d.title)}</div>
     <div class="ddesc">${esc(d.desc)}</div>
-    <div class="dtags">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
+    <div class="d-preview-line"><span>${sampleCount ? "♪" : "详"}</span>
+      ${sampleCount ? `已有 ${sampleCount} 首成品 / Demo，点开试听` : "查看完整企划与招募要求"}<b>›</b></div>
+    <div class="dtags">${bizTagHTML(d.biz)}${(d.status || "招募中") !== "招募中" ? `<span class="tag cat">${esc(d.status)}</span>` : ""}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
     <div class="demand-foot">${demandWhoHTML(d)}
       <span class="price" style="font-size:13.5px">${d.budget}</span></div></div>`;
+}
+
+/** 企划详情：已有作品 / Demo 使用全站悬浮播放器 */
+function demandSampleHTML(sample, d) {
+  return `<div class="d-sample">
+    <div class="ds-cover" style="background:${sample.cover || d.cover || "linear-gradient(145deg,#2152FF,#6B8CFF)"}">${esc(sample.glyph || d.glyph || "♪")}</div>
+    <div class="ds-info"><b>${esc(sample.title)}</b><span>${esc(sample.type || "企划 Demo")} · ${esc(sample.dur || "--:--")}</span></div>
+    <button class="ds-play" data-play-work="${sample.id}" onclick="toggleWorkPlayback(${sample.id}, event)" aria-label="播放《${esc(sample.title)}》">▶</button>
+  </div>`;
+}
+
+function demandDetailHTML(d, i) {
+  const mine = d.whoName === "我" || d.whoName === state.profile.name
+    || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
+  const samples = d.samples || [];
+  return `
+    <div class="dd-hero" style="background:${d.cover || "linear-gradient(145deg,#26334C,#6B8CFF)"}">
+      <span class="dd-glyph">${esc(d.glyph || "企")}</span>
+      <div class="dd-status">${esc(d.status || "招募中")}</div>
+      <div class="dd-hero-copy"><span>${esc(d.whoType)}</span><h2>${esc(d.title)}</h2></div>
+    </div>
+    <div class="dd-main">
+      <div class="dd-tags">${bizTagHTML(d.biz)}${(d.status || "招募中") !== "招募中" ? `<span class="tag cat">${esc(d.status)}</span>` : ""}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}${d.applied ? `<span class="tag cat">已投递</span>` : ""}</div>
+      <div class="dd-owner">${demandWhoHTML(d)}<span>发起的企划</span></div>
+      <p class="dd-desc">${esc(d.desc)}</p>
+
+      <div class="dd-facts">
+        <div><span>预算</span><b>${esc(d.budget)}</b></div>
+        <div><span>招募截止</span><b>${esc(d.deadline || "招满即止")}</b></div>
+        <div class="wide"><span>当前进度</span><b>${esc(d.progress || "企划筹备中")}</b></div>
+        <div class="wide"><span>交付内容</span><b>${esc(d.deliverable || "具体交付内容请与发起方沟通")}</b></div>
+      </div>
+
+      <section class="dd-section">
+        <div class="dd-section-title"><h3>已有作品 / Demo</h3><span>${samples.length ? `${samples.length} 首可试听` : "暂无公开试听"}</span></div>
+        ${samples.length
+          ? `<div class="d-samples">${samples.map(s => demandSampleHTML(s, d)).join("")}</div>`
+          : `<div class="dd-empty">发起方暂未上传公开试听，可私信索取参考资料</div>`}
+      </section>
+
+      <section class="dd-section">
+        <div class="dd-section-title"><h3>招募要求</h3><span>投递前请确认</span></div>
+        <div class="dd-requirements">${(d.requirements || ["请附代表作与近期档期"]).map((r, n) => `<p><i>${n + 1}</i>${esc(r)}</p>`).join("")}</div>
+      </section>
+
+      ${mine
+        ? `<div class="dd-owner-tools"><button class="btn ghost" onclick="editCover('demand',${i})">${d.cover ? "更换企划封面" : "添加企划封面"}</button><button class="btn ghost" onclick="openDemandEditor(${i})">编辑企划资料</button></div>`
+        : (d.status || "招募中") !== "招募中"
+          ? `<div class="dd-empty">该企划当前为“${esc(d.status)}”，暂不接收新的报名。</div>`
+          : d.applied
+          ? `<div class="dd-applied">✓ 已投递报名${d.appliedNote ? `<span>自荐留言：${esc(d.appliedNote)}</span>` : ""}<small>对方通过后会通过私信联系，并在平台签订协议。</small></div>`
+          : `<div class="dd-apply-note"><label for="applyNote">自荐留言 <span>选填</span></label><textarea id="applyNote" rows="4" maxlength="300" placeholder="介绍擅长风格、代表作和近期档期…"></textarea></div>`}
+    </div>`;
+}
+
+/** 我的企划资料编辑器 */
+function demandEditFormHTML(d, i) {
+  const whoType = d.whoType || "个人企划";
+  const biz = Array.isArray(d.biz) ? (d.biz[0] || "待定") : (d.biz || "待定");
+  const status = d.status || "招募中";
+  const requirements = d.requirements?.length ? d.requirements : [""];
+  const samples = d.samples || [];
+  return `
+    <section class="de-section">
+      <div class="de-section-head"><h4>基本资料</h4><span>列表与详情同步更新</span></div>
+      <label for="deTitle">企划标题 <b>*</b></label>
+      <input id="deTitle" maxlength="40" value="${esc(d.title)}">
+      <label for="deDesc">需求描述 <b>*</b></label>
+      <textarea id="deDesc" rows="5" maxlength="500">${esc(d.desc)}</textarea>
+      <div class="de-cover-row">
+        <div class="de-cover-copy"><b>企划封面</b><span>${d.cover ? "已设置，可重新裁剪上传" : "尚未设置封面"}</span></div>
+        <button class="mini-btn" type="button" onclick="editCover('demand',${i})">${d.cover ? "更换封面" : "添加封面"}</button>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募设置</h4><span>可随时暂停或结束</span></div>
+      <label>招募状态</label>
+      <div class="gender-row" id="deStatusRow" style="flex-wrap:wrap">
+        ${["招募中", "暂停招募", "已结束"].map(v => `<div class="chip${v === status ? " on" : ""}" onclick="demandEditPick('status','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label>发起方身份</label>
+      <div class="gender-row" id="deWhoTypeRow" style="flex-wrap:wrap">
+        ${CONFIG.demandWhoTypes.map(v => `<div class="chip${v === whoType ? " on" : ""}" onclick="demandEditPick('whoType','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label>授权方式</label>
+      <div class="gender-row" id="deBizRow" style="flex-wrap:wrap">
+        ${["商业", "非商业", "待定"].map(v => `<div class="chip${v === biz ? " on" : ""}" onclick="demandEditPick('biz','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label for="deTags">招募工种与标签</label>
+      <input id="deTags" maxlength="120" value="${esc((d.tags || []).join("、"))}" placeholder="如：招作曲、古风、原创企划">
+      <p class="se-note">使用顿号、逗号或换行分隔，保存后会显示为独立标签。</p>
+      <div class="de-two">
+        <div><label for="deBudget">预算</label><input id="deBudget" maxlength="30" value="${esc(d.budget || "")}" placeholder="如：¥2,000–3,000"></div>
+        <div><label for="deDeadline">招募截止</label><input id="deDeadline" maxlength="30" value="${esc(d.deadline || "")}" placeholder="如：招满即止"></div>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>制作信息</h4><span>让报名者快速判断档期</span></div>
+      <label for="deProgress">当前进度</label>
+      <input id="deProgress" maxlength="100" value="${esc(d.progress || "")}" placeholder="如：词曲完成 · 编曲制作中">
+      <label for="deDeliverable">交付内容</label>
+      <textarea id="deDeliverable" rows="3" maxlength="300" placeholder="文件格式、工程文件、修改次数等">${esc(d.deliverable || "")}</textarea>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募要求</h4><span>逐条增删，按当前顺序展示</span></div>
+      <div class="de-list" id="deRequirements">
+        ${requirements.map(r => `<div class="de-list-row"><input class="de-req" maxlength="120" value="${esc(r)}" placeholder="填写一条招募要求"><button class="de-remove" type="button" onclick="removeDemandEditRow(this)" aria-label="删除要求">×</button></div>`).join("")}
+      </div>
+      <button class="de-add" type="button" onclick="addDemandRequirement()">＋ 添加一条要求</button>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>成品 / Demo</h4><span>${samples.length} 首试听资料</span></div>
+      <div class="de-list" id="deSamples">
+        ${samples.map(s => demandEditSampleRowHTML(s)).join("")}
+      </div>
+      <button class="de-add" type="button" onclick="addDemandSample()">＋ 添加 Demo 信息</button>
+      <p class="se-note">此原型可编辑试听条目的名称、类型和时长；新增条目会使用站内模拟播放器。</p>
+    </section>`;
+}
+
+function demandEditSampleRowHTML(sample) {
+  return `<div class="de-list-row de-sample-edit" data-sample-id="${Number(sample.id) || Date.now()}">
+    <div class="de-sample-top">
+      <input class="de-sample-title" maxlength="60" value="${esc(sample.title || "")}" placeholder="Demo 名称">
+      <button class="de-remove" type="button" onclick="removeDemandEditRow(this)" aria-label="删除 Demo">×</button>
+    </div>
+    <div class="de-sample-meta">
+      <input class="de-sample-type" maxlength="30" value="${esc(sample.type || "企划 Demo")}" placeholder="类型">
+      <input class="de-sample-dur" maxlength="8" value="${esc(sample.dur || "")}" placeholder="00:00">
+    </div>
+  </div>`;
 }
 
 /* ---------- 平台资讯（社区入口卡片） ---------- */
@@ -3469,6 +4112,18 @@ function originBoxHTML(o) {
     <p>${hashtagHTML(o.txt)}</p></div>`;
 }
 
+/** 社区帖子关联音乐：可试听，也可进入对应作品详情。 */
+function postMusicHTML(musicId) {
+  const w = WORKS.find(work => Number(work.id) === Number(musicId));
+  if (!w) return "";
+  const idx = WORKS.indexOf(w);
+  return `<div class="post-music" onclick="event.stopPropagation();openViewer(${idx},WORKS)" role="button" tabindex="0">
+    <div class="pm-cover" style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || "♪")}</div>
+    <div class="pm-info"><b>${esc(w.title)}</b><span>${esc(w.author)} · ${esc(w.dur || "--:--")} · 查看作品</span></div>
+    <button class="pm-play" data-play-work="${w.id}" onclick="event.stopPropagation();toggleWorkPlayback(${w.id},event)" aria-label="播放《${esc(w.title)}》">▶</button>
+  </div>`;
+}
+
 function postHTML(p) {
   const idx = POSTS.indexOf(p);
   return `<div class="post" onclick="openPost(${idx})">
@@ -3479,7 +4134,8 @@ function postHTML(p) {
     </div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="ptxt">${hashtagHTML(p.txt)}</div>
-    ${p.img ? `<img class="post-img" src="${p.img}" alt="表情包">` : ""}
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="帖子图片">` : ""}
+    ${p.musicId ? postMusicHTML(p.musicId) : ""}
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="event.stopPropagation();toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
@@ -3518,7 +4174,8 @@ function postDetailHTML(p, idx) {
     </div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="ptxt" style="-webkit-line-clamp:99">${hashtagHTML(p.txt)}</div>
-    ${p.img ? `<img class="post-img" src="${p.img}" alt="表情包">` : ""}
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="帖子图片">` : ""}
+    ${p.musicId ? postMusicHTML(p.musicId) : ""}
     ${p.origin ? originBoxHTML(p.origin) : ""}
     <div class="pacts">
       <span class="${p.liked ? "act-on" : ""}" onclick="toggleLike(${idx})">${p.liked ? "♥" : "♡"} ${p.like}</span>
@@ -3615,15 +4272,18 @@ const muteBellSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 
 function messageHTML(m) {
   const muted = state.muted.has(m.name);
-  return `<div class="msg-item" onclick="openChat('${esc(m.name)}')">
+  return `<div class="msg-item${m.pinned ? " pinned" : ""}" onclick="openChat('${esc(m.name)}')">
     ${GROUPS[m.name]
       ? groupAvatarHTML(m.name)
       : `<div class="avatar" style="background:${avatarBg(m.name)}">${esc(m.name[0])}</div>`}
     <div class="msg-body">
-      <div class="r1"><span class="mname">${esc(m.name)}${muted ? `<i class="mute-ic" title="免打扰">${muteBellSVG}</i>` : ""}</span><span class="time">${m.time}</span></div>
+      <div class="r1"><span class="mname">${esc(m.name)}${m.pinned ? `<i class="pin-mark">置顶</i>` : ""}${muted ? `<i class="mute-ic" title="免打扰">${muteBellSVG}</i>` : ""}</span><span class="time">${m.time}</span></div>
       <div class="txt">${esc(m.txt)}</div>
     </div>
-    ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}</div>`;
+    <div class="msg-tail">
+      ${m.unread ? (muted ? `<div class="mute-dot"></div>` : `<div class="badge">${m.unread}</div>`) : ""}
+      <button class="msg-pin${m.pinned ? " on" : ""}" onclick="event.stopPropagation();togglePinMessage('${esc(m.name)}')" aria-label="${m.pinned ? "取消置顶" : "置顶消息"}">${m.pinned ? "取消" : "置顶"}</button>
+    </div></div>`;
 }
 
 /** 聊天气泡：文字 / 默认贴纸 / 相册导入表情包 */
@@ -3661,21 +4321,36 @@ function stickerTrayHTML() {
 
 /* ---------- 沉浸式浏览（单张 slide） ---------- */
 
+/** 作品详情内播放器：与悬浮播放栏共用同一播放状态。 */
+function workAudioPlayerHTML(w) {
+  return `<div class="work-player" data-work-player="${w.id}">
+    <button class="bigplay" data-play-work="${w.id}" onclick="toggleWorkPlayback(${w.id}, event)" aria-label="播放《${esc(w.title)}》">▶</button>
+    <div class="wp-timeline">
+      <span class="wp-current">00:00</span>
+      <input class="player-seek wp-seek" type="range" min="0" max="100" step="0.1" value="0" aria-label="《${esc(w.title)}》播放进度"
+        oninput="seekWorkPlayback(${w.id},this.value,event)" onpointerdown="event.stopPropagation()">
+      <span class="wp-duration">${esc(w.dur || "--:--")}</span>
+      <button class="wp-stop" data-stop-work="${w.id}" onclick="stopWorkPlayback(${w.id},event)" aria-label="停止播放">■</button>
+    </div>
+  </div>`;
+}
+
 /** 媒体区，与瀑布流封面同样的适配优先级 */
 function slideMediaHTML(w) {
   if (w.video) {
     return `<div class="smedia" style="background:${w.cover}">
       <span class="cover-glyph">${esc(w.glyph || "♪")}</span>
-      <div class="bigplay" onclick="toast('Demo：播放视频 ▶')">▶</div>
-      <span class="tpl-label">视频 · ${w.dur}</span></div>`;
+      ${w.audio
+        ? workAudioPlayerHTML(w)
+        : `<button class="bigplay" onclick="event.stopPropagation();toast('Demo：播放视频 ▶')" aria-label="播放视频">▶</button>`}
+      <span class="tpl-label">${w.audio ? "视频配乐" : "视频"} · ${w.dur}</span></div>`;
   }
   if (w.cover) {
     return `<div class="smedia" style="background:${w.cover}">
       <span class="cover-glyph">${esc(w.glyph || "♪")}</span>
       ${w.audio
-        ? `<div class="bigplay" onclick="toast('Demo：播放音频 ▶')">▶</div>
-           <span class="tpl-label">封面 + 音频 · ${w.dur}</span>`
-        : `<span class="tpl-label">封面图</span>`}</div>`;
+        ? `${workAudioPlayerHTML(w)}<span class="tpl-label">封面 + 音频 · ${w.dur}</span>`
+        : ""}</div>`;
   }
   if (w.lyric) {
     return `<div class="smedia tpl-lyric">
@@ -3686,9 +4361,11 @@ function slideMediaHTML(w) {
   return `<div class="smedia">
     <div class="disc-big"></div>
     ${barsHTML(CONFIG.ui.waveBarsViewer, "vwave")}
-    <div class="bigplay" onclick="toast('Demo：播放小样 ▶')">▶</div>
+    ${workAudioPlayerHTML(w)}
     <span class="tpl-label">默认音频模板 · 无封面 · ${w.dur}</span></div>`;
 }
+
+const commentBubbleSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 9.4 9.4 0 0 1-3.2-.55L4 20l1.45-4.2A7.8 7.8 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/></svg>`;
 
 function slideInfoHTML(w) {
   return `<div class="sinfo">
@@ -3705,7 +4382,7 @@ function slideInfoHTML(w) {
       <b style="color:var(--ink)">约稿须知：</b>${esc(w.detail)}</div>
     <div class="s-acts">
       <div class="s-act ${state.workLiked.has(w.id) ? "on" : ""}" id="wlike-${w.id}" onclick="toggleWorkLike(${w.id})"><i>${state.workLiked.has(w.id) ? "♥" : "♡"}</i><b>${workLikeCount(w.id)}</b></div>
-      <div class="s-act" id="wcmt-${w.id}" onclick="scrollToCmts(${w.id})"><i>⁖</i><b>${workCmtsOf(w.id).length}</b></div>
+      <div class="s-act" id="wcmt-${w.id}" onclick="scrollToCmts(${w.id})"><i>${commentBubbleSVG}</i><b>${workCmtsOf(w.id).length}</b></div>
       <div class="s-act" onclick="forwardWork(${w.id})"><i>↻</i><b>转发</b></div>
       <div class="s-act" onclick="openShareWork(${w.id})"><i>↗</i><b>分享</b></div>
     </div>
@@ -3714,16 +4391,23 @@ function slideInfoHTML(w) {
       <button class="btn primary" onclick="closeViewer();openCommission('${esc(w.author)}', '${esc(w.title)}')">发起约稿</button>
     </div>
     <div class="s-cmts" id="scmts-${w.id}">
-      <div class="s-cmts-head">评论 <b id="scmtn-${w.id}">${workCmtsOf(w.id).length}</b><span>评论区内滑动不翻页 · 在封面区用力下滑切换作品</span></div>
-      <div class="wc-list" id="wcl-${w.id}">${workCmtsListHTML(w.id)}</div>
-      <div class="wc-input">
-        <input id="wcin-${w.id}" maxlength="100" placeholder="说点什么…" onkeydown="if(event.key==='Enter')sendWorkCmt(${w.id})">
-        <button class="btn primary" onclick="sendWorkCmt(${w.id})">发送</button>
+      <div class="work-cmts-head">
+        <div><i>${commentBubbleSVG}</i><h4>评论</h4><b id="scmtn-${w.id}">${workCmtsOf(w.id).length}</b></div>
+        <span>和大家聊聊这首作品</span>
       </div>
+      <div class="work-cmt-composer">
+        <div class="avatar" style="background:${avatarBg(state.profile.name || "我")}">${esc((state.profile.name || "我")[0])}</div>
+        <input id="wcin-${w.id}" maxlength="100" placeholder="写下你的感受…" onkeydown="if(event.key==='Enter')sendWorkCmt(${w.id})">
+        <button onclick="sendWorkCmt(${w.id})" aria-label="发送评论">↑</button>
+      </div>
+      <div class="work-cmt-list" id="wcl-${w.id}">${workCmtsListHTML(w.id)}</div>
     </div></div>`;
 }
 
-const slideHTML = w => `<div class="slide">${slideMediaHTML(w)}${slideInfoHTML(w)}</div>`;
+const slideHTML = w => `<div class="slide" data-work-id="${w.id}"
+  onpointerdown="workSlidePointerDown(${w.id}, event)"
+  onpointerup="workSlidePointerUp(${w.id}, event)"
+  onpointercancel="workSlidePointerCancel()">${slideMediaHTML(w)}${slideInfoHTML(w)}</div>`;
 
 /* ---------- 个人风格 / 主页橱窗（米画师式） ---------- */
 
@@ -3873,33 +4557,86 @@ function pubWorkFormHTML() {
 /** 企划招募发布表单 */
 function pubDemandFormHTML() {
   return `
-    <label>企划标题 <b>*</b></label>
-    <input id="pubName" maxlength="30">
-    <label>封面</label>
-    <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickCover()">上传封面（图片/视频）</div>
-      <div class="upload-prev" id="pubCoverPrev" onclick="previewCover()" title="点击查看"></div>
-    </div>
-    <label>介绍视频 / 参考音频</label>
-    <div class="upload-row">
-      <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
-      <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
-    </div>
-    <label>发起方身份</label>
-    <div class="gender-row" style="flex-wrap:wrap">
-      ${CONFIG.demandWhoTypes.map(t => `<div class="chip${t === "个人企划" ? " on" : ""}" onclick="pubSetWhoType('${t}', this)">${t}</div>`).join("")}
-    </div>
-    <label>招募工种（可多选）</label>
-    <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">
-      ${CONFIG.roles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
-      <div class="chip" onclick="pubAddCustomRole(this)">＋ 其他</div>
-    </div>
-    ${pubTagChipsHTML()}
-    ${pubBizChipsHTML()}
-    <label>预算（选填）</label>
-    <input id="pubPrice" maxlength="20" placeholder="如：¥2,000 / 可议">
-    <label>需求描述</label>
-    <textarea id="pubDesc" rows="4" placeholder="企划背景、风格参考、交付要求、周期…"></textarea>`;
+    <section class="de-section">
+      <div class="de-section-head"><h4>基本资料</h4><span>发布后仍可编辑</span></div>
+      <label for="pubName">企划标题 <b>*</b></label>
+      <input id="pubName" maxlength="40" placeholder="填写企划名称">
+      <label for="pubDesc">需求描述 <b>*</b></label>
+      <textarea id="pubDesc" rows="5" maxlength="500" placeholder="企划背景、风格参考、合作周期等"></textarea>
+      <label>企划封面</label>
+      <div class="upload-row">
+        <div class="upload-btn" onclick="pubPickCover()">上传封面（图片/视频）</div>
+        <div class="upload-prev" id="pubCoverPrev" onclick="previewCover()" title="点击查看"></div>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募设置</h4><span>与编辑企划资料一致</span></div>
+      <label>招募状态</label>
+      <div class="gender-row" style="flex-wrap:wrap">
+        ${["招募中", "暂停招募", "已结束"].map(v => `<div class="chip${v === "招募中" ? " on" : ""}" onclick="pubSetDemandOption('status','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label>发起方身份</label>
+      <div class="gender-row" style="flex-wrap:wrap">
+        ${CONFIG.demandWhoTypes.map(t => `<div class="chip${t === "个人企划" ? " on" : ""}" onclick="pubSetWhoType('${t}', this)">${t}</div>`).join("")}
+      </div>
+      <label>授权方式</label>
+      <div class="gender-row" style="flex-wrap:wrap">
+        ${["商业", "非商业", "待定"].map(v => `<div class="chip${v === "待定" ? " on" : ""}" onclick="pubSetDemandOption('demandBiz','${v}',this)">${v}</div>`).join("")}
+      </div>
+      <label for="pubDemandTags">招募工种与标签</label>
+      <input id="pubDemandTags" maxlength="120" placeholder="如：招作曲、古风、原创企划">
+      <p class="se-note">可直接填写，也可用下方选项快速添加；发布后会显示为独立标签。</p>
+      <label>招募工种（可多选）</label>
+      <div class="gender-row" style="flex-wrap:wrap" id="pubRoleRow">
+        ${CONFIG.roles.map(r => `<div class="chip" onclick="pubToggleRole('${r}', this)">${r}</div>`).join("")}
+        <div class="chip" onclick="pubAddCustomRole(this)">＋ 其他</div>
+      </div>
+      ${pubTagChipsHTML()}
+      <div class="de-two">
+        <div><label for="pubPrice">预算</label><input id="pubPrice" maxlength="30" placeholder="如：¥2,000–3,000"></div>
+        <div><label for="pubDeadline">招募截止</label><input id="pubDeadline" maxlength="30" placeholder="如：招满即止"></div>
+      </div>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>制作信息</h4><span>让报名者快速判断档期</span></div>
+      <label for="pubProgress">当前进度</label>
+      <input id="pubProgress" maxlength="100" placeholder="如：词曲完成 · 编曲制作中">
+      <label for="pubDeliverable">交付内容</label>
+      <textarea id="pubDeliverable" rows="3" maxlength="300" placeholder="文件格式、工程文件、修改次数等"></textarea>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>招募要求</h4><span>逐条填写，发布后可增删</span></div>
+      <div class="de-list" id="pubRequirements">
+        <div class="de-list-row"><input class="pub-demand-req" maxlength="120" placeholder="如：报名请附代表作与近期档期"><button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除要求">×</button></div>
+      </div>
+      <button class="de-add" type="button" onclick="addPubDemandRequirement()">＋ 添加一条要求</button>
+    </section>
+
+    <section class="de-section">
+      <div class="de-section-head"><h4>成品 / Demo</h4><span>选填，可发布后继续添加</span></div>
+      <label>介绍视频 / 参考音频</label>
+      <div class="upload-row">
+        <div class="upload-btn" onclick="pubPickMedia()">上传小样</div>
+        <span class="upload-name" id="pubMediaName" onclick="previewMedia()">未选择文件</span>
+      </div>
+      <div class="de-list" id="pubSamples">
+        <div class="de-list-row de-sample-edit pub-demo-edit" data-sample-id="${Date.now()}">
+          <div class="de-sample-top">
+            <input class="pub-demo-title" maxlength="60" placeholder="Demo 名称（选填）">
+            <button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除 Demo">×</button>
+          </div>
+          <div class="de-sample-meta">
+            <input class="pub-demo-type" maxlength="30" value="企划 Demo" placeholder="类型">
+            <input class="pub-demo-dur" maxlength="8" placeholder="00:00">
+          </div>
+        </div>
+      </div>
+      <button class="de-add" type="button" onclick="addPubDemandSample()">＋ 添加 Demo 信息</button>
+      <p class="se-note">上传音频会自动读取时长；仅填写 Demo 名称时会创建站内模拟试听条目。</p>
+    </section>`;
 }
 
 </script>
@@ -3919,6 +4656,8 @@ const state = {
   homeMode: "works",      // "works" | "artist" | "demand"
   tagSel: {},             // 首页标签检索：{ 组名: [已选标签…] }，空 = 全部
   topic: "全部",           // 社区话题筛选
+  communitySort: "latest", // 社区帖子排序：latest | hot | date
+  communityDate: "",      // 社区指定日期筛选：YYYY-MM-DD
   filteredWorks: [...WORKS], // 当前筛选后的作品（沉浸式浏览顺序依据）
   accepting: true,        // 「我的」接稿状态
   myRoles: [],            // 已选工种（注册时可多选，可跳过后补）
@@ -3933,7 +4672,6 @@ const state = {
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
   muted: new Set(),        // 消息免打扰（用户 / 讨论组通用）
   workLiked: new Set(),    // 我点赞过的作品 id
-  viewerSwipes: 0,         // 沉浸式浏览累计切换次数（≥3 后隐藏新手提示）
   accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
   favFolders: [           // 收藏夹（歌单式分类）
@@ -4068,16 +4806,88 @@ function setHomeMode(mode, el) {
 
 /* ---------- 社区 ---------- */
 
+function localDateKey(timestamp) {
+  const d = new Date(timestamp);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const postHeat = p => (p.like || 0) * 3 + (p.comments || []).length * 5 + (p.reposts || 0) * 4;
+
+function renderCommunityFilters() {
+  $$("#commFilterBar [data-comm-sort]").forEach(btn =>
+    btn.classList.toggle("on", btn.dataset.commSort === state.communitySort));
+  const dateButton = $("#commDateButton");
+  dateButton.classList.toggle("on", state.communitySort === "date");
+  dateButton.textContent = state.communityDate
+    ? `日期 · ${formatCommunityDate(state.communityDate)}`
+    : "按日期筛选";
+}
+
+function formatCommunityDate(value) {
+  const parts = String(value || "").split("-").map(Number);
+  return parts.length === 3 && parts.every(Number.isFinite) ? `${parts[1]}月${parts[2]}日` : "按日期筛选";
+}
+
+function openCommunityDateFilter() {
+  const today = localDateKey(Date.now());
+  const yesterday = localDateKey(Date.now() - 24 * 60 * 60 * 1000);
+  openSheet("按日期筛选", `
+    <div class="comm-date-sheet">
+      <p>选择帖子发布的日期</p>
+      <div class="comm-date-quick">
+        <button class="${state.communityDate === today ? "on" : ""}" onclick="applyCommunityDateFilter('${today}')">今天</button>
+        <button class="${state.communityDate === yesterday ? "on" : ""}" onclick="applyCommunityDateFilter('${yesterday}')">昨天</button>
+      </div>
+      <label for="communityDateInput">选择具体日期</label>
+      <input id="communityDateInput" type="date" max="${today}" value="${esc(state.communityDate)}">
+      <div class="comm-date-actions">
+        <button class="btn ghost" onclick="clearCommunityDateFilter()">全部日期</button>
+        <button class="btn primary" onclick="applyCommunityDateFilter()">应用筛选</button>
+      </div>
+    </div>`);
+}
+
+function applyCommunityDateFilter(value) {
+  const selected = value || $("#communityDateInput")?.value;
+  if (!selected) return toast("请先选择日期");
+  setCommunityDate(selected);
+  closeSheet();
+}
+
+function clearCommunityDateFilter() {
+  setCommunityDate("");
+  closeSheet();
+}
+
 function renderCommunity() {
   $("#topicRow").innerHTML = CONFIG.topics.map(t => `
     <div class="chip ${t === state.topic ? "on" : ""}" onclick="setTopic('${t}')">
       ${t === "全部" ? t : "# " + t}</div>`).join("");
-  const articles = state.topic === "全部"
+  renderCommunityFilters();
+  let posts = POSTS.filter(p => state.topic === "全部" || p.topic === state.topic);
+  if (state.communityDate) {
+    posts = posts.filter(p => localDateKey(p.createdAt || Date.now()) === state.communityDate);
+  }
+  posts = [...posts].sort((a, b) => state.communitySort === "hot"
+    ? postHeat(b) - postHeat(a)
+    : (b.createdAt || 0) - (a.createdAt || 0));
+  const articles = state.topic === "全部" && state.communitySort === "latest" && !state.communityDate
     ? `<div class="art-sec">平台资讯</div>` + ARTICLES.map(articleCardHTML).join("")
     : "";
   $("#commFeed").innerHTML = articles +
-    (POSTS.filter(p => state.topic === "全部" || p.topic === state.topic)
-      .map(postHTML).join("") || emptyHTML("该话题下暂无帖子"));
+    (posts.map(postHTML).join("") || emptyHTML(state.communityDate ? "该日期暂无帖子" : "该话题下暂无帖子"));
+}
+
+function setCommunitySort(mode) {
+  state.communitySort = mode === "hot" ? "hot" : "latest";
+  state.communityDate = "";
+  renderCommunity();
+}
+
+function setCommunityDate(value) {
+  state.communityDate = value || "";
+  state.communitySort = state.communityDate ? "date" : "latest";
+  renderCommunity();
 }
 
 function setTopic(t) {
@@ -4087,6 +4897,8 @@ function setTopic(t) {
 
 /** 热议卡片：跳到对应话题 */
 function goHotTopic() {
+  state.communitySort = "latest";
+  state.communityDate = "";
   setTopic("编曲交流");
   toast("已切到热议话题 # 编曲交流");
 }
@@ -4333,7 +5145,7 @@ function submitRepost() {
   const o = repostOriginOf(src);
   src.reposts = (src.reposts || 0) + 1;
   POSTS.unshift({
-    name: state.profile.name || "洛云笙", topic: null, time: "刚刚",
+    name: state.profile.name || "洛云笙", topic: null, time: "刚刚", createdAt: Date.now(),
     title: "转发：" + o.title,
     txt: $("#repostTxt").value.trim() || "转发",
     img: repostImg,
@@ -4342,6 +5154,8 @@ function submitRepost() {
   closeRepost();
   closeOverlay("ovPost");
   state.topic = "全部";
+  state.communitySort = "latest";
+  state.communityDate = "";
   renderCommunity();
   toast("转发成功");
 }
@@ -4412,15 +5226,21 @@ function onCmtImg(input) {
 
 /* ---------- 发帖（正文 #话题+空格 自动识别标签） ---------- */
 
+let postDraft = { img: null, musicId: null };
+
 function openPostForm() {
+  postDraft = { img: null, musicId: null };
   $("#postTitle").value = "";
   $("#postTxt").value = "";
+  $("#postMusicPicker").classList.remove("show");
+  renderPostAttachments();
   postTxtInput();
   $("#postMask").classList.add("show");
 }
 
 function closePostForm() {
   $("#postMask").classList.remove("show");
+  $("#postMusicPicker").classList.remove("show");
 }
 
 /** 发布面板入口：跳到社区页并打开发帖弹层 */
@@ -4437,6 +5257,64 @@ function postTxtInput() {
     : "✎ 正文输入「#话题 + 空格」自动识别为标签";
 }
 
+function pickPostImage() {
+  const input = $("#postImageFile");
+  input.value = "";
+  input.click();
+}
+
+function onPostImage(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) return toast("请选择图片文件");
+  const reader = new FileReader();
+  reader.onload = e => {
+    postDraft.img = e.target.result;
+    renderPostAttachments();
+    toast("图片已添加");
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPostImage() {
+  postDraft.img = null;
+  renderPostAttachments();
+}
+
+function togglePostMusicPicker() {
+  const picker = $("#postMusicPicker");
+  picker.innerHTML = WORKS.filter(w => w.audio).map(w => `
+    <button class="post-music-option${Number(postDraft.musicId) === Number(w.id) ? " on" : ""}" onclick="selectPostMusic(${w.id})">
+      <span style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || "♪")}</span>
+      <div><b>${esc(w.title)}</b><i>${esc(w.author)} · ${esc(w.dur || "--:--")}</i></div>
+      <em>${Number(postDraft.musicId) === Number(w.id) ? "✓" : "＋"}</em>
+    </button>`).join("");
+  picker.classList.toggle("show");
+}
+
+function selectPostMusic(id) {
+  postDraft.musicId = Number(id);
+  $("#postMusicPicker").classList.remove("show");
+  renderPostAttachments();
+  toast("已关联音乐作品");
+}
+
+function clearPostMusic() {
+  postDraft.musicId = null;
+  renderPostAttachments();
+}
+
+function renderPostAttachments() {
+  const w = WORKS.find(work => Number(work.id) === Number(postDraft.musicId));
+  $("#postAttachPreview").innerHTML = `
+    ${postDraft.img ? `<div class="post-draft-image"><img src="${postDraft.img}" alt="待发布图片"><button onclick="clearPostImage()" aria-label="删除图片">×</button></div>` : ""}
+    ${w ? `<div class="post-draft-music">
+      <span style="background:${w.cover || avatarBg(w.title)}">${esc(w.glyph || "♪")}</span>
+      <div><b>${esc(w.title)}</b><i>${esc(w.author)} · ${esc(w.dur || "--:--")}</i></div>
+      <button onclick="clearPostMusic()" aria-label="取消关联音乐">×</button>
+    </div>` : ""}`;
+}
+
 function submitPost() {
   const title = $("#postTitle").value.trim();
   if (!title) return toast("先给帖子起个标题吧");
@@ -4444,10 +5322,13 @@ function submitPost() {
   const m = txt.match(/#([^#\s]+)(?=\s|$)/);
   const topic = m && CONFIG.topics.includes(m[1]) ? m[1] : null;
   POSTS.unshift({
-    name: state.profile.name || "洛云笙", topic, time: "刚刚",
-    title, txt, like: 0, liked: false, reposts: 0, comments: [],
+    name: state.profile.name || "洛云笙", topic, time: "刚刚", createdAt: Date.now(),
+    title, txt, img: postDraft.img || undefined, musicId: postDraft.musicId || undefined,
+    like: 0, liked: false, reposts: 0, comments: [],
   });
   state.topic = topic || "全部";
+  state.communitySort = "latest";
+  state.communityDate = "";
   closePostForm();
   renderCommunity();
   toast(m ? `发布成功，已带标签 #${m[1]}` : "发布成功");
@@ -4586,8 +5467,21 @@ function ndReply() {
 /* ---------- 消息 ---------- */
 
 function renderMessages() {
-  $("#msgList").innerHTML = MESSAGES.filter(m => !state.blocked.has(m.name)).map(messageHTML).join("");
+  const messages = MESSAGES
+    .map((message, order) => ({ message, order }))
+    .filter(({ message }) => !state.blocked.has(message.name))
+    .sort((a, b) => Number(!!b.message.pinned) - Number(!!a.message.pinned) || a.order - b.order)
+    .map(({ message }) => message);
+  $("#msgList").innerHTML = messages.map(messageHTML).join("");
   renderMsgEntries();
+}
+
+function togglePinMessage(name) {
+  const message = MESSAGES.find(m => m.name === name);
+  if (!message) return;
+  message.pinned = !message.pinned;
+  renderMessages();
+  toast(message.pinned ? `已置顶「${name}」` : `已取消置顶「${name}」`);
 }
 
 /** 消息列表一键全部已读 */
@@ -4924,36 +5818,54 @@ let vLastIdx = 0;
 
 function openViewer(idx, list) {
   const works = list || state.filteredWorks;
+  window.getSelection?.()?.removeAllRanges();
   viewerWorks = works;
   const scroller = $("#vscroll");
   scroller.innerHTML = works.map(slideHTML).join("");
   $("#viewer").classList.add("show");
-  // 新手提示：累计切换 3 次后不再展示
-  $(".viewer-hint").style.display = state.viewerSwipes >= 3 ? "none" : "";
+  $(".phone").classList.add("viewer-open");
+  renderMiniPlayer();
   vLastIdx = idx;
   scroller.onscroll = viewerOnScroll;
-  requestAnimationFrame(() => { scroller.scrollTop = scroller.clientHeight * idx; });
+  requestAnimationFrame(() => {
+    const target = scroller.children[idx];
+    scroller.scrollTop = target ? target.offsetTop : 0;
+    renderMiniPlayer();
+  });
 }
 
-/** 统计上下滑切换次数，满 3 次淡出新手提示 */
+/** 跟踪当前作品页，避免滚动时重复处理同一项 */
 function viewerOnScroll() {
   const sc = $("#vscroll");
-  const i = Math.round(sc.scrollTop / sc.clientHeight);
+  const marker = sc.scrollTop + Math.min(160, sc.clientHeight * .25);
+  const slides = [...sc.children];
+  let i = 0;
+  for (let n = 0; n < slides.length; n++) {
+    if (slides[n].offsetTop <= marker) i = n;
+    else break;
+  }
   if (i === vLastIdx) return;
   vLastIdx = i;
-  if (state.viewerSwipes >= 3) return;
-  state.viewerSwipes++;
-  if (state.viewerSwipes >= 3) {
-    const hint = $(".viewer-hint");
-    hint.style.transition = "opacity .6s";
-    hint.style.opacity = "0";
-    setTimeout(() => { hint.style.display = "none"; hint.style.opacity = ""; }, 650);
-  }
 }
 
 /* --- 作品互动：点赞 / 评论 / 转发 / 分享 --- */
 
-const vWorkById = id => viewerWorks.find(w => w.id === id) || WORKS.find(w => w.id === id);
+function demandSampleById(id) {
+  for (let demandIndex = 0; demandIndex < DEMANDS.length; demandIndex++) {
+    const d = DEMANDS[demandIndex];
+    const sample = (d.samples || []).find(s => Number(s.id) === Number(id));
+    if (sample) return {
+      ...sample, audio: true, video: false, demandIndex,
+      author: d.whoName, role: `${d.whoType} · 企划试听`,
+      cover: sample.cover || d.cover, glyph: sample.glyph || d.glyph,
+    };
+  }
+  return null;
+}
+
+const vWorkById = id => viewerWorks.find(w => w.id === id)
+  || WORKS.find(w => w.id === id)
+  || demandSampleById(id);
 
 /** 基础点赞数：由 id 确定性生成（Demo 无后端） */
 const workLikeBase = id => 46 + (id * 83) % 460;
@@ -4962,45 +5874,364 @@ const workLikeCount = id => workLikeBase(id) + (state.workLiked.has(id) ? 1 : 0)
 function toggleWorkLike(id) {
   const on = !state.workLiked.has(id);
   on ? state.workLiked.add(id) : state.workLiked.delete(id);
-  const el = $(`#wlike-${id}`);
-  if (el) {
+  updateWorkLikeUI(id, on);
+}
+
+function updateWorkLikeUI(id, on) {
+  $$(`#wlike-${id}`).forEach(el => {
     el.classList.toggle("on", on);
     el.innerHTML = `<i>${on ? "♥" : "♡"}</i><b>${workLikeCount(id)}</b>`;
+  });
+}
+
+/* 双击 / 双击触摸点赞：排除按钮和输入框，拖动页面不会误触 */
+let workTapDown = null;
+let workLastTap = { id: null, time: 0, x: 0, y: 0 };
+
+function workSlidePointerDown(id, event) {
+  workTapDown = {
+    id, x: event.clientX, y: event.clientY, time: Date.now(),
+    scrollTop: $("#vscroll")?.scrollTop || 0,
+  };
+}
+
+function workSlidePointerCancel() { workTapDown = null; }
+
+function workSlidePointerUp(id, event) {
+  const down = workTapDown;
+  workTapDown = null;
+  if (!down || down.id !== id) return;
+  if (event.target.closest("button,input,a,.s-act,.sauthor,.s-cmts")) return;
+  const sc = $("#vscroll");
+  const moved = Math.hypot(event.clientX - down.x, event.clientY - down.y);
+  const scrolled = Math.abs((sc?.scrollTop || 0) - down.scrollTop);
+  if (moved > 14 || scrolled > 8 || Date.now() - down.time > 420) return;
+
+  const now = Date.now();
+  const isDouble = workLastTap.id === id
+    && now - workLastTap.time < 340
+    && Math.hypot(event.clientX - workLastTap.x, event.clientY - workLastTap.y) < 54;
+  if (!isDouble) {
+    workLastTap = { id, time: now, x: event.clientX, y: event.clientY };
+    return;
   }
+  workLastTap = { id: null, time: 0, x: 0, y: 0 };
+  likeWorkFromDoubleTap(id, event.currentTarget, event.clientX, event.clientY);
+}
+
+function likeWorkFromDoubleTap(id, slide, clientX, clientY) {
+  window.getSelection?.()?.removeAllRanges();
+  const on = !state.workLiked.has(id);
+  on ? state.workLiked.add(id) : state.workLiked.delete(id);
+  updateWorkLikeUI(id, on);
+  const rect = slide.getBoundingClientRect();
+  const heart = document.createElement("span");
+  heart.className = `work-like-burst${on ? "" : " off"}`;
+  heart.textContent = on ? "♥" : "♡";
+  heart.style.left = `${clientX - rect.left}px`;
+  heart.style.top = `${clientY - rect.top}px`;
+  slide.appendChild(heart);
+  setTimeout(() => heart.remove(), 720);
+  navigator.vibrate?.(on ? 18 : 10);
+}
+
+/* --- 悬浮播放条：试听状态跨作品页、主页和资料页持续存在 --- */
+const playerState = {
+  work: null, playing: false, elapsed: 0, duration: 0,
+};
+let playerClock = null;
+let demoAudioCtx = null;
+let demoMaster = null;
+let demoNoteTimer = null;
+let demoNoteStep = 0;
+
+function durationSeconds(text) {
+  const parts = String(text || "02:00").split(":").map(Number);
+  return parts.length === 2 && parts.every(Number.isFinite) ? parts[0] * 60 + parts[1] : 120;
+}
+
+function playerTime(sec) {
+  const safe = Math.max(0, Math.floor(sec || 0));
+  return `${String(Math.floor(safe / 60)).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
+}
+
+function toggleWorkPlayback(id, event) {
+  event?.stopPropagation();
+  const work = vWorkById(id);
+  if (!work || !work.audio) return toast("这个作品暂时没有可试听音频");
+  if (playerState.work?.id === id) {
+    togglePlayerPlayback(event);
+    return;
+  }
+  playerState.work = work;
+  playerState.elapsed = 0;
+  playerState.duration = durationSeconds(work.dur);
+  playerState.playing = true;
+  startPlayerClock();
+  startDemoAudio(work.id);
+  renderMiniPlayer();
+}
+
+function togglePlayerPlayback(event) {
+  event?.stopPropagation();
+  if (!playerState.work) return;
+  playerState.playing = !playerState.playing;
+  if (playerState.elapsed >= playerState.duration) playerState.elapsed = 0;
+  if (playerState.playing) {
+    startPlayerClock();
+    startDemoAudio(playerState.work.id);
+  } else {
+    clearInterval(playerClock);
+    playerClock = null;
+    stopDemoAudio();
+  }
+  renderMiniPlayer();
+}
+
+function setPlaybackProgress(percent, event, workId) {
+  event?.stopPropagation();
+  const requestedId = workId == null ? playerState.work?.id : Number(workId);
+  if (requestedId == null) return;
+  if (Number(playerState.work?.id) !== Number(requestedId)) {
+    const work = vWorkById(requestedId);
+    if (!work || !work.audio) return;
+    clearInterval(playerClock);
+    playerClock = null;
+    stopDemoAudio();
+    playerState.work = work;
+    playerState.duration = durationSeconds(work.dur);
+    playerState.playing = false;
+  }
+  const safePercent = Math.min(100, Math.max(0, Number(percent) || 0));
+  playerState.elapsed = playerState.duration * safePercent / 100;
+  if (safePercent >= 100 && playerState.playing) {
+    playerState.playing = false;
+    clearInterval(playerClock);
+    playerClock = null;
+    stopDemoAudio();
+  }
+  renderMiniPlayer();
+}
+
+function seekPlayerPlayback(percent, event) {
+  setPlaybackProgress(percent, event);
+}
+
+function seekWorkPlayback(id, percent, event) {
+  setPlaybackProgress(percent, event, id);
+}
+
+function stopWorkPlayback(id, event) {
+  event?.stopPropagation();
+  if (Number(playerState.work?.id) !== Number(id)) return;
+  stopPlayerPlayback(event);
+}
+
+function startPlayerClock() {
+  clearInterval(playerClock);
+  playerClock = setInterval(() => {
+    if (!playerState.playing) return;
+    playerState.elapsed = Math.min(playerState.duration, playerState.elapsed + .25);
+    if (playerState.elapsed >= playerState.duration) {
+      playerState.playing = false;
+      clearInterval(playerClock);
+      playerClock = null;
+      stopDemoAudio();
+    }
+    renderMiniPlayer();
+  }, 250);
+}
+
+/* Demo 没有外部音频文件，用很轻的合成试听声让播放/暂停是真实可感知的。 */
+function startDemoAudio(seed) {
+  const AudioCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtor) return;
+  if (!demoAudioCtx) {
+    demoAudioCtx = new AudioCtor();
+    demoMaster = demoAudioCtx.createGain();
+    demoMaster.gain.value = 0;
+    demoMaster.connect(demoAudioCtx.destination);
+  }
+  demoAudioCtx.resume?.();
+  demoMaster.gain.cancelScheduledValues(demoAudioCtx.currentTime);
+  demoMaster.gain.setTargetAtTime(.035, demoAudioCtx.currentTime, .05);
+  clearTimeout(demoNoteTimer);
+  demoNoteStep = 0;
+  const scale = [0, 3, 5, 7, 10, 7, 5, 3];
+  const root = 196 * Math.pow(2, ((Number(seed) || 1) % 5) / 12);
+  const tick = () => {
+    if (!playerState.playing || !demoAudioCtx) return;
+    const now = demoAudioCtx.currentTime;
+    const osc = demoAudioCtx.createOscillator();
+    const gain = demoAudioCtx.createGain();
+    osc.type = demoNoteStep % 4 === 0 ? "triangle" : "sine";
+    osc.frequency.value = root * Math.pow(2, scale[demoNoteStep % scale.length] / 12);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(.55, now + .035);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .7);
+    osc.connect(gain).connect(demoMaster);
+    osc.start(now);
+    osc.stop(now + .72);
+    demoNoteStep++;
+    demoNoteTimer = setTimeout(tick, 620);
+  };
+  tick();
+}
+
+function stopDemoAudio() {
+  clearTimeout(demoNoteTimer);
+  demoNoteTimer = null;
+  if (demoAudioCtx && demoMaster) {
+    demoMaster.gain.cancelScheduledValues(demoAudioCtx.currentTime);
+    demoMaster.gain.setTargetAtTime(0, demoAudioCtx.currentTime, .035);
+  }
+}
+
+function stopPlayerPlayback(event) {
+  event?.stopPropagation();
+  if (!playerState.work) return;
+  clearInterval(playerClock);
+  playerClock = null;
+  stopDemoAudio();
+  playerState.playing = false;
+  playerState.elapsed = 0;
+  renderMiniPlayer();
+}
+
+function clearPlayerPlayback(event) {
+  event?.stopPropagation();
+  clearInterval(playerClock);
+  playerClock = null;
+  stopDemoAudio();
+  playerState.work = null;
+  playerState.playing = false;
+  playerState.elapsed = 0;
+  playerState.duration = 0;
+  renderMiniPlayer();
+}
+
+function renderMiniPlayer() {
+  const bar = $("#miniPlayer");
+  if (!bar) return;
+  const work = playerState.work;
+  const viewerOpen = $("#viewer")?.classList.contains("show");
+  const showMini = !!work && !viewerOpen;
+  const percent = work && playerState.duration
+    ? Math.min(100, Math.max(0, playerState.elapsed / playerState.duration * 100)) : 0;
+  bar.classList.toggle("show", showMini);
+  bar.classList.toggle("playing", !!work && playerState.playing);
+  $(".phone").classList.toggle("player-active", showMini);
+  if (work) {
+    $("#mpTitle").textContent = work.title;
+    $("#mpMeta").textContent = `${work.author} · ${playerTime(playerState.elapsed)} / ${playerTime(playerState.duration)}`;
+    $("#mpSeek").value = percent;
+    $("#mpSeek").style.setProperty("--seek-pct", `${percent}%`);
+    $("#mpSeek").disabled = false;
+    $("#mpPlay").textContent = playerState.playing ? "❚❚" : "▶";
+    $("#mpPlay").setAttribute("aria-label", playerState.playing ? "暂停" : "继续播放");
+    $("#mpStop").disabled = !playerState.playing && playerState.elapsed <= 0;
+    $("#mpCover").textContent = work.glyph || "♪";
+    $("#mpCover").style.background = work.cover || "linear-gradient(145deg,#2152FF,#6B8CFF)";
+  } else {
+    $("#mpSeek").value = 0;
+    $("#mpSeek").style.setProperty("--seek-pct", "0%");
+    $("#mpSeek").disabled = true;
+    $("#mpStop").disabled = true;
+  }
+  $$('[data-play-work]').forEach(btn => {
+    const active = !!work && Number(btn.dataset.playWork) === Number(work.id) && playerState.playing;
+    btn.classList.toggle("is-playing", active);
+    btn.textContent = active ? "❚❚" : "▶";
+    btn.setAttribute("aria-label", active ? "暂停" : "播放试听");
+  });
+  $$('[data-work-player]').forEach(panel => {
+    const id = Number(panel.dataset.workPlayer);
+    const active = !!work && id === Number(work.id);
+    const panelPercent = active ? percent : 0;
+    const seek = panel.querySelector(".wp-seek");
+    const stop = panel.querySelector(".wp-stop");
+    const current = panel.querySelector(".wp-current");
+    if (seek) {
+      seek.value = panelPercent;
+      seek.style.setProperty("--seek-pct", `${panelPercent}%`);
+    }
+    if (current) current.textContent = active ? playerTime(playerState.elapsed) : "00:00";
+    if (stop) stop.disabled = !active || (!playerState.playing && playerState.elapsed <= 0);
+  });
+}
+
+function openPlayingWork() {
+  if (!playerState.work) return;
+  if (Number.isInteger(playerState.work.demandIndex)) {
+    const demandIdx = DEMANDS.findIndex(d => (d.samples || []).some(s => Number(s.id) === Number(playerState.work.id)));
+    closeViewer();
+    if (demandIdx >= 0) openDemandDetail(demandIdx);
+    return;
+  }
+  const idx = WORKS.findIndex(w => w.id === playerState.work.id);
+  if (idx >= 0) {
+    openViewer(idx, WORKS);
+    return;
+  }
+  const localIdx = viewerWorks.findIndex(w => w.id === playerState.work.id);
+  if (localIdx >= 0) openViewer(localIdx, viewerWorks);
 }
 
 /** 作品评论存储（按 id，首次访问种子两条 Demo 评论） */
 const workCmts = {};
 function workCmtsOf(id) {
   if (!workCmts[id]) workCmts[id] = [
-    { name: "晚风拾梦", txt: "旋律太戳了，循环了一下午！", time: "2 天前" },
-    { name: "衔枝客", txt: "编曲层次好丰富，期待合作～", time: "1 周前" },
+    { name: "晚风拾梦", txt: "旋律太戳了，循环了一下午！", time: "2 天前", likes: 18, liked: false },
+    { name: "衔枝客", txt: "编曲层次好丰富，期待合作～", time: "1 周前", likes: 7, liked: false },
   ];
   return workCmts[id];
 }
 
 /** 作品评论列表（内嵌在信息面板，下拉即见） */
 function workCmtsListHTML(id) {
-  return workCmtsOf(id).map(c => `
-    <div class="wc-row">
-      <div class="avatar" style="background:${avatarBg(c.name)};width:30px;height:30px;font-size:12px;flex-shrink:0">${esc(c.name[0])}</div>
-      <div class="wc-body"><b>${esc(c.name)}</b><p>${esc(c.txt)}</p><span>${esc(c.time)}</span></div>
+  return workCmtsOf(id).map((c, i) => `
+    <div class="work-cmt">
+      <div class="avatar" style="background:${avatarBg(c.name)}">${esc(c.name[0])}</div>
+      <div class="work-cmt-main">
+        <div class="work-cmt-meta"><b>${esc(c.name)}</b><span>${esc(c.time)}</span></div>
+        <p>${esc(c.txt)}</p>
+        <div class="work-cmt-actions">
+          <button onclick="replyWorkCmt(${id},${i})">回复</button>
+          <button class="${c.liked ? "on" : ""}" onclick="toggleWorkCmtLike(${id},${i})">${c.liked ? "♥" : "♡"} ${c.likes || 0}</button>
+        </div>
+      </div>
     </div>`).join("");
 }
 
-/** 点「评论」按钮：只滚动当前 slide 的信息面板到评论区（不触碰外层翻页容器，避免误切作品） */
+/** 点「评论」按钮：在整页滚动容器中定位到评论区 */
 function scrollToCmts(id) {
   const cmts = $(`#scmts-${id}`);
   if (!cmts) return;
-  const sinfo = cmts.closest(".sinfo");
-  sinfo.scrollTo({ top: cmts.offsetTop, behavior: "smooth" }); // offsetTop 相对 sinfo（relative 定位）
+  cmts.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function replyWorkCmt(id, i) {
+  const c = workCmtsOf(id)[i];
+  const input = $(`#wcin-${id}`);
+  if (!c || !input) return;
+  input.value = `@${c.name} `;
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function toggleWorkCmtLike(id, i) {
+  const c = workCmtsOf(id)[i];
+  if (!c) return;
+  c.liked = !c.liked;
+  c.likes = Math.max(0, (c.likes || 0) + (c.liked ? 1 : -1));
+  $(`#wcl-${id}`).innerHTML = workCmtsListHTML(id);
 }
 
 function sendWorkCmt(id) {
   const input = $(`#wcin-${id}`);
   const v = input.value.trim();
   if (!v) return toast("先写点评论内容吧～");
-  workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚" });
+  workCmtsOf(id).push({ name: state.profile.name || "我", txt: v, time: "刚刚", likes: 0, liked: false });
   input.value = "";
   $(`#wcl-${id}`).innerHTML = workCmtsListHTML(id);
   const n = $(`#wcmt-${id} b`), h = $(`#scmtn-${id}`);
@@ -5026,7 +6257,7 @@ function submitWorkRepost() {
   const w = vWorkById(repostCtx.id);
   if (!w) return;
   POSTS.unshift({
-    name: state.profile.name || "我", topic: null, time: "刚刚",
+    name: state.profile.name || "我", topic: null, time: "刚刚", createdAt: Date.now(),
     title: "推荐作品：《" + w.title + "》",
     txt: $("#repostTxt").value.trim() || ("转发了 @" + w.author + " 的作品《" + w.title + "》，速来围观！"),
     img: repostImg,
@@ -5034,6 +6265,8 @@ function submitWorkRepost() {
     origin: { name: w.author, title: w.title, txt: w.desc || "" },
   });
   closeRepost();
+  state.communitySort = "latest";
+  state.communityDate = "";
   renderCommunity();
   toast("已转发到社区动态 ✓");
 }
@@ -5070,6 +6303,8 @@ function openMyWork(i) {
 
 function closeViewer() {
   $("#viewer").classList.remove("show");
+  $(".phone").classList.remove("viewer-open");
+  renderMiniPlayer();
 }
 
 /* ---------- 音乐人主页浮层 ---------- */
@@ -5716,38 +6951,149 @@ function closeSheet() {
   $("#sheetMask").classList.remove("show");
 }
 
-/** 招募需求详情 + 投递报名 */
+let currentDemandIdx = null;
+let demandEditDraft = null;
+
+/** 招募需求全屏详情 + 已有作品试听 + 投递报名 */
 function openDemandDetail(i) {
+  const d = DEMANDS[i];
+  if (!d) return;
+  currentDemandIdx = i;
+  renderDemandDetail();
+  $("#ovDemand").classList.add("show");
+  $("#demandBody").scrollTop = 0;
+  renderMiniPlayer();
+}
+
+function renderDemandDetail() {
+  const i = currentDemandIdx;
   const d = DEMANDS[i];
   if (!d) return;
   const mine = d.whoName === "我" || d.whoName === state.profile.name
     || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
-  openSheet("招募详情", `
-    <div class="dtitle" style="margin:2px 0 6px">${esc(d.title)}</div>
-    <div class="dtags" style="margin-bottom:8px">${bizTagHTML(d.biz)}${d.tags.map(t => `<span class="tag gray">${esc(t)}</span>`).join("")}</div>
-    <p style="font-size:13px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">${esc(d.desc)}</p>
-    <div class="pay-rows">
-      <div class="pay-row"><span>发起方</span><b>${demandWhoHTML(d)}</b></div>
-      <div class="pay-row total"><span>预算</span><b>${esc(d.budget)}</b></div>
-    </div>
-    ${mine
-      ? `<button class="btn ghost" style="width:100%;margin-top:10px" onclick="editCover('demand',${i})">${d.cover ? "更换企划封面" : "添加企划封面"}</button>`
-      : d.applied
-      ? `<p class="escrow-note">已投递 · 对方通过后将私信与你签约，稿酬经平台托管</p>`
-      : `<textarea id="applyNote" rows="3" placeholder="自荐留言：擅长风格、代表作、档期…（选填）"></textarea>
-         <div class="rate-acts">
-           <button class="btn ghost" onclick="closeSheet()">再看看</button>
-           <button class="btn primary" onclick="applyDemand(${i})">投递报名</button>
-         </div>`}`);
+  const accepting = (d.status || "招募中") === "招募中";
+  $("#demandBody").innerHTML = demandDetailHTML(d, i);
+  $("#demandActions").innerHTML = mine
+    ? `<button class="btn ghost" onclick="toast('已打开投递名单（Demo）')">查看投递</button>
+       <button class="btn primary" onclick="openDemandEditor(${i})">编辑资料</button>`
+    : `<button class="btn ghost" onclick="closeOverlay('ovDemand');openChat('${esc(d.whoName)}')">私信发起方</button>
+       <button class="btn ${d.applied || !accepting ? "ghost" : "primary"}" ${d.applied || !accepting ? "disabled" : `onclick="applyDemand(${i})"`}>${d.applied ? "已投递" : accepting ? "投递报名" : d.status}</button>`;
+  renderMiniPlayer();
 }
 
 function applyDemand(i) {
   const d = DEMANDS[i];
+  if (!d || (d.status || "招募中") !== "招募中") {
+    toast("该企划当前不接收新的报名");
+    return;
+  }
   d.applied = true;
   d.appliedNote = ($("#applyNote")?.value || "").trim();
-  closeSheet();
   renderHome();
+  renderDemandDetail();
   toast("投递成功，对方通过后会私信你");
+}
+
+/** 打开我的企划编辑器；修改先存草稿，点击保存后统一写回。 */
+function openDemandEditor(i) {
+  const d = DEMANDS[i];
+  if (!d) return;
+  const mine = d.whoName === "我" || d.whoName === state.profile.name
+    || d.whoName === `${state.profile.name} 发起` || d.whoName === "我 发起";
+  if (!mine) { toast("只有企划发起方可以编辑资料"); return; }
+  demandEditDraft = {
+    i,
+    status: d.status || "招募中",
+    whoType: d.whoType || "个人企划",
+    biz: Array.isArray(d.biz) ? (d.biz[0] || "待定") : (d.biz || "待定"),
+  };
+  $("#demandEditBody").innerHTML = demandEditFormHTML(d, i);
+  $("#ovDemandEdit").classList.add("show");
+  $("#demandEditBody").scrollTop = 0;
+}
+
+function closeDemandEditor() {
+  closeOverlay("ovDemandEdit");
+  demandEditDraft = null;
+}
+
+/** 单选编辑项：招募状态 / 发起方身份 / 授权方式。 */
+function demandEditPick(field, value, el) {
+  if (!demandEditDraft) return;
+  demandEditDraft[field] = value;
+  [...el.parentElement.children].forEach(chip => chip.classList.toggle("on", chip === el));
+}
+
+function removeDemandEditRow(btn) {
+  btn.closest(".de-list-row")?.remove();
+}
+
+function addDemandRequirement() {
+  $("#deRequirements")?.insertAdjacentHTML("beforeend", `
+    <div class="de-list-row"><input class="de-req" maxlength="120" placeholder="填写一条招募要求"><button class="de-remove" type="button" onclick="removeDemandEditRow(this)" aria-label="删除要求">×</button></div>`);
+  const inputs = $$("#deRequirements .de-req");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function addDemandSample() {
+  const id = Date.now() + $$("#deSamples .de-sample-edit").length;
+  $("#deSamples")?.insertAdjacentHTML("beforeend", demandEditSampleRowHTML({ id, title: "", type: "企划 Demo", dur: "" }));
+  const inputs = $$("#deSamples .de-sample-title");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function saveDemandEdit() {
+  if (!demandEditDraft) return;
+  const d = DEMANDS[demandEditDraft.i];
+  if (!d) return;
+  const title = $("#deTitle").value.trim();
+  const desc = $("#deDesc").value.trim();
+  if (!title) { toast("请填写企划标题"); $("#deTitle").focus(); return; }
+  if (!desc) { toast("请填写需求描述"); $("#deDesc").focus(); return; }
+
+  const tags = $("#deTags").value.split(/[、,，\n]+/).map(v => v.trim()).filter(Boolean);
+  const requirements = $$("#deRequirements .de-req").map(input => input.value.trim()).filter(Boolean);
+  const oldSamples = new Map((d.samples || []).map(sample => [Number(sample.id), sample]));
+  const samples = $$("#deSamples .de-sample-edit").map(row => {
+    const id = Number(row.dataset.sampleId) || Date.now();
+    const sampleTitle = row.querySelector(".de-sample-title").value.trim();
+    if (!sampleTitle) return null;
+    const old = oldSamples.get(id) || {};
+    return {
+      ...old,
+      id,
+      title: sampleTitle,
+      type: row.querySelector(".de-sample-type").value.trim() || "企划 Demo",
+      dur: row.querySelector(".de-sample-dur").value.trim() || "--:--",
+      glyph: old.glyph || sampleTitle[sampleTitle.startsWith("《") ? 1 : 0] || "♪",
+    };
+  }).filter(Boolean);
+
+  Object.assign(d, {
+    title,
+    desc,
+    status: demandEditDraft.status,
+    whoType: demandEditDraft.whoType,
+    biz: demandEditDraft.biz,
+    tags: tags.length ? [...new Set(tags)] : ["招合作"],
+    budget: $("#deBudget").value.trim() || "预算可议",
+    deadline: $("#deDeadline").value.trim() || "招满即止",
+    progress: $("#deProgress").value.trim() || "企划筹备中",
+    deliverable: $("#deDeliverable").value.trim() || "具体交付内容请与发起方沟通",
+    requirements: requirements.length ? requirements : ["报名请附代表作与近期档期"],
+    samples,
+  });
+
+  if (Number.isInteger(playerState.work?.demandIndex)) {
+    const refreshedSample = demandSampleById(playerState.work.id);
+    if (refreshedSample) playerState.work = { ...playerState.work, ...refreshedSample };
+    else clearPlayerPlayback();
+  }
+
+  renderHome();
+  renderDemandDetail();
+  closeDemandEditor();
+  toast("企划资料已保存");
 }
 
 /** 接稿方：接受约稿邀约 → 进入待付款（等对方托管） */
@@ -6212,7 +7558,10 @@ let pubState = null;
 /** @param mode "work" 作品 | "demand" 企划招募 */
 function openPubForm(mode) {
   closePublish();
-  pubState = { mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null, dur: null, attach: null, whoType: "个人企划" };
+  pubState = {
+    mode, types: [], biz: [], roles: [], tags: {}, cover: null, media: null,
+    dur: null, attach: null, whoType: "个人企划", status: "招募中", demandBiz: "待定",
+  };
   $("#pubTitle").textContent = mode === "work" ? "发布作品" : "发布企划招募";
   $("#pubBody").innerHTML = mode === "work" ? pubWorkFormHTML() : pubDemandFormHTML();
   $("#ovPub").classList.add("show");
@@ -6243,6 +7592,13 @@ function pubSetWhoType(t, el) {
   [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
 }
 
+/** 发布企划中的单选项：招募状态 / 授权方式。 */
+function pubSetDemandOption(field, value, el) {
+  if (!pubState || pubState.mode !== "demand") return;
+  pubState[field] = value;
+  [...el.parentElement.children].forEach(c => c.classList.toggle("on", c === el));
+}
+
 function pubToggleRole(r, el) {
   const i = pubState.roles.indexOf(r);
   i >= 0 ? pubState.roles.splice(i, 1) : pubState.roles.push(r);
@@ -6255,6 +7611,34 @@ function pubAddCustomRole(btn) {
     if (!pubState.roles.includes(r)) pubState.roles.push(r);
     btn.parentElement.insertBefore(makeCustomChip(r, el => pubToggleRole(r, el)), btn);
   });
+}
+
+function removePubDemandRow(btn) {
+  btn.closest(".de-list-row")?.remove();
+}
+
+function addPubDemandRequirement() {
+  $("#pubRequirements")?.insertAdjacentHTML("beforeend", `
+    <div class="de-list-row"><input class="pub-demand-req" maxlength="120" placeholder="填写一条招募要求"><button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除要求">×</button></div>`);
+  const inputs = $$("#pubRequirements .pub-demand-req");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function addPubDemandSample() {
+  const id = Date.now() + $$("#pubSamples .pub-demo-edit").length;
+  $("#pubSamples")?.insertAdjacentHTML("beforeend", `
+    <div class="de-list-row de-sample-edit pub-demo-edit" data-sample-id="${id}">
+      <div class="de-sample-top">
+        <input class="pub-demo-title" maxlength="60" placeholder="Demo 名称">
+        <button class="de-remove" type="button" onclick="removePubDemandRow(this)" aria-label="删除 Demo">×</button>
+      </div>
+      <div class="de-sample-meta">
+        <input class="pub-demo-type" maxlength="30" value="企划 Demo" placeholder="类型">
+        <input class="pub-demo-dur" maxlength="8" placeholder="00:00">
+      </div>
+    </div>`);
+  const inputs = $$("#pubSamples .pub-demo-title");
+  inputs[inputs.length - 1]?.focus();
 }
 
 /** 发布表单「其他」：自定义作品品类（无强制小样规则） */
@@ -6357,6 +7741,8 @@ function onPubMedia(input) {
   probe.onloadedmetadata = () => {
     const s = Math.round(probe.duration);
     pubState.dur = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    const durInput = $("#pubSamples .pub-demo-dur");
+    if (durInput && !durInput.value.trim()) durInput.value = pubState.dur;
   };
   probe.src = url;
   input.value = "";
@@ -6439,18 +7825,54 @@ function submitPublish() {
     backHomeAs("works");
     toast("作品已发布");
   } else {
+    const desc = $("#pubDesc").value.trim();
+    if (!desc) { toast("请填写需求描述"); $("#pubDesc").focus(); return; }
+    const manualTags = ($("#pubDemandTags")?.value || "")
+      .split(/[、,，\n]+/).map(v => v.trim()).filter(Boolean);
+    const tags = [...new Set([
+      ...manualTags,
+      ...pubState.roles.map(r => r.startsWith("招") ? r : "招" + r),
+      ...(pubState.tags["风格"] || []),
+      ...(pubState.tags["用途"] || []),
+    ])];
+    const requirements = $$("#pubRequirements .pub-demand-req")
+      .map(input => input.value.trim()).filter(Boolean);
+    const samples = $$("#pubSamples .pub-demo-edit").map((row, index) => {
+      const sampleTitle = row.querySelector(".pub-demo-title").value.trim();
+      if (!sampleTitle) return null;
+      return {
+        id: Number(row.dataset.sampleId) || Date.now() + index,
+        title: sampleTitle,
+        type: row.querySelector(".pub-demo-type").value.trim() || "企划 Demo",
+        dur: row.querySelector(".pub-demo-dur").value.trim() || "--:--",
+        glyph: sampleTitle[sampleTitle.startsWith("《") ? 1 : 0] || "♪",
+      };
+    }).filter(Boolean);
+    if (pubState.media?.kind === "audio" && !samples.length) {
+      samples.push({
+        id: Date.now() + 1,
+        title: `${title} · 参考 Demo`,
+        type: $("#pubSamples .pub-demo-type")?.value.trim() || "企划 Demo",
+        dur: $("#pubSamples .pub-demo-dur")?.value.trim() || pubState.dur || "--:--",
+        glyph: title[title.startsWith("《") ? 1 : 0] || "♪",
+      });
+    }
     DEMANDS.unshift({
-      title, desc: $("#pubDesc").value.trim() || "（暂无描述）",
-      biz: pubState.biz,
-      tags: [
-        ...(pubState.roles.length ? pubState.roles.map(r => "招" + r) : ["招合作"]),
-        ...(pubState.tags["风格"] || []), ...(pubState.tags["用途"] || []),
-      ],
+      title, desc,
+      status: pubState.status || "招募中",
+      biz: pubState.demandBiz || "待定",
+      tags: tags.length ? tags : ["招合作"],
       whoType: pubState.whoType || "个人企划", whoName: author,
       budget: $("#pubPrice").value.trim() || "预算可议",
       cover: pubState.cover?.kind === "image" ? `url(${pubState.cover.url}) center/cover` : null,
+      glyph: title[title.startsWith("《") ? 1 : 0] || "企",
       hasVideo: pubState.cover?.kind === "video" || pubState.media?.kind === "video",
       hasAudio: pubState.media?.kind === "audio",
+      progress: $("#pubProgress").value.trim() || "企划筹备中",
+      deadline: $("#pubDeadline").value.trim() || "招满即止",
+      deliverable: $("#pubDeliverable").value.trim() || "具体交付内容请与发起方沟通",
+      requirements: requirements.length ? requirements : ["报名请附代表作与近期档期"],
+      samples,
     });
     closeOverlay("ovPub");
     backHomeAs("demand");
@@ -7458,6 +8880,7 @@ function onCoverEdit(input) {
       } else if (kind === "demand") {
         DEMANDS[idx].cover = `url(${url}) center/cover`;
         closeSheet(); renderHome();
+        if (currentDemandIdx === idx && $("#ovDemand").classList.contains("show")) renderDemandDetail();
         toast("企划封面已更新，招募卡片将展示新封面");
       } else if (kind === "fav") {
         state.favFolders[idx].coverImg = url;
@@ -8446,12 +9869,14 @@ function forwardArticle(id) {
   const a = findArticle(id);
   if (!a) return;
   POSTS.unshift({
-    name: state.profile.name || "我", topic: null, time: "刚刚",
+    name: state.profile.name || "我", topic: null, time: "刚刚", createdAt: Date.now(),
     title: "转发资讯：" + a.title,
     txt: "转发了 @" + a.author + " 的资讯《" + a.title + "》，速来围观！",
     like: 0, liked: false, reposts: 0, comments: [],
     origin: { name: a.author, title: a.title, txt: a.sections[0]?.p || "" },
   });
+  state.communitySort = "latest";
+  state.communityDate = "";
   renderCommunity();
   toast("已转发到社区动态 ✓");
 }
