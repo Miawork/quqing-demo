@@ -858,11 +858,12 @@ function pubTagChipsHTML() {
 function pubWorkFormHTML() {
   const cats = CONFIG.categories.filter(c => c !== "全部");
   return `
-    <label>作品品类 <b>*</b></label>
+    <label>你在这首作品中负责什么？ <b>*</b></label>
     <div class="gender-row" style="flex-wrap:wrap" id="pubTypeRow">
       ${cats.map(c => `<div class="chip" onclick="pubToggleType('${c}', this)">${c}</div>`).join("")}
       <div class="chip" onclick="pubAddCustomType(this)">＋ 其他</div>
     </div>
+    <p class="se-note">这里只记录本次参与；发布后会自动补充到你的创作身份，之后仍可修改。</p>
     <label>标题 <b>*</b></label>
     <input id="pubName" maxlength="30">
     <label id="pubCoverLabel">封面</label>

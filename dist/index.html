@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>曲境 · 音乐约稿平台 Demo</title>
+<title>曲境 · 音乐共创与交友平台 Demo</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221024%22%20height%3D%221024%22%20viewBox%3D%220%200%201024%201024%22%3E%0A%20%20%3C!--%20%E6%9B%B2%E5%A2%83%20App%20%E5%9B%BE%E6%A0%87%20%C2%B7%20%E6%BB%A1%E5%B9%85%E6%B0%B4%E5%A2%A8%E5%B1%B1%E6%B0%B4%20%C2%B7%20%E6%97%A0%E6%96%87%E5%AD%97%20--%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22sky%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FCFAF4%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.6%22%20stop-color%3D%22%23F6F3EA%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23EEEADD%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22moonGlow%22%20cx%3D%22.5%22%20cy%3D%22.5%22%20r%3D%22.5%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23E8C879%22%20stop-opacity%3D%22.95%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.75%22%20stop-color%3D%22%23D8B35C%22%20stop-opacity%3D%22.85%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23C9A144%22%20stop-opacity%3D%22.75%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22moonHalo%22%20cx%3D%22.5%22%20cy%3D%22.5%22%20r%3D%22.5%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23D8B35C%22%20stop-opacity%3D%22.35%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23D8B35C%22%20stop-opacity%3D%220%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22mFar%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%238A94A3%22%20stop-opacity%3D%22.55%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238A94A3%22%20stop-opacity%3D%220%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22mMid%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%235C6472%22%20stop-opacity%3D%22.78%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%235C6472%22%20stop-opacity%3D%22.05%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22mNear%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23343B47%22%20stop-opacity%3D%22.92%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23343B47%22%20stop-opacity%3D%22.25%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3CclipPath%20id%3D%22squircle%22%3E%0A%20%20%20%20%20%20%3Crect%20x%3D%2232%22%20y%3D%2232%22%20width%3D%22960%22%20height%3D%22960%22%20rx%3D%22224%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%3C%2Fdefs%3E%0A%0A%20%20%3Cg%20clip-path%3D%22url(%23squircle)%22%3E%0A%20%20%20%20%3C!--%20%E5%AE%A3%E7%BA%B8%E5%A4%A9%E7%A9%BA%20--%3E%0A%20%20%20%20%3Crect%20width%3D%221024%22%20height%3D%221024%22%20fill%3D%22url(%23sky)%22%2F%3E%0A%0A%20%20%20%20%3C!--%20%E9%87%91%E6%9C%88%E4%B8%8E%E6%9C%88%E6%99%95%20--%3E%0A%20%20%20%20%3Ccircle%20cx%3D%22738%22%20cy%3D%22286%22%20r%3D%22250%22%20fill%3D%22url(%23moonHalo)%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%22738%22%20cy%3D%22286%22%20r%3D%22128%22%20fill%3D%22url(%23moonGlow)%22%2F%3E%0A%0A%20%20%20%20%3C!--%20%E9%9B%81%E5%BD%B1%E4%B8%A4%E8%A1%8C%20--%3E%0A%20%20%20%20%3Cg%20stroke%3D%22%231F242D%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%20opacity%3D%22.8%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M296%20262%20Q318%20246%20340%20262%20M340%20262%20Q362%20246%20384%20262%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M232%20322%20Q250%20308%20268%20322%20M268%20322%20Q286%20308%20304%20322%22%20opacity%3D%22.6%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C!--%20%E8%BF%9C%E5%B1%B1%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M-40%20538%20Q130%20362%20290%20462%20Q420%20544%20540%20478%20Q700%20392%20850%20492%20Q950%20556%201064%20512%20L1064%201024%20L-40%201024%20Z%22%20fill%3D%22url(%23mFar)%22%2F%3E%0A%20%20%20%20%3C!--%20%E4%B8%AD%E5%B1%B1%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M-40%20650%20Q150%20436%20330%20560%20Q470%20652%20620%20572%20Q780%20488%20920%20592%20Q990%20642%201064%20616%20L1064%201024%20L-40%201024%20Z%22%20fill%3D%22url(%23mMid)%22%2F%3E%0A%20%20%20%20%3C!--%20%E4%BA%91%E9%9B%BE%E7%95%99%E7%99%BD%20--%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22360%22%20cy%3D%22636%22%20rx%3D%22330%22%20ry%3D%2244%22%20fill%3D%22%23F6F3EA%22%20opacity%3D%22.8%22%2F%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22720%22%20cy%3D%22700%22%20rx%3D%22300%22%20ry%3D%2236%22%20fill%3D%22%23F6F3EA%22%20opacity%3D%22.62%22%2F%3E%0A%20%20%20%20%3C!--%20%E8%BF%91%E5%B1%B1%E4%B8%BB%E5%B3%B0%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M-40%20800%20Q120%20560%20300%20672%20Q420%20748%20560%20686%20Q730%20606%20880%20702%20Q970%20758%201064%20730%20L1064%201024%20L-40%201024%20Z%22%20fill%3D%22url(%23mNear)%22%2F%3E%0A%0A%20%20%20%20%3C!--%20%E6%B0%B4%E9%9D%A2%E6%B3%A2%E7%97%95%20--%3E%0A%20%20%20%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%23343B47%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.5%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20846%20Q320%20830%20480%20846%20T%20870%20842%22%20stroke-width%3D%229%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M240%20896%20Q390%20882%20550%20896%20T%20820%20892%22%20stroke-width%3D%228%22%20opacity%3D%22.7%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M330%20942%20Q460%20930%20590%20942%20T%20780%20938%22%20stroke-width%3D%227%22%20opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C!--%20%E5%AD%A4%E8%88%9F%E6%B8%94%E7%BF%81%20--%3E%0A%20%20%20%20%3Cg%20stroke%3D%22%231F242D%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M408%20818%20Q470%20840%20532%20818%22%20stroke-width%3D%2213%22%20fill%3D%22%231F242D%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M470%20818%20L470%20740%22%20stroke-width%3D%229%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M470%20740%20Q506%20762%20476%20796%22%20stroke-width%3D%228%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C!--%20%E5%A2%A8%E6%A2%85%E4%B8%80%E6%9E%9D%EF%BC%8C%E5%B7%A6%E4%B8%8B%E6%96%9C%E5%85%A5%20--%3E%0A%20%20%20%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%232B2620%22%20stroke-linecap%3D%22round%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M-20%201010%20Q150%20900%20250%20786%20Q318%20710%20348%20644%22%20stroke-width%3D%2218%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M208%20834%20Q268%20814%20318%20824%22%20stroke-width%3D%2210%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M300%20712%20Q340%20680%20384%20674%22%20stroke-width%3D%229%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M150%20898%20Q186%20902%20214%20922%22%20stroke-width%3D%228%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3Cg%20fill%3D%22%239E2B25%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22324%22%20cy%3D%22826%22%20r%3D%2219%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22352%22%20cy%3D%22804%22%20r%3D%2213%22%20opacity%3D%22.85%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22390%22%20cy%3D%22672%22%20r%3D%2218%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22414%22%20cy%3D%22696%22%20r%3D%2212%22%20opacity%3D%22.85%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22252%22%20cy%3D%22772%22%20r%3D%2213%22%20opacity%3D%22.9%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22350%22%20cy%3D%22632%22%20r%3D%2211%22%20opacity%3D%22.75%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22218%22%20cy%3D%22928%22%20r%3D%2212%22%20opacity%3D%22.8%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3Cg%20fill%3D%22%23C9A144%22%20opacity%3D%22.9%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22324%22%20cy%3D%22826%22%20r%3D%226%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22390%22%20cy%3D%22672%22%20r%3D%226%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A">
 <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221024%22%20height%3D%221024%22%20viewBox%3D%220%200%201024%201024%22%3E%0A%20%20%3C!--%20%E6%9B%B2%E5%A2%83%20App%20%E5%9B%BE%E6%A0%87%20%C2%B7%20%E6%BB%A1%E5%B9%85%E6%B0%B4%E5%A2%A8%E5%B1%B1%E6%B0%B4%20%C2%B7%20%E6%97%A0%E6%96%87%E5%AD%97%20--%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22sky%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FCFAF4%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.6%22%20stop-color%3D%22%23F6F3EA%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23EEEADD%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22moonGlow%22%20cx%3D%22.5%22%20cy%3D%22.5%22%20r%3D%22.5%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23E8C879%22%20stop-opacity%3D%22.95%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.75%22%20stop-color%3D%22%23D8B35C%22%20stop-opacity%3D%22.85%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23C9A144%22%20stop-opacity%3D%22.75%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22moonHalo%22%20cx%3D%22.5%22%20cy%3D%22.5%22%20r%3D%22.5%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23D8B35C%22%20stop-opacity%3D%22.35%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23D8B35C%22%20stop-opacity%3D%220%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22mFar%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%238A94A3%22%20stop-opacity%3D%22.55%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238A94A3%22%20stop-opacity%3D%220%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22mMid%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%235C6472%22%20stop-opacity%3D%22.78%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%235C6472%22%20stop-opacity%3D%22.05%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22mNear%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23343B47%22%20stop-opacity%3D%22.92%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23343B47%22%20stop-opacity%3D%22.25%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%3CclipPath%20id%3D%22squircle%22%3E%0A%20%20%20%20%20%20%3Crect%20x%3D%2232%22%20y%3D%2232%22%20width%3D%22960%22%20height%3D%22960%22%20rx%3D%22224%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%3C%2Fdefs%3E%0A%0A%20%20%3Cg%20clip-path%3D%22url(%23squircle)%22%3E%0A%20%20%20%20%3C!--%20%E5%AE%A3%E7%BA%B8%E5%A4%A9%E7%A9%BA%20--%3E%0A%20%20%20%20%3Crect%20width%3D%221024%22%20height%3D%221024%22%20fill%3D%22url(%23sky)%22%2F%3E%0A%0A%20%20%20%20%3C!--%20%E9%87%91%E6%9C%88%E4%B8%8E%E6%9C%88%E6%99%95%20--%3E%0A%20%20%20%20%3Ccircle%20cx%3D%22738%22%20cy%3D%22286%22%20r%3D%22250%22%20fill%3D%22url(%23moonHalo)%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%22738%22%20cy%3D%22286%22%20r%3D%22128%22%20fill%3D%22url(%23moonGlow)%22%2F%3E%0A%0A%20%20%20%20%3C!--%20%E9%9B%81%E5%BD%B1%E4%B8%A4%E8%A1%8C%20--%3E%0A%20%20%20%20%3Cg%20stroke%3D%22%231F242D%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%20opacity%3D%22.8%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M296%20262%20Q318%20246%20340%20262%20M340%20262%20Q362%20246%20384%20262%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M232%20322%20Q250%20308%20268%20322%20M268%20322%20Q286%20308%20304%20322%22%20opacity%3D%22.6%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C!--%20%E8%BF%9C%E5%B1%B1%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M-40%20538%20Q130%20362%20290%20462%20Q420%20544%20540%20478%20Q700%20392%20850%20492%20Q950%20556%201064%20512%20L1064%201024%20L-40%201024%20Z%22%20fill%3D%22url(%23mFar)%22%2F%3E%0A%20%20%20%20%3C!--%20%E4%B8%AD%E5%B1%B1%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M-40%20650%20Q150%20436%20330%20560%20Q470%20652%20620%20572%20Q780%20488%20920%20592%20Q990%20642%201064%20616%20L1064%201024%20L-40%201024%20Z%22%20fill%3D%22url(%23mMid)%22%2F%3E%0A%20%20%20%20%3C!--%20%E4%BA%91%E9%9B%BE%E7%95%99%E7%99%BD%20--%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22360%22%20cy%3D%22636%22%20rx%3D%22330%22%20ry%3D%2244%22%20fill%3D%22%23F6F3EA%22%20opacity%3D%22.8%22%2F%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22720%22%20cy%3D%22700%22%20rx%3D%22300%22%20ry%3D%2236%22%20fill%3D%22%23F6F3EA%22%20opacity%3D%22.62%22%2F%3E%0A%20%20%20%20%3C!--%20%E8%BF%91%E5%B1%B1%E4%B8%BB%E5%B3%B0%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M-40%20800%20Q120%20560%20300%20672%20Q420%20748%20560%20686%20Q730%20606%20880%20702%20Q970%20758%201064%20730%20L1064%201024%20L-40%201024%20Z%22%20fill%3D%22url(%23mNear)%22%2F%3E%0A%0A%20%20%20%20%3C!--%20%E6%B0%B4%E9%9D%A2%E6%B3%A2%E7%97%95%20--%3E%0A%20%20%20%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%23343B47%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.5%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20846%20Q320%20830%20480%20846%20T%20870%20842%22%20stroke-width%3D%229%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M240%20896%20Q390%20882%20550%20896%20T%20820%20892%22%20stroke-width%3D%228%22%20opacity%3D%22.7%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M330%20942%20Q460%20930%20590%20942%20T%20780%20938%22%20stroke-width%3D%227%22%20opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C!--%20%E5%AD%A4%E8%88%9F%E6%B8%94%E7%BF%81%20--%3E%0A%20%20%20%20%3Cg%20stroke%3D%22%231F242D%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M408%20818%20Q470%20840%20532%20818%22%20stroke-width%3D%2213%22%20fill%3D%22%231F242D%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M470%20818%20L470%20740%22%20stroke-width%3D%229%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M470%20740%20Q506%20762%20476%20796%22%20stroke-width%3D%228%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C!--%20%E5%A2%A8%E6%A2%85%E4%B8%80%E6%9E%9D%EF%BC%8C%E5%B7%A6%E4%B8%8B%E6%96%9C%E5%85%A5%20--%3E%0A%20%20%20%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%232B2620%22%20stroke-linecap%3D%22round%22%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M-20%201010%20Q150%20900%20250%20786%20Q318%20710%20348%20644%22%20stroke-width%3D%2218%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M208%20834%20Q268%20814%20318%20824%22%20stroke-width%3D%2210%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M300%20712%20Q340%20680%20384%20674%22%20stroke-width%3D%229%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M150%20898%20Q186%20902%20214%20922%22%20stroke-width%3D%228%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3Cg%20fill%3D%22%239E2B25%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22324%22%20cy%3D%22826%22%20r%3D%2219%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22352%22%20cy%3D%22804%22%20r%3D%2213%22%20opacity%3D%22.85%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22390%22%20cy%3D%22672%22%20r%3D%2218%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22414%22%20cy%3D%22696%22%20r%3D%2212%22%20opacity%3D%22.85%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22252%22%20cy%3D%22772%22%20r%3D%2213%22%20opacity%3D%22.9%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22350%22%20cy%3D%22632%22%20r%3D%2211%22%20opacity%3D%22.75%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22218%22%20cy%3D%22928%22%20r%3D%2212%22%20opacity%3D%22.8%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%3Cg%20fill%3D%22%23C9A144%22%20opacity%3D%22.9%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22324%22%20cy%3D%22826%22%20r%3D%226%22%2F%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%22390%22%20cy%3D%22672%22%20r%3D%226%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A">
 <style>
@@ -146,6 +146,40 @@ body {
   display: flex; align-items: center; gap: 8px;
 }
 
+/* 新用户不被问卷拦截：先从“我今天想做什么”进入内容 */
+.participation-hub {
+  margin: 2px 16px 14px; padding: 17px;
+  color: #fff; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle at 92% 5%, rgba(142,164,255,.7), transparent 34%),
+    linear-gradient(145deg, #11131A 0%, #263D94 100%);
+  border-radius: 24px; box-shadow: 0 12px 28px rgba(22,39,100,.18);
+}
+.participation-hub::after {
+  content: "♪"; position: absolute; right: 15px; top: 22px;
+  font-size: 72px; line-height: 1; opacity: .08; transform: rotate(8deg);
+}
+.participation-kicker { display: flex; align-items: center; gap: 7px; position: relative; z-index: 1; }
+.participation-kicker span { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; opacity: .78; }
+.participation-kicker i {
+  font-style: normal; font-size: 9px; padding: 2px 7px; border-radius: 999px;
+  color: #EAF0FF; background: rgba(255,255,255,.14);
+}
+.participation-hub h2 { position: relative; z-index: 1; margin-top: 8px; font-size: 19px; letter-spacing: .5px; }
+.participation-hub > p { position: relative; z-index: 1; margin: 5px 0 13px; max-width: 92%; font-size: 10.5px; line-height: 1.65; opacity: .72; }
+.participation-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.participation-grid button {
+  min-width: 0; padding: 10px 11px; text-align: left; cursor: pointer;
+  color: #fff; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.13);
+  border-radius: 14px; font: inherit;
+}
+.participation-grid button:active { transform: scale(.98); background: rgba(255,255,255,.16); }
+.participation-grid button.start { color: #172458; background: #EAF0FF; border-color: #EAF0FF; }
+.participation-grid b { display: block; font-size: 12px; letter-spacing: .3px; }
+.participation-grid span { display: block; margin-top: 2px; font-size: 8.8px; opacity: .68; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.participation-trust { position: relative; z-index: 1; display: flex; gap: 13px; margin-top: 11px; font-size: 8.8px; opacity: .68; }
+.participation-trust span::before { content: "✓"; margin-right: 3px; color: #AFC0FF; font-weight: 700; }
+
 /* 标签：biz=商业 nonbiz=非商业 cat=类目 gray=中性 */
 .tag { display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
 .tag.biz    { background: var(--red-light);   color: var(--red); }
@@ -187,6 +221,30 @@ body {
 
 .feed { padding: 0 16px 90px; display: flex; flex-direction: column; gap: 12px; }
 .empty { text-align: center; color: var(--ink-3); padding: 40px 0; font-size: 13px; column-span: all; break-inside: avoid; }
+
+/* 游客进入“消息 / 我的”时解释价值，不弹登录墙 */
+.guest-panel { display: none; margin: 34px 22px 90px; text-align: center; }
+.screen.guest-view .guest-panel { display: flex; flex-direction: column; align-items: center; }
+#scr-msg.guest-view > :not(.header):not(.guest-panel),
+#scr-me.guest-view > :not(.header):not(.guest-panel) { display: none !important; }
+#scr-msg.guest-view .header > div:last-child,
+#scr-me.guest-view .header > div:last-child { visibility: hidden; }
+.guest-orbit {
+  width: 92px; height: 92px; margin: 8px 0 27px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: #fff; font-size: 30px; font-weight: 700;
+  background: linear-gradient(145deg, var(--red), #718CFF);
+  box-shadow: 0 18px 36px rgba(33,82,255,.2);
+}
+.guest-orbit::before { content: ""; position: absolute; inset: -12px; border: 1px solid var(--line); border-radius: 50%; }
+.guest-orbit i { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+.guest-orbit i:first-child { left: -10px; top: 18px; }
+.guest-orbit i:last-child { right: -4px; bottom: 4px; width: 6px; height: 6px; background: var(--green); }
+.guest-kicker { color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.guest-panel h2 { max-width: 280px; margin: 10px 0 9px; font-size: 21px; line-height: 1.35; letter-spacing: .5px; }
+.guest-panel p { max-width: 285px; color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.guest-panel .btn { width: 100%; max-width: 270px; flex: none; margin-top: 24px; }
+.guest-panel small { margin-top: 10px; color: var(--ink-3); font-size: 9.5px; line-height: 1.5; }
 
 /* 头像（背景色由 JS 依名字生成） */
 .avatar {
@@ -1544,8 +1602,18 @@ body { background: #D9DADE; }
   display: none; flex-direction: column;
 }
 .login-overlay.show { display: flex; animation: slide-in .22s ease; }
+.login-gate-head {
+  flex: none; min-height: 48px; padding: 14px 17px 7px;
+  display: flex; align-items: center; gap: 12px;
+}
+.login-gate-head button {
+  padding: 6px 10px; cursor: pointer; font: inherit; font-size: 11px;
+  color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--line); border-radius: 999px;
+}
+.login-gate-head span { margin-left: auto; max-width: 190px; color: var(--ink); font-size: 11px; font-weight: 700; text-align: right; }
+.login-gate-note { margin: 0 28px; color: var(--ink-3); font-size: 9.5px; text-align: center; }
 .lv { flex: 1; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 0 28px; }
-.login-logo { font-size: 34px; font-weight: 700; letter-spacing: 8px; margin: 86px 0 6px; }
+.login-logo { font-size: 34px; font-weight: 700; letter-spacing: 8px; margin: 48px 0 6px; }
 .login-sub { font-size: 11px; color: var(--ink-3); letter-spacing: 3px; margin-bottom: 44px; }
 .acct-grid {
   display: flex; flex-wrap: wrap; justify-content: center;
@@ -2204,11 +2272,204 @@ body { background: #D9DADE; }
 .share-it b { font-size: 10px; color: var(--ink-2); font-weight: 400; }
 
 </style>
+<style>
+/* ============================================================
+ * 造曲台 · 微型 GarageBand 式歌曲 DIY 面板
+ * 多轨步进音序器 · 可调速率 · 音阶锁定 · 播放头扫过
+ * ============================================================ */
+
+/* 首页入口卡 */
+.studio-card {
+  margin: 2px 16px 15px;
+  padding: 16px 17px 15px;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255, 180, 120, .5), transparent 32%),
+    linear-gradient(135deg, #15122a 4%, #3a1f6e 52%, #6a3bff 116%);
+  box-shadow: 0 16px 32px rgba(47, 25, 110, .24);
+}
+.studio-card:active { transform: scale(.994); }
+.studio-card:focus-visible { outline: 3px solid rgba(106, 59, 255, .4); outline-offset: 3px; }
+.studio-card .sc-kicker { display: flex; align-items: center; gap: 8px; }
+.studio-card .sc-kicker span { font-size: 10px; font-weight: 800; letter-spacing: 2px; opacity: .85; }
+.studio-card .sc-kicker i {
+  padding: 3px 8px; color: #ffe8d6; font: 500 9px var(--font-sans); font-style: normal;
+  border: 1px solid rgba(255,255,255,.22); border-radius: 999px; background: rgba(255,255,255,.1);
+}
+.studio-card h2 { margin: 10px 0 5px; max-width: 250px; font-size: 20px; line-height: 1.25; }
+.studio-card > p { max-width: 252px; font-size: 10.5px; line-height: 1.6; color: rgba(255,255,255,.7); }
+/* 迷你步进格装饰 */
+.sc-grid { display: flex; gap: 5px; margin: 14px 0 14px; }
+.sc-grid i { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.sc-grid i b { height: 7px; border-radius: 2px; background: rgba(255,255,255,.16); }
+.sc-grid i b.on { background: #ffce9e; box-shadow: 0 0 8px rgba(255,180,120,.6); }
+.studio-card > button {
+  width: 100%; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
+  color: #2a1760; cursor: pointer; font: 750 12px var(--font-sans); border: 0; border-radius: 13px;
+  background: #fff6ef; box-shadow: 0 8px 18px rgba(20,8,48,.18);
+}
+.studio-card > button span { font-size: 16px; }
+
+/* 全屏面板 */
+.studio-overlay {
+  position: absolute; inset: 0; z-index: 92; display: none; flex-direction: column;
+  color: var(--ink);
+  background: radial-gradient(circle at 0 0, rgba(106,59,255,.1), transparent 34%), var(--paper);
+}
+.studio-overlay.show { display: flex; animation: studio-in .24s ease both; }
+@keyframes studio-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.st-top {
+  flex: none; min-height: 56px; padding: 10px 14px 8px;
+  display: grid; grid-template-columns: 36px 1fr 58px; align-items: center; gap: 10px;
+}
+.st-top > button:first-child {
+  width: 35px; height: 35px; color: var(--ink-2); cursor: pointer; font: 400 22px/1 var(--font-sans);
+  border: 1px solid var(--line); border-radius: 50%; background: var(--paper-2);
+}
+.st-top .st-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.st-top .st-title b { font-size: 15px; letter-spacing: .4px; }
+.st-top .st-title span { color: var(--ink-3); font-size: 9px; }
+.st-done {
+  height: 32px; color: #fff; cursor: pointer; font: 700 12px var(--font-sans);
+  border: 0; border-radius: 11px; background: var(--red); box-shadow: 0 6px 14px rgba(33,82,255,.22);
+}
+
+/* transport */
+.st-transport {
+  flex: none; margin: 0 14px 8px; padding: 11px 13px;
+  display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 12px;
+  border-radius: 17px; background: var(--paper-2); box-shadow: var(--shadow-card);
+}
+.st-play {
+  width: 46px; height: 46px; color: #fff; cursor: pointer; font: 400 16px/1 var(--font-sans);
+  border: 0; border-radius: 50%; background: var(--red); box-shadow: 0 7px 16px rgba(33,82,255,.26);
+  transition: background .15s;
+}
+.st-play.on { background: #15224d; }
+.st-bpm { min-width: 0; }
+.st-bpm-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+.st-bpm-top span { color: var(--ink-3); font-size: 9px; letter-spacing: 1px; }
+.st-bpm-top b { color: var(--red); font: 800 14px var(--font-sans); letter-spacing: .3px; }
+.st-bpm input[type=range] { width: 100%; height: 4px; accent-color: var(--red); display: block; }
+
+/* stage（可滚） */
+.st-stage { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 2px 14px 16px; }
+.st-stage::-webkit-scrollbar { display: none; }
+
+.st-controls { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 11px; }
+.st-sel { display: flex; flex-direction: column; gap: 3px; }
+.st-sel span { padding-left: 3px; color: var(--ink-3); font-size: 8.5px; letter-spacing: 1px; }
+.st-sel select {
+  width: 100%; padding: 7px 8px; color: var(--ink); font: 650 10.5px var(--font-sans);
+  border: 1px solid var(--line); border-radius: 11px; background: var(--card); -webkit-appearance: none; appearance: none;
+}
+
+/* 步进标尺 */
+.st-ruler { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 8px; margin-bottom: 5px; }
+.st-ruler-label { }
+.st-ruler-cells { display: flex; gap: 2px; }
+.st-ruler-cells i {
+  flex: 1; height: 13px; display: grid; place-items: center; color: var(--ink-3);
+  font: 700 8px var(--font-sans); font-style: normal; border-radius: 3px;
+}
+.st-ruler-cells i.beat { color: var(--ink-2); background: var(--card); }
+.st-ruler-cells i.st-playcol { color: #fff; background: var(--red); }
+
+/* 轨道 */
+.st-lanes { display: flex; flex-direction: column; gap: 6px; }
+.st-lane { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 8px; transition: opacity .15s; }
+.st-lane.muted, .st-melody.muted { opacity: .38; }
+.st-lane-head { display: flex; }
+.st-mute {
+  width: 46px; height: 30px; display: grid; place-items: center; color: #fff; cursor: pointer;
+  font: 750 11px var(--font-sans); border: 0; border-radius: 9px;
+  background: var(--lane); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.st-lane.muted .st-mute, .st-melody.muted .st-mute { background: var(--ink-3); }
+.st-cells { display: flex; gap: 2px; }
+.st-cell {
+  flex: 1; height: 30px; padding: 0; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 5px; background: var(--card);
+  transition: background .1s, transform .08s, box-shadow .1s;
+}
+.st-cell.beat { border-left-width: 2px; border-left-color: color-mix(in srgb, var(--ink-3) 40%, transparent); }
+.st-cell:active { transform: scale(.9); }
+.st-cell.on {
+  border-color: transparent;
+  background: var(--lane);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--lane) 45%, transparent);
+}
+.st-cell.st-playcol { box-shadow: inset 0 0 0 2px var(--red); }
+.st-cell.on.st-playcol { box-shadow: inset 0 0 0 2px #fff, 0 2px 10px color-mix(in srgb, var(--lane) 60%, transparent); }
+
+/* 主旋律音高格 */
+.st-melody { margin-top: 12px; }
+.st-melody-head { margin-bottom: 6px; }
+.st-melody-head .st-mute { width: auto; padding: 0 12px; }
+.st-melody-grid { display: flex; flex-direction: column; gap: 2px; }
+.st-prow { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 8px; }
+.st-pnum { text-align: center; color: var(--ink-3); font: 700 10px var(--font-sans); }
+.st-pcells { display: flex; gap: 2px; }
+.st-mcell {
+  flex: 1; height: 22px; padding: 0; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 5px; background: var(--card);
+  transition: background .1s, transform .08s;
+}
+.st-mcell.beat { border-left-width: 2px; border-left-color: color-mix(in srgb, var(--ink-3) 40%, transparent); }
+.st-mcell:active { transform: scale(.9); }
+.st-mcell.on {
+  border-color: transparent; background: linear-gradient(180deg,#ff8a5c,#e8622b);
+  box-shadow: 0 2px 8px rgba(232,98,43,.4);
+}
+.st-mcell.st-playcol { box-shadow: inset 0 0 0 2px var(--red); }
+.st-mcell.on.st-playcol { box-shadow: inset 0 0 0 2px #fff; }
+
+/* 人声/干音轨 */
+.st-vocal {
+  margin-top: 13px; padding: 12px 14px; display: grid; grid-template-columns: 34px 1fr 24px;
+  align-items: center; gap: 11px; cursor: pointer;
+  border: 1px dashed var(--line); border-radius: 15px; background: var(--paper-2);
+}
+.st-vocal-ic { width: 34px; height: 34px; display: grid; place-items: center; color: #E8622B; border-radius: 10px; background: var(--card); }
+.st-vocal-ic .li { width: 17px; height: 17px; }
+.st-vocal b { font-size: 12px; }
+.st-vocal span { display: block; margin-top: 2px; color: var(--ink-3); font-size: 9px; }
+.st-vocal em { color: var(--ink-3); font: 400 20px/1 var(--font-sans); font-style: normal; text-align: center; }
+
+/* 底部坞 */
+.st-dock {
+  flex: none; min-height: 68px; padding: 10px 14px 15px; display: grid;
+  grid-template-columns: 1fr 1fr; gap: 9px;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(12px);
+}
+.st-dock button { min-height: 44px; cursor: pointer; font: 750 13px var(--font-sans); border-radius: 15px; }
+.st-inspire {
+  color: #fff; border: 0;
+  background: linear-gradient(135deg,#6a3bff,#9d7bff);
+  box-shadow: 0 8px 18px rgba(106,59,255,.26);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.st-clear { color: var(--ink-2); border: 1px solid var(--line); background: var(--paper-2); }
+
+html.dark .st-cell, html.dark .st-mcell { background: rgba(255,255,255,.05); }
+html.dark .st-sel select { background: rgba(255,255,255,.06); }
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-overlay.show { animation: none; }
+}
+
+</style>
 </head>
 <body>
 
 <div class="phone">
-  <div class="statusbar"><span>9:41</span><span>曲境 · 音乐约稿</span><span>100%</span></div>
+  <div class="statusbar"><span>9:41</span><span>曲境 · 音乐共创</span><span>100%</span></div>
 
   <div class="app">
 
@@ -2219,14 +2480,39 @@ body { background: #D9DADE; }
         <div class="header-action icon-btn bell-wrap" onclick="openNotices()"><span data-icon="bell"></span><i class="ndot" id="nDot"></i></div>
       </div>
       <div class="search" onclick="openSearch()"><span class="si" data-icon="search"></span> 搜索作品 / 音乐人 / 约稿需求…</div>
+      <section class="studio-card" id="studioCard" role="button" tabindex="0"
+        onclick="openStudio()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStudio()}">
+        <div class="sc-kicker"><span>造曲台</span><i>自由编曲</i></div>
+        <h2>多轨步进，像搭积木一样编一首歌</h2>
+        <p>点格子就出声，调速率、换和弦、叠人声——音阶锁定，不会弹错。</p>
+        <div class="sc-grid" aria-hidden="true">
+          <i><b class="on"></b><b></b><b class="on"></b></i>
+          <i><b></b><b class="on"></b><b></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b class="on"></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b class="on"></b><b class="on"></b></i>
+          <i><b class="on"></b><b></b><b class="on"></b></i>
+          <i><b></b><b class="on"></b><b></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b class="on"></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b class="on"></b><b class="on"></b></i>
+        </div>
+        <button type="button" onclick="event.stopPropagation();openStudio()">进入造曲台 <span>→</span></button>
+      </section>
       <div class="banner-wrap" id="bannerWrap">
         <div class="banner-track" id="bannerTrack"></div>
         <div class="banner-dots" id="bannerDots"></div>
       </div>
       <div class="mode-tabs" id="modeTabs">
         <div class="mode-tab on" onclick="setHomeMode('works', this)">作品</div>
-        <div class="mode-tab" onclick="setHomeMode('artist', this)">找音乐人</div>
-        <div class="mode-tab" onclick="setHomeMode('demand', this)">企划招募</div>
+        <div class="mode-tab" onclick="setHomeMode('artist', this)">音乐人</div>
+        <div class="mode-tab" onclick="setHomeMode('demand', this)">企划</div>
       </div>
       <div class="filter-bar" id="catRow"></div>
       <div id="homeFeed"></div>
@@ -2276,6 +2562,14 @@ body { background: #D9DADE; }
           <div class="header-action af-plus" onclick="openMsgPlus()" title="添加好友 / 分享">＋</div>
         </div>
       </div>
+      <div class="guest-panel" id="guestMsg">
+        <div class="guest-orbit">♪<i></i><i></i></div>
+        <span class="guest-kicker">先逛，遇到想合作的人再登录</span>
+        <h2>把合作关系和进度留在曲星球</h2>
+        <p>登录后可以私信创作搭子、接收企划邀请，并保存协议与交易通知。</p>
+        <button class="btn primary" onclick="openAccountGate('查看消息并保存合作进度')">登录查看消息</button>
+        <small>登录不会要求你立刻填写职业或完整资料</small>
+      </div>
       <div class="sys-notice">平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
       <div class="msg-entries" id="msgEntries"></div>
       <div id="msgList"></div>
@@ -2290,6 +2584,14 @@ body { background: #D9DADE; }
           <div class="header-action hdr-ic" onclick="openScan()" title="扫一扫"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M4 12h16"/></svg></div>
           <div class="header-action hdr-ic icon-btn" data-icon="gear" onclick="openSettings()"></div>
         </div>
+      </div>
+      <div class="guest-panel" id="guestMe">
+        <div class="guest-orbit">曲<i></i><i></i></div>
+        <span class="guest-kicker">你正在以游客身份漫游</span>
+        <h2>身份可以在参与中慢慢长出来</h2>
+        <p>第一次发布或联系别人时，只需手机号即可获得临时昵称；你负责过的词、曲、唱、混音，会逐步形成创作身份。</p>
+        <button class="btn primary" onclick="openAccountGate('保存收藏、创作身份和合作记录')">登录并保存进度</button>
+        <small>临时昵称示例：来自曲星球4821 · 之后随时可改</small>
       </div>
       <div class="profile-hero" id="myHero">
         <div class="ph-bg-blur"></div><div class="ph-bg-sharp"></div>
@@ -2793,7 +3095,7 @@ body { background: #D9DADE; }
 
       <!-- 步骤一：基本资料（仅圈名必填） -->
       <div class="reg-body" id="regStep1">
-        <h2>创建你的身份</h2>
+        <h2>完善你的个人资料</h2>
         <div class="avatar-pick">
           <div class="avatar-preview" id="avatarPreview" onclick="pickAvatar()"></div>
         </div>
@@ -2815,8 +3117,8 @@ body { background: #D9DADE; }
 
       <!-- 步骤二：选择工种（可多选 / 可跳过） -->
       <div class="reg-body" id="regStep2" style="display:none">
-        <h2 id="regTitle">选择你的工种</h2>
-        <p class="sub" id="regSub">可多选 · 跳过可稍后在「我的主页」中设置</p>
+        <h2 id="regTitle">补充你的创作身份</h2>
+        <p class="sub" id="regSub">可多选 · 也可以通过参与作品逐步形成</p>
         <div class="role-grid" id="roleGrid"></div>
       </div>
 
@@ -2827,10 +3129,15 @@ body { background: #D9DADE; }
 
     <!-- ========== 账号登录（QQ 式多账号选择） ========== -->
     <div class="login-overlay" id="loginOverlay">
+      <div class="login-gate-head">
+        <button onclick="closeLoginGate()">‹ 继续浏览</button>
+        <span id="loginReason">登录后保存你的进度</span>
+      </div>
+      <p class="login-gate-note">只验证手机号，不强制填写职业或完整资料</p>
       <!-- 视图一：账号选择 -->
       <div class="lv" id="lvPick">
         <div class="login-logo">曲境</div>
-        <p class="login-sub">音乐约稿平台</p>
+        <p class="login-sub">让更多人参与音乐制作</p>
         <div class="acct-grid" id="acctGrid"></div>
       </div>
       <!-- 视图二：登录（验证码 / 密码） -->
@@ -2865,7 +3172,7 @@ body { background: #D9DADE; }
       <!-- 视图三：注册新账号（小红书式：手机号 + 验证码） -->
       <div class="lv" id="lvReg" style="display:none">
         <div class="login-logo">注册</div>
-        <p class="login-sub" style="letter-spacing:1px">验证后自动创建账号，再完善资料</p>
+        <p class="login-sub" style="letter-spacing:1px">验证后自动获得临时昵称，资料以后再完善</p>
         <div class="reg-form login-form">
           <label>手机号</label>
           <input id="lrPhone" maxlength="11" inputmode="numeric" pattern="1[3-9][0-9]{9}" placeholder="注册即绑定此手机号">
@@ -2876,7 +3183,7 @@ body { background: #D9DADE; }
           </div>
           <div class="agree-row" onclick="toggleAgree('lrAgree')"><i class="agree-box" id="lrAgree"></i>已阅读并同意<a href="javascript:;" onclick="event.stopPropagation();openTerms('terms')">《曲境条约》</a>和<a href="javascript:;" onclick="event.stopPropagation();openTerms('privacy')">《隐私政策》</a></div>
           <button class="btn primary" style="width:100%;margin-top:14px" onclick="lvRegSubmit()">注册</button>
-          <p class="se-note" style="margin-top:12px;text-align:center">注册后可在设置中补充 ID、邮箱与密码</p>
+          <p class="se-note" style="margin-top:12px;text-align:center">注册后可在设置中修改昵称，并补充 ID、邮箱与密码</p>
         </div>
         <div class="login-back" onclick="lvShow('lvPick')">‹ 返回</div>
       </div>
@@ -2923,6 +3230,28 @@ body { background: #D9DADE; }
     <div class="qr-mask" id="qrMask" onclick="if(event.target===this)closeQR()">
       <div class="qr-card" id="qrCard"></div>
       <div class="qr-acts-float" id="qrActs"></div>
+    </div>
+
+    <!-- 造曲台：独立全屏多轨步进音序器，不登录即可编曲 -->
+    <div class="studio-overlay" id="studio" aria-hidden="true" role="dialog" aria-modal="true" aria-label="造曲台">
+      <header class="st-top">
+        <button type="button" onclick="closeStudio()" aria-label="关闭造曲台">×</button>
+        <div class="st-title"><b>造曲台</b><span>多轨步进 · 像搭积木一样编一首歌</span></div>
+        <button class="st-done" type="button" onclick="completeStudio()">完成</button>
+      </header>
+      <div class="st-transport">
+        <button class="st-play" id="stPlay" type="button" onclick="stToggle()" aria-label="播放">▶</button>
+        <div class="st-bpm">
+          <div class="st-bpm-top"><span>速度 TEMPO</span><b id="stBpmVal">96 BPM</b></div>
+          <input type="range" id="stBpm" min="60" max="160" step="1" value="96"
+            oninput="studioSetBpm(this.value)" aria-label="速度 BPM">
+        </div>
+      </div>
+      <div class="st-stage" id="stStage"></div>
+      <footer class="st-dock">
+        <button class="st-inspire" type="button" onclick="studioInspire()">✨ 一键来灵感</button>
+        <button class="st-clear" type="button" onclick="studioClearAll()">全部清空</button>
+      </footer>
     </div>
 
     <!-- 跨页面悬浮播放条：作品详情内自动收起，退出后恢复 -->
@@ -4515,11 +4844,12 @@ function pubTagChipsHTML() {
 function pubWorkFormHTML() {
   const cats = CONFIG.categories.filter(c => c !== "全部");
   return `
-    <label>作品品类 <b>*</b></label>
+    <label>你在这首作品中负责什么？ <b>*</b></label>
     <div class="gender-row" style="flex-wrap:wrap" id="pubTypeRow">
       ${cats.map(c => `<div class="chip" onclick="pubToggleType('${c}', this)">${c}</div>`).join("")}
       <div class="chip" onclick="pubAddCustomType(this)">＋ 其他</div>
     </div>
+    <p class="se-note">这里只记录本次参与；发布后会自动补充到你的创作身份，之后仍可修改。</p>
     <label>标题 <b>*</b></label>
     <input id="pubName" maxlength="30">
     <label id="pubCoverLabel">封面</label>
@@ -4653,6 +4983,8 @@ const $$ = sel => document.querySelectorAll(sel);
 
 /* ---------- 状态 ---------- */
 const state = {
+  auth: { loggedIn: false, fresh: false }, // 游客默认直达；需要保存关系/交易时再轻量登录
+  guestHints: new Set(),   // 游客会话内提示去重
   homeMode: "works",      // "works" | "artist" | "demand"
   tagSel: {},             // 首页标签检索：{ 组名: [已选标签…] }，空 = 全部
   topic: "全部",           // 社区话题筛选
@@ -4668,15 +5000,14 @@ const state = {
     name: "", uid: "", gender: "保密", bio: "",
     avatar: null,         // 自定义头像 dataURL；null = 用简笔画头像
   },
-  following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
+  following: new Set(),    // 我关注的人（小红书式：互相关注即好友）
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
   muted: new Set(),        // 消息免打扰（用户 / 讨论组通用）
   workLiked: new Set(),    // 我点赞过的作品 id
   accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
-  favFolders: [           // 收藏夹（歌单式分类）
-    { name: "默认收藏", ids: [2] },
-    { name: "古风灵感", ids: [1, 4] },
+  favFolders: [           // 游客也能临时收藏，登录后才跨设备保存
+    { name: "临时收藏", ids: [] },
   ],
   orderFilter: "全部",     // 订单状态筛选
   showMyReviews: true,     // 评价整体公开/隐藏（不可单条设置）
@@ -4695,6 +5026,46 @@ const state = {
     privacy: { showFollow: true, allowDM: true, findByPhone: false, personalized: true },
   },
 };
+
+let afterLoginAction = null;
+
+const isLoggedIn = () => state.auth.loggedIn;
+
+/** 情境式账号门槛：不打断浏览，只在需要身份/留痕时出现 */
+function openAccountGate(reason = "保存你的进度", continuation = null) {
+  if (isLoggedIn()) {
+    if (continuation) continuation();
+    return;
+  }
+  afterLoginAction = continuation;
+  const reasonEl = $("#loginReason");
+  if (reasonEl) reasonEl.textContent = `登录后可${reason}`;
+  renderAcctGrid();
+  lvShow(state.accounts.length ? "lvPick" : "lvLogin");
+  $("#loginOverlay").classList.add("show");
+}
+
+function ensureAccount(reason, continuation) {
+  if (isLoggedIn()) return true;
+  openAccountGate(reason, continuation);
+  return false;
+}
+
+function closeLoginGate() {
+  $("#loginOverlay").classList.remove("show");
+  afterLoginAction = null;
+}
+
+function renderAuthState() {
+  [$("#scr-msg"), $("#scr-me")].forEach(screen =>
+    screen?.classList.toggle("guest-view", !isLoggedIn()));
+}
+
+function guestSessionHint(key, message) {
+  if (isLoggedIn() || state.guestHints.has(key)) return;
+  state.guestHints.add(key);
+  toast(message);
+}
 
 /* ---------- 首页 ---------- */
 
@@ -4800,8 +5171,22 @@ function renderHome() {
 
 function setHomeMode(mode, el) {
   state.homeMode = mode;
-  $$("#modeTabs .mode-tab").forEach(t => t.classList.toggle("on", t === el));
+  $$("#modeTabs .mode-tab").forEach((t, i) => {
+    const target = mode === "works" ? 0 : mode === "artist" ? 1 : 2;
+    t.classList.toggle("on", el ? t === el : i === target);
+  });
   renderHome();
+}
+
+/** 首页按目标进入，而不是要求新用户先定义自己是谁 */
+function chooseHomeIntent(intent) {
+  if (intent === "start") {
+    openPublish();
+    return;
+  }
+  const mode = intent === "people" ? "artist" : intent === "join" ? "demand" : "works";
+  setHomeMode(mode);
+  $("#modeTabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ---------- 社区 ---------- */
@@ -9224,6 +9609,8 @@ function doLogout() {
     const i = state.accounts.findIndex(a => a.uid === acc.uid);
     i >= 0 ? state.accounts[i] = acc : state.accounts.push(acc);
   }
+  state.auth.loggedIn = false;
+  renderAuthState();
   closeOverlay("ovSettings");
   lvShow("lvPick");
   renderAcctGrid();
@@ -9262,6 +9649,7 @@ function reloginAcct(i, el) {
 
 /** 登录成功：恢复账号资料；新用户进资料+选工种初始流程，老用户直进首页 */
 function enterApp(acc, isNew) {
+  state.auth.loggedIn = true;
   state.profile.name = acc.name;
   state.profile.uid = acc.uid;
   state.profile.avatar = acc.avatar || null;
@@ -9271,6 +9659,7 @@ function enterApp(acc, isNew) {
   state.settings.phone = acc.phone || "";
   state.settings.password = acc.password || "";
   $("#loginOverlay").classList.remove("show");
+  renderAuthState();
   renderMyProfile();
   if (isNew) {
     state.roleSetupMode = "register";
@@ -9340,7 +9729,7 @@ function lvLoginSubmit() {
     const acc = state.accounts.find(a => a.phone === phone);
     if (acc) return enterApp(acc, false);
     // 未注册手机号：验证通过后自动创建账号（小红书式）
-    const nu = { name: "曲友" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
+    const nu = { name: "来自曲星球" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
     state.accounts.push(nu);
     toast("新账号已创建，完善一下资料吧");
     return enterApp(nu, true);
@@ -9373,7 +9762,7 @@ function lvRegSubmit() {
     toast("该手机号已注册，已为你直接登录");
     return enterApp(old, false);
   }
-  const acc = { name: "曲友" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
+  const acc = { name: "来自曲星球" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
   state.accounts.push(acc);
   toast("注册成功，手机号已绑定");
   enterApp(acc, true); // 新用户 → 完善资料 → 选工种
@@ -9958,10 +10347,506 @@ renderOrders();
 renderMyReviews();
 renderFavStrip();
 renderNoticeDot();
-/* 初始为未登录：先进登录/注册界面，登录注册成功后再取名、选工种 */
+/* 初始为游客：直接体验首页，需要保存关系或交易时再进入登录。 */
 renderAcctGrid();
-lvShow(state.accounts.length ? "lvPick" : "lvLogin");
-$("#loginOverlay").classList.add("show");
+renderAuthState();
+
+</script>
+<script>
+/* ============================================================
+ * 造曲台 · 微型 GarageBand 式歌曲 DIY 面板
+ * ------------------------------------------------------------
+ * 多轨步进音序器：底鼓/军鼓/踩镲/贝斯/和弦 + 主旋律音高格 + 人声轨。
+ * 可调速率(BPM)、调性、和弦走向、音场(混音)。音阶锁定→不会弹错。
+ * 纯前端 Web Audio 实时合成 + 前瞻调度器(lookahead scheduler)，
+ * 不依赖外部音频或生成服务；生产环境可把合成替换为采样/后端。
+ * ============================================================ */
+
+const ST_STEPS = 16;                 // 一小节 16 步（4/4，十六分音符）
+const ST_RHYTHM_LANES = [
+  { key: "kick",  name: "底鼓", color: "#2152FF" },
+  { key: "snare", name: "军鼓", color: "#6A3BFF" },
+  { key: "hat",   name: "踩镲", color: "#2FA36B" },
+  { key: "bass",  name: "贝斯", color: "#C23B3B" },
+  { key: "chord", name: "和弦", color: "#8F9B1E" },
+];
+/* 主旋律音高格：大调五声 1 2 3 5 6，自上而下由高到低（半音偏移）。 */
+const ST_MELODY_ROWS = [
+  { label: "6", deg: 9 },
+  { label: "5", deg: 7 },
+  { label: "3", deg: 4 },
+  { label: "2", deg: 2 },
+  { label: "1", deg: 0 },
+];
+/* 调性预设：melodic 根音频率（中音区），贝斯自动降八度。 */
+const ST_KEYS = {
+  "C 五声": 261.63, "D 五声": 293.66, "E 五声": 329.63, "G 五声": 392.0, "A 五声": 440.0,
+};
+/* 和弦走向预设：每拍一个和弦根音（半音偏移），一小节走 4 个。 */
+const ST_PROGS = {
+  "温暖": [0, 7, 9, 5],   // I–V–vi–IV
+  "国风": [9, 5, 0, 7],   // vi–IV–I–V
+  "燃":   [0, 5, 7, 0],   // I–IV–V–I
+  "游离": [9, 5, 7, 9],   // vi–IV–V–vi
+};
+const ST_CHORD_QUALITY = { 0: "maj", 5: "maj", 7: "maj", 9: "min", 2: "min", 4: "min" };
+const ST_EFFECTS = ["贴近", "现场", "磁带"]; // 复用试作的音场处理语义
+
+const studioState = {
+  bpm: 96,
+  key: "C 五声",
+  prog: "温暖",
+  effect: 0,
+  playing: false,
+  step: 0,
+  rhythm: {
+    kick:  Array(ST_STEPS).fill(false),
+    snare: Array(ST_STEPS).fill(false),
+    hat:   Array(ST_STEPS).fill(false),
+    bass:  Array(ST_STEPS).fill(false),
+    chord: Array(ST_STEPS).fill(false),
+  },
+  melody: Array(ST_STEPS).fill(null), // 每步存音高行索引 0..4，或 null（单音）
+  mutes: { kick: false, snare: false, hat: false, bass: false, chord: false, melody: false },
+  started: false, // 是否已填过内容
+};
+
+let studioLastFocus = null;
+let stCtx = null;
+let stMasterGraph = null;
+let stTimer = null;
+let stRaf = 0;
+let stNextStepTime = 0;
+let stSchedStep = 0;
+let stQueue = []; // 播放头队列 {step, time}
+
+/* ---------------- 打开 / 关闭 ---------------- */
+
+function openStudio() {
+  studioLastFocus = document.activeElement;
+  if (typeof playerState !== "undefined" && playerState.playing) togglePlayerPlayback();
+  const overlay = $("#studio");
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden", "false");
+  renderStudio();
+  setTimeout(() => overlay.querySelector(".st-top button")?.focus(), 20);
+}
+
+function closeStudio() {
+  stStop();
+  const overlay = $("#studio");
+  overlay.classList.remove("show");
+  overlay.setAttribute("aria-hidden", "true");
+  studioLastFocus?.focus?.();
+}
+
+function completeStudio() {
+  stStop();
+  const hasContent = Object.values(studioState.rhythm).some(a => a.some(Boolean)) ||
+    studioState.melody.some(v => v != null);
+  closeStudio();
+  toast(hasContent ? "这段编曲已保留在本次体验中 ✓" : "空着也没关系，随时回来编");
+}
+
+/* ---------------- 渲染 ---------------- */
+
+function studioIcon(name) { return (typeof CONFIG !== "undefined" && CONFIG.icons[name]) || ""; }
+
+function renderStudio() {
+  const stage = $("#stStage");
+  if (!stage) return;
+  $("#stBpmVal").textContent = `${studioState.bpm} BPM`;
+  $("#stBpm").value = studioState.bpm;
+  const playBtn = $("#stPlay");
+  if (playBtn) {
+    playBtn.textContent = studioState.playing ? "❚❚" : "▶";
+    playBtn.setAttribute("aria-label", studioState.playing ? "停止" : "播放");
+    playBtn.classList.toggle("on", studioState.playing);
+  }
+  stage.innerHTML = `
+    ${studioControlsHTML()}
+    <div class="st-ruler">${stRulerHTML()}</div>
+    <div class="st-lanes">
+      ${ST_RHYTHM_LANES.map(stLaneHTML).join("")}
+    </div>
+    ${stMelodyHTML()}
+    ${stVocalHTML()}`;
+}
+
+function studioControlsHTML() {
+  const keyOpts = Object.keys(ST_KEYS).map(k =>
+    `<option ${k === studioState.key ? "selected" : ""}>${k}</option>`).join("");
+  const progOpts = Object.keys(ST_PROGS).map(p =>
+    `<option ${p === studioState.prog ? "selected" : ""}>${p}</option>`).join("");
+  const effOpts = ST_EFFECTS.map((e, i) =>
+    `<option value="${i}" ${i === studioState.effect ? "selected" : ""}>音场 · ${e}</option>`).join("");
+  return `
+    <div class="st-controls">
+      <label class="st-sel"><span>调性</span><select onchange="studioSetKey(this.value)">${keyOpts}</select></label>
+      <label class="st-sel"><span>和弦</span><select onchange="studioSetProg(this.value)">${progOpts}</select></label>
+      <label class="st-sel"><span>音场</span><select onchange="studioSetEffect(this.value)">${effOpts}</select></label>
+    </div>`;
+}
+
+function stRulerHTML() {
+  let cells = "";
+  for (let s = 0; s < ST_STEPS; s++) {
+    cells += `<i data-step="${s}" class="${s % 4 === 0 ? "beat" : ""}">${s % 4 === 0 ? (s / 4 + 1) : ""}</i>`;
+  }
+  return `<span class="st-ruler-label"></span><div class="st-ruler-cells">${cells}</div>`;
+}
+
+function stLaneHTML(lane) {
+  const muted = studioState.mutes[lane.key];
+  const cells = studioState.rhythm[lane.key].map((on, s) =>
+    `<button type="button" class="st-cell ${on ? "on" : ""} ${s % 4 === 0 ? "beat" : ""}"
+       data-track="${lane.key}" data-step="${s}" aria-pressed="${on}"
+       style="--lane:${lane.color}" onclick="studioToggle('${lane.key}',${s})"></button>`
+  ).join("");
+  return `
+    <div class="st-lane ${muted ? "muted" : ""}" data-lane="${lane.key}">
+      <div class="st-lane-head" style="--lane:${lane.color}">
+        <button type="button" class="st-mute" onclick="studioMute('${lane.key}')" aria-label="静音">${lane.name}</button>
+      </div>
+      <div class="st-cells">${cells}</div>
+    </div>`;
+}
+
+function stMelodyHTML() {
+  const muted = studioState.mutes.melody;
+  const rows = ST_MELODY_ROWS.map((row, r) => {
+    const cells = [];
+    for (let s = 0; s < ST_STEPS; s++) {
+      const on = studioState.melody[s] === r;
+      cells.push(`<button type="button" class="st-mcell ${on ? "on" : ""} ${s % 4 === 0 ? "beat" : ""}"
+        data-step="${s}" data-row="${r}" aria-pressed="${on}"
+        onclick="studioToggleMel(${s},${r})"></button>`);
+    }
+    return `<div class="st-prow"><span class="st-pnum">${row.label}</span><div class="st-pcells">${cells.join("")}</div></div>`;
+  }).join("");
+  return `
+    <div class="st-melody ${muted ? "muted" : ""}">
+      <div class="st-lane-head st-melody-head" style="--lane:#E8622B">
+        <button type="button" class="st-mute" onclick="studioMute('melody')" aria-label="静音">主旋律</button>
+      </div>
+      <div class="st-melody-grid">${rows}</div>
+    </div>`;
+}
+
+function stVocalHTML() {
+  return `
+    <div class="st-vocal" onclick="studioVocal()">
+      <span class="st-vocal-ic">${studioIcon("mic")}</span>
+      <div><b>人声 / 上传干音</b><span>把你录好的干音叠到这段伴奏上 · 即将开放</span></div>
+      <em>＋</em>
+    </div>`;
+}
+
+/* ---------------- 交互 ---------------- */
+
+function studioToggle(key, step) {
+  const arr = studioState.rhythm[key];
+  arr[step] = !arr[step];
+  const cell = $(`.st-cell[data-track="${key}"][data-step="${step}"]`);
+  cell?.classList.toggle("on", arr[step]);
+  cell?.setAttribute("aria-pressed", arr[step]);
+  if (!studioState.playing) stPreviewStep(key, step);
+}
+
+function studioToggleMel(step, row) {
+  const cur = studioState.melody[step];
+  studioState.melody[step] = cur === row ? null : row;
+  // 单音：同一步其它行取消高亮
+  document.querySelectorAll(`.st-mcell[data-step="${step}"]`).forEach(c => {
+    const on = Number(c.dataset.row) === studioState.melody[step];
+    c.classList.toggle("on", on);
+    c.setAttribute("aria-pressed", on);
+  });
+  if (!studioState.playing && studioState.melody[step] != null) stPreviewMel(step, row);
+}
+
+function studioMute(key) {
+  studioState.mutes[key] = !studioState.mutes[key];
+  const el = key === "melody" ? document.querySelector(".st-melody") : document.querySelector(`.st-lane[data-lane="${key}"]`);
+  el?.classList.toggle("muted", studioState.mutes[key]);
+}
+
+function studioSetKey(v) { studioState.key = v; }
+function studioSetProg(v) { studioState.prog = v; }
+function studioSetEffect(v) {
+  studioState.effect = Number(v);
+  if (studioState.playing) { stBuildMaster(); }
+}
+
+function studioSetBpm(v) {
+  studioState.bpm = Number(v);
+  $("#stBpmVal").textContent = `${studioState.bpm} BPM`;
+}
+
+function studioClearAll() {
+  Object.keys(studioState.rhythm).forEach(k => studioState.rhythm[k].fill(false));
+  studioState.melody.fill(null);
+  renderStudio();
+  toast("已清空，重新来过");
+}
+
+/* 一键来灵感：填入一套互相咬合的律动 + 一句五声小动机。 */
+function studioInspire() {
+  const R = studioState.rhythm;
+  R.kick  = idx([0, 4, 8, 12, 14], ST_STEPS);
+  R.snare = idx([4, 12], ST_STEPS);
+  R.hat   = idx([0, 2, 4, 6, 8, 10, 12, 14], ST_STEPS);
+  R.bass  = idx([0, 3, 8, 11], ST_STEPS);
+  R.chord = idx([0, 8], ST_STEPS);
+  // 五声小动机（行索引，null 为休止）：一句上行再回落
+  const motif = [4, null, 3, null, 2, 3, 1, null, 2, null, 3, 4, 2, null, 1, null];
+  studioState.melody = motif.slice(0, ST_STEPS);
+  renderStudio();
+  toast("灵感已填入，点播放听听 ♪");
+  if (!studioState.playing) stToggle();
+}
+
+function idx(list, len) {
+  const a = Array(len).fill(false);
+  list.forEach(i => { if (i < len) a[i] = true; });
+  return a;
+}
+
+function studioVocal() {
+  toast("上传干音即将开放：录好的人声可叠到这段伴奏上一起混");
+}
+
+/* ---------------- 音频引擎（前瞻调度器） ---------------- */
+
+function stToggle() { studioState.playing ? stStop() : stStart(); }
+
+function stStart() {
+  const Ctor = window.AudioContext || window.webkitAudioContext;
+  if (!Ctor) return toast("当前浏览器暂不支持实时合成");
+  if (!stCtx) stCtx = new Ctor();
+  stCtx.resume?.();
+  stBuildMaster();
+  studioState.playing = true;
+  stSchedStep = 0;
+  stNextStepTime = stCtx.currentTime + 0.08;
+  stQueue = [];
+  clearInterval(stTimer);
+  stTimer = setInterval(stScheduler, 25);
+  stPlayheadLoop();
+  const b = $("#stPlay");
+  if (b) { b.textContent = "❚❚"; b.classList.add("on"); }
+}
+
+function stStop() {
+  studioState.playing = false;
+  clearInterval(stTimer); stTimer = null;
+  cancelAnimationFrame(stRaf); stRaf = 0;
+  stQueue = [];
+  if (stMasterGraph) {
+    try {
+      const now = stCtx.currentTime;
+      stMasterGraph.master.gain.setTargetAtTime(0, now, 0.02);
+    } catch (_) {}
+  }
+  stClearPlayhead();
+  const b = $("#stPlay");
+  if (b) { b.textContent = "▶"; b.classList.remove("on"); }
+}
+
+function stScheduler() {
+  const spb = 60 / studioState.bpm / 4; // 每步秒数（十六分）
+  while (stNextStepTime < stCtx.currentTime + 0.1) {
+    stScheduleStep(stSchedStep, stNextStepTime);
+    stQueue.push({ step: stSchedStep, time: stNextStepTime });
+    stNextStepTime += spb;
+    stSchedStep = (stSchedStep + 1) % ST_STEPS;
+  }
+}
+
+function stScheduleStep(step, at) {
+  const g = stMasterGraph; if (!g) return;
+  const m = studioState.mutes;
+  const R = studioState.rhythm;
+  const root = ST_KEYS[studioState.key] || 261.63;
+  const prog = ST_PROGS[studioState.prog] || [0, 0, 0, 0];
+  const chordRoot = prog[Math.floor(step / 4) % prog.length];
+
+  if (!m.kick && R.kick[step]) stKick(at, step % 4 === 0 ? 0.9 : 0.75);
+  if (!m.snare && R.snare[step]) stSnare(at, 0.7);
+  if (!m.hat && R.hat[step]) stHat(at, step % 2 === 0 ? 0.5 : 0.32);
+  if (!m.bass && R.bass[step]) stTone(root / 4 * Math.pow(2, chordRoot / 12), at, 0.26, "triangle", 0.5, 2200);
+  if (!m.chord && R.chord[step]) stChord(root, chordRoot, at);
+  if (!m.melody && studioState.melody[step] != null) {
+    const deg = ST_MELODY_ROWS[studioState.melody[step]].deg;
+    stTone(root * Math.pow(2, deg / 12), at, 0.42, "sine", 0.42);
+    stTone(root * Math.pow(2, deg / 12) * 2, at, 0.3, "triangle", 0.07);
+  }
+}
+
+function stBuildMaster() {
+  const ctx = stCtx; if (!ctx) return;
+  if (stMasterGraph) { try { stMasterGraph.nodes.forEach(n => n.disconnect()); } catch (_) {} }
+  const input = ctx.createGain();
+  const comp = ctx.createDynamicsCompressor();
+  const master = ctx.createGain();
+  master.gain.value = 0.9;
+  comp.threshold.value = -18; comp.ratio.value = 4;
+  comp.connect(master).connect(ctx.destination);
+  const nodes = [input, comp, master];
+  const eff = studioState.effect;
+  if (eff === 1) { // 现场：延时混响
+    const dry = ctx.createGain(), delay = ctx.createDelay(0.8), fb = ctx.createGain(), wet = ctx.createGain();
+    dry.gain.value = 0.82; delay.delayTime.value = 0.25; fb.gain.value = 0.26; wet.gain.value = 0.34;
+    input.connect(dry).connect(comp);
+    input.connect(delay).connect(wet).connect(comp);
+    delay.connect(fb).connect(delay);
+    nodes.push(dry, delay, fb, wet);
+  } else if (eff === 2) { // 磁带：低通 + 暖色
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 3200; lp.Q.value = 0.5;
+    input.connect(lp).connect(comp);
+    nodes.push(lp);
+  } else {
+    input.connect(comp);
+  }
+  stMasterGraph = { input, master, nodes };
+}
+
+/* 合成基元 */
+function stTone(freq, at, dur, type, vol, lp) {
+  const ctx = stCtx, g = stMasterGraph; if (!ctx || !g) return;
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  const end = at + Math.max(0.08, dur);
+  osc.type = type; osc.frequency.setValueAtTime(freq, at);
+  gain.gain.setValueAtTime(0.0001, at);
+  gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol), at + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, end);
+  if (lp) {
+    const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = lp;
+    osc.connect(f).connect(gain).connect(g.input);
+  } else {
+    osc.connect(gain).connect(g.input);
+  }
+  osc.start(at); osc.stop(end + 0.03);
+}
+
+function stChord(root, chordRoot, at) {
+  const quality = ST_CHORD_QUALITY[chordRoot] || "maj";
+  const intervals = quality === "min" ? [0, 3, 7] : [0, 4, 7];
+  intervals.forEach((iv, i) =>
+    stTone(root / 2 * Math.pow(2, (chordRoot + iv) / 12), at, 0.5, i === 0 ? "triangle" : "sine", 0.12));
+}
+
+function stKick(at, vol) {
+  const ctx = stCtx, g = stMasterGraph; if (!ctx || !g) return;
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(130, at);
+  osc.frequency.exponentialRampToValueAtTime(46, at + 0.14);
+  gain.gain.setValueAtTime(vol, at);
+  gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.2);
+  osc.connect(gain).connect(g.input);
+  osc.start(at); osc.stop(at + 0.22);
+}
+
+function stSnare(at, vol) {
+  const ctx = stCtx, g = stMasterGraph; if (!ctx || !g) return;
+  const len = Math.floor(ctx.sampleRate * 0.2);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+  const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), gain = ctx.createGain();
+  src.buffer = buf; f.type = "highpass"; f.frequency.value = 1700;
+  gain.gain.value = vol;
+  src.connect(f).connect(gain).connect(g.input);
+  src.start(at);
+  // 主体音
+  const osc = ctx.createOscillator(), og = ctx.createGain();
+  osc.type = "triangle"; osc.frequency.setValueAtTime(180, at);
+  og.gain.setValueAtTime(vol * 0.5, at);
+  og.gain.exponentialRampToValueAtTime(0.0001, at + 0.12);
+  osc.connect(og).connect(g.input);
+  osc.start(at); osc.stop(at + 0.13);
+}
+
+function stHat(at, vol) {
+  const ctx = stCtx, g = stMasterGraph; if (!ctx || !g) return;
+  const len = Math.floor(ctx.sampleRate * 0.04);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), gain = ctx.createGain();
+  src.buffer = buf; f.type = "highpass"; f.frequency.value = 6000;
+  gain.gain.value = vol;
+  src.connect(f).connect(gain).connect(g.input);
+  src.start(at);
+}
+
+/* 停播时点格子的即时试听 */
+function stPreviewStep(key, step) {
+  const Ctor = window.AudioContext || window.webkitAudioContext;
+  if (!Ctor) return;
+  if (!stCtx) stCtx = new Ctor();
+  stCtx.resume?.();
+  if (!stMasterGraph) stBuildMaster();
+  const at = stCtx.currentTime + 0.01;
+  const root = ST_KEYS[studioState.key] || 261.63;
+  const chordRoot = (ST_PROGS[studioState.prog] || [0])[Math.floor(step / 4) % 4] || 0;
+  if (!studioState.rhythm[key][step]) return;
+  if (key === "kick") stKick(at, 0.85);
+  else if (key === "snare") stSnare(at, 0.7);
+  else if (key === "hat") stHat(at, 0.45);
+  else if (key === "bass") stTone(root / 4 * Math.pow(2, chordRoot / 12), at, 0.26, "triangle", 0.5, 2200);
+  else if (key === "chord") stChord(root, chordRoot, at);
+  if (stMasterGraph) stMasterGraph.master.gain.setTargetAtTime(0.9, at, 0.01);
+}
+
+function stPreviewMel(step, row) {
+  const Ctor = window.AudioContext || window.webkitAudioContext;
+  if (!Ctor) return;
+  if (!stCtx) stCtx = new Ctor();
+  stCtx.resume?.();
+  if (!stMasterGraph) stBuildMaster();
+  const at = stCtx.currentTime + 0.01;
+  const root = ST_KEYS[studioState.key] || 261.63;
+  const deg = ST_MELODY_ROWS[row].deg;
+  stTone(root * Math.pow(2, deg / 12), at, 0.4, "sine", 0.42);
+  if (stMasterGraph) stMasterGraph.master.gain.setTargetAtTime(0.9, at, 0.01);
+}
+
+/* ---------------- 播放头 ---------------- */
+
+function stPlayheadLoop() {
+  const tick = () => {
+    if (!studioState.playing) return;
+    const now = stCtx.currentTime;
+    let cur = null;
+    while (stQueue.length && stQueue[0].time <= now) cur = stQueue.shift().step;
+    if (cur != null && cur !== studioState.step) {
+      studioState.step = cur;
+      stPaintPlayhead(cur);
+    }
+    stRaf = requestAnimationFrame(tick);
+  };
+  stRaf = requestAnimationFrame(tick);
+}
+
+function stPaintPlayhead(step) {
+  document.querySelectorAll(".st-playcol").forEach(el => el.classList.remove("st-playcol"));
+  document.querySelectorAll(`[data-step="${step}"]`).forEach(el => el.classList.add("st-playcol"));
+}
+
+function stClearPlayhead() {
+  document.querySelectorAll(".st-playcol").forEach(el => el.classList.remove("st-playcol"));
+}
+
+/* Esc 关闭；切出页面自动停。 */
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && $("#studio")?.classList.contains("show")) closeStudio();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && studioState.playing) stStop();
+});
 
 </script>
 </body>

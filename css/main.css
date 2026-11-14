@@ -61,6 +61,40 @@ body {
   display: flex; align-items: center; gap: 8px;
 }
 
+/* 新用户不被问卷拦截：先从“我今天想做什么”进入内容 */
+.participation-hub {
+  margin: 2px 16px 14px; padding: 17px;
+  color: #fff; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle at 92% 5%, rgba(142,164,255,.7), transparent 34%),
+    linear-gradient(145deg, #11131A 0%, #263D94 100%);
+  border-radius: 24px; box-shadow: 0 12px 28px rgba(22,39,100,.18);
+}
+.participation-hub::after {
+  content: "♪"; position: absolute; right: 15px; top: 22px;
+  font-size: 72px; line-height: 1; opacity: .08; transform: rotate(8deg);
+}
+.participation-kicker { display: flex; align-items: center; gap: 7px; position: relative; z-index: 1; }
+.participation-kicker span { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; opacity: .78; }
+.participation-kicker i {
+  font-style: normal; font-size: 9px; padding: 2px 7px; border-radius: 999px;
+  color: #EAF0FF; background: rgba(255,255,255,.14);
+}
+.participation-hub h2 { position: relative; z-index: 1; margin-top: 8px; font-size: 19px; letter-spacing: .5px; }
+.participation-hub > p { position: relative; z-index: 1; margin: 5px 0 13px; max-width: 92%; font-size: 10.5px; line-height: 1.65; opacity: .72; }
+.participation-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.participation-grid button {
+  min-width: 0; padding: 10px 11px; text-align: left; cursor: pointer;
+  color: #fff; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.13);
+  border-radius: 14px; font: inherit;
+}
+.participation-grid button:active { transform: scale(.98); background: rgba(255,255,255,.16); }
+.participation-grid button.start { color: #172458; background: #EAF0FF; border-color: #EAF0FF; }
+.participation-grid b { display: block; font-size: 12px; letter-spacing: .3px; }
+.participation-grid span { display: block; margin-top: 2px; font-size: 8.8px; opacity: .68; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.participation-trust { position: relative; z-index: 1; display: flex; gap: 13px; margin-top: 11px; font-size: 8.8px; opacity: .68; }
+.participation-trust span::before { content: "✓"; margin-right: 3px; color: #AFC0FF; font-weight: 700; }
+
 /* 标签：biz=商业 nonbiz=非商业 cat=类目 gray=中性 */
 .tag { display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
 .tag.biz    { background: var(--red-light);   color: var(--red); }
@@ -102,6 +136,30 @@ body {
 
 .feed { padding: 0 16px 90px; display: flex; flex-direction: column; gap: 12px; }
 .empty { text-align: center; color: var(--ink-3); padding: 40px 0; font-size: 13px; column-span: all; break-inside: avoid; }
+
+/* 游客进入“消息 / 我的”时解释价值，不弹登录墙 */
+.guest-panel { display: none; margin: 34px 22px 90px; text-align: center; }
+.screen.guest-view .guest-panel { display: flex; flex-direction: column; align-items: center; }
+#scr-msg.guest-view > :not(.header):not(.guest-panel),
+#scr-me.guest-view > :not(.header):not(.guest-panel) { display: none !important; }
+#scr-msg.guest-view .header > div:last-child,
+#scr-me.guest-view .header > div:last-child { visibility: hidden; }
+.guest-orbit {
+  width: 92px; height: 92px; margin: 8px 0 27px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: #fff; font-size: 30px; font-weight: 700;
+  background: linear-gradient(145deg, var(--red), #718CFF);
+  box-shadow: 0 18px 36px rgba(33,82,255,.2);
+}
+.guest-orbit::before { content: ""; position: absolute; inset: -12px; border: 1px solid var(--line); border-radius: 50%; }
+.guest-orbit i { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+.guest-orbit i:first-child { left: -10px; top: 18px; }
+.guest-orbit i:last-child { right: -4px; bottom: 4px; width: 6px; height: 6px; background: var(--green); }
+.guest-kicker { color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.guest-panel h2 { max-width: 280px; margin: 10px 0 9px; font-size: 21px; line-height: 1.35; letter-spacing: .5px; }
+.guest-panel p { max-width: 285px; color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.guest-panel .btn { width: 100%; max-width: 270px; flex: none; margin-top: 24px; }
+.guest-panel small { margin-top: 10px; color: var(--ink-3); font-size: 9.5px; line-height: 1.5; }
 
 /* 头像（背景色由 JS 依名字生成） */
 .avatar {
@@ -1459,8 +1517,18 @@ body { background: #D9DADE; }
   display: none; flex-direction: column;
 }
 .login-overlay.show { display: flex; animation: slide-in .22s ease; }
+.login-gate-head {
+  flex: none; min-height: 48px; padding: 14px 17px 7px;
+  display: flex; align-items: center; gap: 12px;
+}
+.login-gate-head button {
+  padding: 6px 10px; cursor: pointer; font: inherit; font-size: 11px;
+  color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--line); border-radius: 999px;
+}
+.login-gate-head span { margin-left: auto; max-width: 190px; color: var(--ink); font-size: 11px; font-weight: 700; text-align: right; }
+.login-gate-note { margin: 0 28px; color: var(--ink-3); font-size: 9.5px; text-align: center; }
 .lv { flex: 1; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 0 28px; }
-.login-logo { font-size: 34px; font-weight: 700; letter-spacing: 8px; margin: 86px 0 6px; }
+.login-logo { font-size: 34px; font-weight: 700; letter-spacing: 8px; margin: 48px 0 6px; }
 .login-sub { font-size: 11px; color: var(--ink-3); letter-spacing: 3px; margin-bottom: 44px; }
 .acct-grid {
   display: flex; flex-wrap: wrap; justify-content: center;

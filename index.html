@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>曲境 · 音乐约稿平台 Demo</title>
+<title>曲境 · 音乐共创与交友平台 Demo</title>
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/studio.css">
 </head>
 <body>
 
 <div class="phone">
-  <div class="statusbar"><span>9:41</span><span>曲境 · 音乐约稿</span><span>100%</span></div>
+  <div class="statusbar"><span>9:41</span><span>曲境 · 音乐共创</span><span>100%</span></div>
 
   <div class="app">
 
@@ -23,14 +24,39 @@
         <div class="header-action icon-btn bell-wrap" onclick="openNotices()"><span data-icon="bell"></span><i class="ndot" id="nDot"></i></div>
       </div>
       <div class="search" onclick="openSearch()"><span class="si" data-icon="search"></span> 搜索作品 / 音乐人 / 约稿需求…</div>
+      <section class="studio-card" id="studioCard" role="button" tabindex="0"
+        onclick="openStudio()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStudio()}">
+        <div class="sc-kicker"><span>造曲台</span><i>自由编曲</i></div>
+        <h2>多轨步进，像搭积木一样编一首歌</h2>
+        <p>点格子就出声，调速率、换和弦、叠人声——音阶锁定，不会弹错。</p>
+        <div class="sc-grid" aria-hidden="true">
+          <i><b class="on"></b><b></b><b class="on"></b></i>
+          <i><b></b><b class="on"></b><b></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b class="on"></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b class="on"></b><b class="on"></b></i>
+          <i><b class="on"></b><b></b><b class="on"></b></i>
+          <i><b></b><b class="on"></b><b></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b class="on"></b><b></b></i>
+          <i><b></b><b></b><b class="on"></b></i>
+          <i><b class="on"></b><b></b><b></b></i>
+          <i><b></b><b class="on"></b><b class="on"></b></i>
+        </div>
+        <button type="button" onclick="event.stopPropagation();openStudio()">进入造曲台 <span>→</span></button>
+      </section>
       <div class="banner-wrap" id="bannerWrap">
         <div class="banner-track" id="bannerTrack"></div>
         <div class="banner-dots" id="bannerDots"></div>
       </div>
       <div class="mode-tabs" id="modeTabs">
         <div class="mode-tab on" onclick="setHomeMode('works', this)">作品</div>
-        <div class="mode-tab" onclick="setHomeMode('artist', this)">找音乐人</div>
-        <div class="mode-tab" onclick="setHomeMode('demand', this)">企划招募</div>
+        <div class="mode-tab" onclick="setHomeMode('artist', this)">音乐人</div>
+        <div class="mode-tab" onclick="setHomeMode('demand', this)">企划</div>
       </div>
       <div class="filter-bar" id="catRow"></div>
       <div id="homeFeed"></div>
@@ -80,6 +106,14 @@
           <div class="header-action af-plus" onclick="openMsgPlus()" title="添加好友 / 分享">＋</div>
         </div>
       </div>
+      <div class="guest-panel" id="guestMsg">
+        <div class="guest-orbit">♪<i></i><i></i></div>
+        <span class="guest-kicker">先逛，遇到想合作的人再登录</span>
+        <h2>把合作关系和进度留在曲星球</h2>
+        <p>登录后可以私信创作搭子、接收企划邀请，并保存协议与交易通知。</p>
+        <button class="btn primary" onclick="openAccountGate('查看消息并保存合作进度')">登录查看消息</button>
+        <small>登录不会要求你立刻填写职业或完整资料</small>
+      </div>
       <div class="sys-notice">平台提示：商用约稿请务必通过平台签订电子协议并托管稿酬，保障双方权益。</div>
       <div class="msg-entries" id="msgEntries"></div>
       <div id="msgList"></div>
@@ -94,6 +128,14 @@
           <div class="header-action hdr-ic" onclick="openScan()" title="扫一扫"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M4 12h16"/></svg></div>
           <div class="header-action hdr-ic icon-btn" data-icon="gear" onclick="openSettings()"></div>
         </div>
+      </div>
+      <div class="guest-panel" id="guestMe">
+        <div class="guest-orbit">曲<i></i><i></i></div>
+        <span class="guest-kicker">你正在以游客身份漫游</span>
+        <h2>身份可以在参与中慢慢长出来</h2>
+        <p>第一次发布或联系别人时，只需手机号即可获得临时昵称；你负责过的词、曲、唱、混音，会逐步形成创作身份。</p>
+        <button class="btn primary" onclick="openAccountGate('保存收藏、创作身份和合作记录')">登录并保存进度</button>
+        <small>临时昵称示例：来自曲星球4821 · 之后随时可改</small>
       </div>
       <div class="profile-hero" id="myHero">
         <div class="ph-bg-blur"></div><div class="ph-bg-sharp"></div>
@@ -597,7 +639,7 @@
 
       <!-- 步骤一：基本资料（仅圈名必填） -->
       <div class="reg-body" id="regStep1">
-        <h2>创建你的身份</h2>
+        <h2>完善你的个人资料</h2>
         <div class="avatar-pick">
           <div class="avatar-preview" id="avatarPreview" onclick="pickAvatar()"></div>
         </div>
@@ -619,8 +661,8 @@
 
       <!-- 步骤二：选择工种（可多选 / 可跳过） -->
       <div class="reg-body" id="regStep2" style="display:none">
-        <h2 id="regTitle">选择你的工种</h2>
-        <p class="sub" id="regSub">可多选 · 跳过可稍后在「我的主页」中设置</p>
+        <h2 id="regTitle">补充你的创作身份</h2>
+        <p class="sub" id="regSub">可多选 · 也可以通过参与作品逐步形成</p>
         <div class="role-grid" id="roleGrid"></div>
       </div>
 
@@ -631,10 +673,15 @@
 
     <!-- ========== 账号登录（QQ 式多账号选择） ========== -->
     <div class="login-overlay" id="loginOverlay">
+      <div class="login-gate-head">
+        <button onclick="closeLoginGate()">‹ 继续浏览</button>
+        <span id="loginReason">登录后保存你的进度</span>
+      </div>
+      <p class="login-gate-note">只验证手机号，不强制填写职业或完整资料</p>
       <!-- 视图一：账号选择 -->
       <div class="lv" id="lvPick">
         <div class="login-logo">曲境</div>
-        <p class="login-sub">音乐约稿平台</p>
+        <p class="login-sub">让更多人参与音乐制作</p>
         <div class="acct-grid" id="acctGrid"></div>
       </div>
       <!-- 视图二：登录（验证码 / 密码） -->
@@ -669,7 +716,7 @@
       <!-- 视图三：注册新账号（小红书式：手机号 + 验证码） -->
       <div class="lv" id="lvReg" style="display:none">
         <div class="login-logo">注册</div>
-        <p class="login-sub" style="letter-spacing:1px">验证后自动创建账号，再完善资料</p>
+        <p class="login-sub" style="letter-spacing:1px">验证后自动获得临时昵称，资料以后再完善</p>
         <div class="reg-form login-form">
           <label>手机号</label>
           <input id="lrPhone" maxlength="11" inputmode="numeric" pattern="1[3-9][0-9]{9}" placeholder="注册即绑定此手机号">
@@ -680,7 +727,7 @@
           </div>
           <div class="agree-row" onclick="toggleAgree('lrAgree')"><i class="agree-box" id="lrAgree"></i>已阅读并同意<a href="javascript:;" onclick="event.stopPropagation();openTerms('terms')">《曲境条约》</a>和<a href="javascript:;" onclick="event.stopPropagation();openTerms('privacy')">《隐私政策》</a></div>
           <button class="btn primary" style="width:100%;margin-top:14px" onclick="lvRegSubmit()">注册</button>
-          <p class="se-note" style="margin-top:12px;text-align:center">注册后可在设置中补充 ID、邮箱与密码</p>
+          <p class="se-note" style="margin-top:12px;text-align:center">注册后可在设置中修改昵称，并补充 ID、邮箱与密码</p>
         </div>
         <div class="login-back" onclick="lvShow('lvPick')">‹ 返回</div>
       </div>
@@ -729,6 +776,28 @@
       <div class="qr-acts-float" id="qrActs"></div>
     </div>
 
+    <!-- 造曲台：独立全屏多轨步进音序器，不登录即可编曲 -->
+    <div class="studio-overlay" id="studio" aria-hidden="true" role="dialog" aria-modal="true" aria-label="造曲台">
+      <header class="st-top">
+        <button type="button" onclick="closeStudio()" aria-label="关闭造曲台">×</button>
+        <div class="st-title"><b>造曲台</b><span>多轨步进 · 像搭积木一样编一首歌</span></div>
+        <button class="st-done" type="button" onclick="completeStudio()">完成</button>
+      </header>
+      <div class="st-transport">
+        <button class="st-play" id="stPlay" type="button" onclick="stToggle()" aria-label="播放">▶</button>
+        <div class="st-bpm">
+          <div class="st-bpm-top"><span>速度 TEMPO</span><b id="stBpmVal">96 BPM</b></div>
+          <input type="range" id="stBpm" min="60" max="160" step="1" value="96"
+            oninput="studioSetBpm(this.value)" aria-label="速度 BPM">
+        </div>
+      </div>
+      <div class="st-stage" id="stStage"></div>
+      <footer class="st-dock">
+        <button class="st-inspire" type="button" onclick="studioInspire()">✨ 一键来灵感</button>
+        <button class="st-clear" type="button" onclick="studioClearAll()">全部清空</button>
+      </footer>
+    </div>
+
     <!-- 跨页面悬浮播放条：作品详情内自动收起，退出后恢复 -->
     <div class="mini-player" id="miniPlayer" role="region" aria-label="正在播放" aria-live="polite">
       <button class="mp-cover" id="mpCover" onclick="openPlayingWork()" aria-label="返回当前作品">♪</button>
@@ -765,5 +834,6 @@
 <script src="js/data.js"></script>
 <script src="js/templates.js"></script>
 <script src="js/app.js"></script>
+<script src="js/studio.js"></script>
 </body>
 </html>

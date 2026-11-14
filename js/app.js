@@ -10,6 +10,8 @@ const $$ = sel => document.querySelectorAll(sel);
 
 /* ---------- 状态 ---------- */
 const state = {
+  auth: { loggedIn: false, fresh: false }, // 游客默认直达；需要保存关系/交易时再轻量登录
+  guestHints: new Set(),   // 游客会话内提示去重
   homeMode: "works",      // "works" | "artist" | "demand"
   tagSel: {},             // 首页标签检索：{ 组名: [已选标签…] }，空 = 全部
   topic: "全部",           // 社区话题筛选
@@ -25,15 +27,14 @@ const state = {
     name: "", uid: "", gender: "保密", bio: "",
     avatar: null,         // 自定义头像 dataURL；null = 用简笔画头像
   },
-  following: new Set(["墨临溪", "青梧", "绾绾"]), // 我关注的人（小红书式：互相关注即好友）
+  following: new Set(),    // 我关注的人（小红书式：互相关注即好友）
   blocked: new Set(),      // 已拉黑的用户（黑名单，设置里可解除）
   muted: new Set(),        // 消息免打扰（用户 / 讨论组通用）
   workLiked: new Set(),    // 我点赞过的作品 id
   accounts: [],            // 登录过的账号（QQ 式多账号）：{name,uid,avatar,gender,bio,roles,phone,password}
   followTab: "following",  // 关注列表当前页签 "following" | "fans"
-  favFolders: [           // 收藏夹（歌单式分类）
-    { name: "默认收藏", ids: [2] },
-    { name: "古风灵感", ids: [1, 4] },
+  favFolders: [           // 游客也能临时收藏，登录后才跨设备保存
+    { name: "临时收藏", ids: [] },
   ],
   orderFilter: "全部",     // 订单状态筛选
   showMyReviews: true,     // 评价整体公开/隐藏（不可单条设置）
@@ -52,6 +53,46 @@ const state = {
     privacy: { showFollow: true, allowDM: true, findByPhone: false, personalized: true },
   },
 };
+
+let afterLoginAction = null;
+
+const isLoggedIn = () => state.auth.loggedIn;
+
+/** 情境式账号门槛：不打断浏览，只在需要身份/留痕时出现 */
+function openAccountGate(reason = "保存你的进度", continuation = null) {
+  if (isLoggedIn()) {
+    if (continuation) continuation();
+    return;
+  }
+  afterLoginAction = continuation;
+  const reasonEl = $("#loginReason");
+  if (reasonEl) reasonEl.textContent = `登录后可${reason}`;
+  renderAcctGrid();
+  lvShow(state.accounts.length ? "lvPick" : "lvLogin");
+  $("#loginOverlay").classList.add("show");
+}
+
+function ensureAccount(reason, continuation) {
+  if (isLoggedIn()) return true;
+  openAccountGate(reason, continuation);
+  return false;
+}
+
+function closeLoginGate() {
+  $("#loginOverlay").classList.remove("show");
+  afterLoginAction = null;
+}
+
+function renderAuthState() {
+  [$("#scr-msg"), $("#scr-me")].forEach(screen =>
+    screen?.classList.toggle("guest-view", !isLoggedIn()));
+}
+
+function guestSessionHint(key, message) {
+  if (isLoggedIn() || state.guestHints.has(key)) return;
+  state.guestHints.add(key);
+  toast(message);
+}
 
 /* ---------- 首页 ---------- */
 
@@ -157,8 +198,22 @@ function renderHome() {
 
 function setHomeMode(mode, el) {
   state.homeMode = mode;
-  $$("#modeTabs .mode-tab").forEach(t => t.classList.toggle("on", t === el));
+  $$("#modeTabs .mode-tab").forEach((t, i) => {
+    const target = mode === "works" ? 0 : mode === "artist" ? 1 : 2;
+    t.classList.toggle("on", el ? t === el : i === target);
+  });
   renderHome();
+}
+
+/** 首页按目标进入，而不是要求新用户先定义自己是谁 */
+function chooseHomeIntent(intent) {
+  if (intent === "start") {
+    openPublish();
+    return;
+  }
+  const mode = intent === "people" ? "artist" : intent === "join" ? "demand" : "works";
+  setHomeMode(mode);
+  $("#modeTabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ---------- 社区 ---------- */
@@ -4581,6 +4636,8 @@ function doLogout() {
     const i = state.accounts.findIndex(a => a.uid === acc.uid);
     i >= 0 ? state.accounts[i] = acc : state.accounts.push(acc);
   }
+  state.auth.loggedIn = false;
+  renderAuthState();
   closeOverlay("ovSettings");
   lvShow("lvPick");
   renderAcctGrid();
@@ -4619,6 +4676,7 @@ function reloginAcct(i, el) {
 
 /** 登录成功：恢复账号资料；新用户进资料+选工种初始流程，老用户直进首页 */
 function enterApp(acc, isNew) {
+  state.auth.loggedIn = true;
   state.profile.name = acc.name;
   state.profile.uid = acc.uid;
   state.profile.avatar = acc.avatar || null;
@@ -4628,6 +4686,7 @@ function enterApp(acc, isNew) {
   state.settings.phone = acc.phone || "";
   state.settings.password = acc.password || "";
   $("#loginOverlay").classList.remove("show");
+  renderAuthState();
   renderMyProfile();
   if (isNew) {
     state.roleSetupMode = "register";
@@ -4697,7 +4756,7 @@ function lvLoginSubmit() {
     const acc = state.accounts.find(a => a.phone === phone);
     if (acc) return enterApp(acc, false);
     // 未注册手机号：验证通过后自动创建账号（小红书式）
-    const nu = { name: "曲友" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
+    const nu = { name: "来自曲星球" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
     state.accounts.push(nu);
     toast("新账号已创建，完善一下资料吧");
     return enterApp(nu, true);
@@ -4730,7 +4789,7 @@ function lvRegSubmit() {
     toast("该手机号已注册，已为你直接登录");
     return enterApp(old, false);
   }
-  const acc = { name: "曲友" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
+  const acc = { name: "来自曲星球" + phone.slice(-4), uid: randomUid(), avatar: null, gender: "保密", bio: "", roles: [], phone, password: "" };
   state.accounts.push(acc);
   toast("注册成功，手机号已绑定");
   enterApp(acc, true); // 新用户 → 完善资料 → 选工种
@@ -5315,7 +5374,6 @@ renderOrders();
 renderMyReviews();
 renderFavStrip();
 renderNoticeDot();
-/* 初始为未登录：先进登录/注册界面，登录注册成功后再取名、选工种 */
+/* 初始为游客：直接体验首页，需要保存关系或交易时再进入登录。 */
 renderAcctGrid();
-lvShow(state.accounts.length ? "lvPick" : "lvLogin");
-$("#loginOverlay").classList.add("show");
+renderAuthState();
