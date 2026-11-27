@@ -26,28 +26,27 @@
       <div class="search" onclick="openSearch()"><span class="si" data-icon="search"></span> 搜索作品 / 音乐人 / 约稿需求…</div>
       <section class="studio-card" id="studioCard" role="button" tabindex="0"
         onclick="openStudio()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStudio()}">
-        <div class="sc-kicker"><span>造曲台</span><i>自由编曲</i></div>
-        <h2>多轨步进，像搭积木一样编一首歌</h2>
-        <p>点格子就出声，调速率、换和弦、叠人声——音阶锁定，不会弹错。</p>
-        <div class="sc-grid" aria-hidden="true">
-          <i><b class="on"></b><b></b><b class="on"></b></i>
-          <i><b></b><b class="on"></b><b></b></i>
-          <i><b class="on"></b><b></b><b></b></i>
-          <i><b></b><b></b><b class="on"></b></i>
-          <i><b class="on"></b><b class="on"></b><b></b></i>
-          <i><b></b><b></b><b class="on"></b></i>
-          <i><b class="on"></b><b></b><b></b></i>
-          <i><b></b><b class="on"></b><b class="on"></b></i>
-          <i><b class="on"></b><b></b><b class="on"></b></i>
-          <i><b></b><b class="on"></b><b></b></i>
-          <i><b class="on"></b><b></b><b></b></i>
-          <i><b></b><b></b><b class="on"></b></i>
-          <i><b class="on"></b><b class="on"></b><b></b></i>
-          <i><b></b><b></b><b class="on"></b></i>
-          <i><b class="on"></b><b></b><b></b></i>
-          <i><b></b><b class="on"></b><b class="on"></b></i>
+        <div class="sc-head">
+          <div class="sc-kicker"><span>造曲台</span><i>PRIVATE WORKSPACE</i></div>
+          <div class="sc-sync"><i></i>已同步</div>
         </div>
-        <button type="button" onclick="event.stopPropagation();openStudio()">进入造曲台 <span>→</span></button>
+        <h2>让每一版 Demo<br>都有地方生长</h2>
+        <p>收好未发布音乐，管理版本、批注与分享权限。</p>
+        <div class="sc-preview" aria-hidden="true">
+          <div class="sc-art"><span>曲</span><i></i></div>
+          <div class="sc-track">
+            <div class="sc-track-head"><div><b>潮汐来信</b><span>Mix 07 · 最新版本</span></div><i class="sc-mini-play"></i></div>
+            <div class="sc-wave">
+              <i style="--h:32%"></i><i style="--h:64%"></i><i style="--h:45%"></i><i style="--h:88%"></i>
+              <i style="--h:58%"></i><i style="--h:36%"></i><i style="--h:76%"></i><i style="--h:48%"></i>
+              <i style="--h:92%"></i><i style="--h:54%"></i><i style="--h:38%"></i><i style="--h:70%"></i>
+              <i style="--h:42%"></i><i style="--h:82%"></i><i style="--h:55%"></i><i style="--h:34%"></i>
+              <i style="--h:68%"></i><i style="--h:46%"></i><i style="--h:78%"></i><i style="--h:40%"></i>
+            </div>
+            <div class="sc-time"><span>1:16</span><span>3 条批注</span><span>3:18</span></div>
+          </div>
+        </div>
+        <button type="button" onclick="event.stopPropagation();openStudio()"><i class="sc-button-play"></i><b>打开音乐工作区</b><span>继续创作</span></button>
       </section>
       <div class="banner-wrap" id="bannerWrap">
         <div class="banner-track" id="bannerTrack"></div>
@@ -776,26 +775,10 @@
       <div class="qr-acts-float" id="qrActs"></div>
     </div>
 
-    <!-- 造曲台：独立全屏多轨步进音序器，不登录即可编曲 -->
+    <!-- 造曲台：Untitled 风格的私密音乐项目工作区 -->
     <div class="studio-overlay" id="studio" aria-hidden="true" role="dialog" aria-modal="true" aria-label="造曲台">
-      <header class="st-top">
-        <button type="button" onclick="closeStudio()" aria-label="关闭造曲台">×</button>
-        <div class="st-title"><b>造曲台</b><span>多轨步进 · 像搭积木一样编一首歌</span></div>
-        <button class="st-done" type="button" onclick="completeStudio()">完成</button>
-      </header>
-      <div class="st-transport">
-        <button class="st-play" id="stPlay" type="button" onclick="stToggle()" aria-label="播放">▶</button>
-        <div class="st-bpm">
-          <div class="st-bpm-top"><span>速度 TEMPO</span><b id="stBpmVal">96 BPM</b></div>
-          <input type="range" id="stBpm" min="60" max="160" step="1" value="96"
-            oninput="studioSetBpm(this.value)" aria-label="速度 BPM">
-        </div>
-      </div>
-      <div class="st-stage" id="stStage"></div>
-      <footer class="st-dock">
-        <button class="st-inspire" type="button" onclick="studioInspire()">✨ 一键来灵感</button>
-        <button class="st-clear" type="button" onclick="studioClearAll()">全部清空</button>
-      </footer>
+      <div class="studio-app" id="studioApp"></div>
+      <input type="file" id="stAudioFile" accept="audio/*" multiple hidden onchange="studioHandleFiles(this.files)">
     </div>
 
     <!-- 跨页面悬浮播放条：作品详情内自动收起，退出后恢复 -->
