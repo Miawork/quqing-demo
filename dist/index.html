@@ -2280,7 +2280,7 @@ body { background: #D9DADE; }
 
 .studio-card {
   margin: 2px 16px 15px;
-  min-height: 344px;
+  min-height: 226px;
   padding: 18px;
   position: relative;
   overflow: hidden;
@@ -2302,7 +2302,7 @@ body { background: #D9DADE; }
 }
 .studio-card::after {
   content: "";
-  position: absolute; width: 180px; height: 180px; right: -86px; top: 64px;
+  position: absolute; width: 180px; height: 180px; right: -86px; top: 22px;
   border: 1px solid rgba(255,255,255,.13); border-radius: 50%; pointer-events: none;
   box-shadow: 0 0 0 27px rgba(255,255,255,.035), 0 0 0 54px rgba(255,255,255,.022);
 }
@@ -2314,10 +2314,8 @@ body { background: #D9DADE; }
 .studio-card .sc-kicker i { color: rgba(225,234,255,.7); font: 700 8px var(--font-sans); font-style: normal; letter-spacing: .8px; }
 .sc-sync { display: flex; align-items: center; gap: 5px; color: rgba(238,243,255,.65); font-size: 9px; }
 .sc-sync i { width: 5px; height: 5px; border-radius: 50%; background: #89e3b0; box-shadow: 0 0 0 3px rgba(137,227,176,.12); }
-.studio-card h2 { position: relative; z-index: 2; margin: 15px 0 7px; max-width: 300px; font-size: 25px; line-height: 1.18; letter-spacing: -.7px; }
-.studio-card > p { position: relative; z-index: 2; max-width: 300px; font-size: 12px; line-height: 1.55; color: rgba(229,235,252,.7); }
 .sc-preview {
-  position: relative; z-index: 2; min-height: 84px; margin: 17px 0 14px; padding: 9px;
+  position: relative; z-index: 2; min-height: 84px; margin: 18px 0 14px; padding: 9px;
   display: grid; grid-template-columns: 66px 1fr; gap: 11px; align-items: center;
   overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 17px;
   background: linear-gradient(110deg,rgba(8,15,32,.46),rgba(255,255,255,.075));
@@ -2757,8 +2755,6 @@ html.dark .st-cover { filter: none; }
           <div class="sc-kicker"><span>造曲台</span><i>PRIVATE WORKSPACE</i></div>
           <div class="sc-sync"><i></i>已同步</div>
         </div>
-        <h2>让每一版 Demo<br>都有地方生长</h2>
-        <p>收好未发布音乐，管理版本、批注与分享权限。</p>
         <div class="sc-preview" aria-hidden="true">
           <div class="sc-art"><span>曲</span><i></i></div>
           <div class="sc-track">
